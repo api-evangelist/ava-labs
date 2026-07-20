@@ -1,0 +1,17 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/ava-labs-data-api-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+schemes:
+- name: apiKey
+  type: apiKey
+  in: header
+  parameter: x-glacier-api-key
+  description: Api keys provide higher access to rate limits. To obtain an api key, sign up
+    for an account at https://avacloud.io/.
+  sources:
+  - openapi/ava-labs-data-api-openapi.yml
