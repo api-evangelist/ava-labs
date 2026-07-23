@@ -1,0 +1,43 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/ava-labs-data-api-openapi.yml
+note: Entity graph derived from the Data API schema set (250 component schemas across EVM and Primary Network domains).
+entities:
+- name: Chain
+  schema: ChainInfo
+  id_field: chainId
+  domain: EVM / Primary Network
+- name: Block
+  schema: EvmBlock
+  id_field: blockNumber
+  domain: EVM
+- name: Transaction
+  schema: NativeTransaction
+  id_field: txHash
+  domain: EVM
+- name: Erc20Token
+  schema: Erc20Token
+  id_field: address
+  domain: EVM tokens
+- name: Erc20Transfer
+  schema: Erc20Transfer
+  domain: EVM transfers
+- name: Erc721Token
+  schema: Erc721Token
+  id_field: tokenId
+  domain: NFTs
+- name: PrimaryNetworkBlock
+  schema: PrimaryNetworkBlock
+  domain: Primary Network (P/X/C)
+- name: Webhook
+  schema: Webhook
+  id_field: id
+  domain: Webhooks
+relationships:
+- {from: Block, to: Chain, type: belongs_to, via: chainId}
+- {from: Block, to: Transaction, type: has_many, via: blockNumber}
+- {from: Transaction, to: Chain, type: belongs_to, via: chainId}
+- {from: Transaction, to: Erc20Transfer, type: has_many, via: txHash}
+- {from: Erc20Transfer, to: Erc20Token, type: belongs_to, via: address}
+- {from: Erc721Token, to: Chain, type: belongs_to, via: chainId}
+- {from: Webhook, to: Chain, type: belongs_to, via: chainId}

@@ -1,0 +1,25 @@
+generated: '2026-07-18'
+method: searched
+source: https://developers.avacloud.io, https://build.avax.network/docs
+note: >-
+  Avalanche exposes a public test network (Fuji / testnet) rather than test cards or
+  magic tokens. Most Data/Metrics API endpoints accept a network selector (mainnet vs
+  testnet) or operate per chainId. Public RPC has separate mainnet and testnet hosts.
+networks:
+- name: mainnet
+  selector_value: mainnet
+- name: testnet (Fuji)
+  selector_value: testnet
+rpc_endpoints:
+  mainnet:
+    c_chain: https://api.avax.network/ext/bc/C/rpc
+    p_chain: https://api.avax.network/ext/bc/P
+    x_chain: https://api.avax.network/ext/bc/X
+  testnet:
+    c_chain: https://api.avax-test.network/ext/bc/C/rpc
+    p_chain: https://api.avax-test.network/ext/bc/P
+    x_chain: https://api.avax-test.network/ext/bc/X
+faucet:
+  url: https://core.app/tools/testnet-faucet/
+  repository: https://github.com/ava-labs/avalanche-faucet
+  note: Fuji testnet faucet dispenses test AVAX and subnet tokens for development.

@@ -1,0 +1,15 @@
+generated: '2026-07-18'
+method: searched
+source: https://developers.avacloud.io, https://status.avax.network
+versioning:
+  scheme: uri-path
+  current: v1
+  docs: https://developers.avacloud.io
+  note: Data API endpoints are versioned under /v1; product changes are announced via a dated changelog.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  note: No formal RFC 8594 Sunset/Deprecation header policy is documented; deprecations are communicated through the changelog.
+status_page: https://status.avax.network
+changelog: https://developers.avacloud.io/changelog
+deprecated_operations: []

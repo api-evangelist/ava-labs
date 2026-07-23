@@ -1,0 +1,15 @@
+generated: '2026-07-18'
+method: generated
+skills:
+- file: ava-labs-wallet-portfolio.md
+  name: Look up an address's wallet portfolio and history
+  api: openapi/ava-labs-data-api-openapi.yml
+  operations: [listAddressChains, getNativeBalance, listErc20Balances, listErc721Balances, listTransactions, listNativeTransactions, getTxByHash]
+- file: ava-labs-address-webhooks.md
+  name: Monitor addresses with AvaCloud webhooks
+  api: openapi/ava-labs-data-api-openapi.yml
+  operations: [createWebhook, listWebhooks, getWebhook, addAddressesToWebhook, removeAddressesFromWebhook, generateOrRotateSharedSecret, getSharedSecret, deactivateWebhook]
+- file: ava-labs-chain-metrics.md
+  name: Pull chain and staking metrics
+  api: openapi/ava-labs-metrics-api-openapi.yml
+  operations: [listChains, getChain, getEvmChainMetrics, getStakingMetrics]

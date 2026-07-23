@@ -1,0 +1,1535 @@
+openapi: 3.1.0
+info:
+  title: Data AVAX Supply Webhooks API
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  version: 1.0.0
+  contact: {}
+servers:
+- url: https://glacier-api.avax.network
+security:
+- apiKey: []
+- {}
+tags:
+- name: Webhooks
+  description: Manage webhooks and get notified for various onchain activities.
+paths:
+  /v1/webhooks:
+    post:
+      operationId: createWebhook
+      x-speakeasy-group: webhooks
+      x-speakeasy-name-override: create
+      x-execution-weight: medium
+      summary: Create a webhook
+      description: Create a new webhook.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/EVMAddressActivityRequest'
+              - $ref: '#/components/schemas/PrimaryNetworkAddressActivityRequest'
+              - $ref: '#/components/schemas/ValidatorActivityRequest'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EVMAddressActivityResponse'
+                - $ref: '#/components/schemas/PrimaryNetworkAddressActivityResponse'
+                - $ref: '#/components/schemas/ValidatorActivityResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.create({\n    eventType: \"address_activity\",\n    url: \"https://sophisticated-exterior.org/\",\n    chainId: \"<id>\",\n    metadata: {\n      eventSignatures: [\n        \"0x61cbb2a3dee0b6064c2e681aadd61677fb4ef319f0b547508d495626f5a62f64\",\n      ],\n      addresses: [\n        \"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\n      ],\n    },\n  });\n\n  console.log(result);\n}\n\nrun();"
+    get:
+      operationId: listWebhooks
+      x-execution-weight: small
+      x-speakeasy-group: webhooks
+      x-speakeasy-name-override: list
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      summary: List webhooks
+      description: Lists webhooks for the user.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: status
+        required: false
+        in: query
+        example: active
+        description: Status of the webhook. Use "active" to return only active webhooks, "inactive" to return only inactive webhooks. Else if no status is provided, all configured webhooks will be returned.
+        schema:
+          $ref: '#/components/schemas/WebhookStatus'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWebhooksResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.list({\n    pageSize: 10,\n    status: \"active\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/webhooks/{id}:
+    get:
+      operationId: getWebhook
+      x-execution-weight: small
+      x-speakeasy-group: webhooks
+      x-speakeasy-name-override: get
+      summary: Get a webhook by ID
+      description: Retrieves a webhook by ID.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: The webhook identifier.
+        example: f33de69c-d13b-4691-908f-870d6e2e6b04
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EVMAddressActivityResponse'
+                - $ref: '#/components/schemas/PrimaryNetworkAddressActivityResponse'
+                - $ref: '#/components/schemas/ValidatorActivityResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.get({\n    id: \"f33de69c-d13b-4691-908f-870d6e2e6b04\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+    delete:
+      operationId: deactivateWebhook
+      x-speakeasy-group: webhooks
+      x-speakeasy-name-override: deactivate
+      x-execution-weight: medium
+      summary: Deactivate a webhook
+      description: Deactivates a webhook by ID.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: The webhook identifier.
+        example: f33de69c-d13b-4691-908f-870d6e2e6b04
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EVMAddressActivityResponse'
+                - $ref: '#/components/schemas/PrimaryNetworkAddressActivityResponse'
+                - $ref: '#/components/schemas/ValidatorActivityResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.deactivate({\n    id: \"f33de69c-d13b-4691-908f-870d6e2e6b04\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+    patch:
+      operationId: updateWebhook
+      x-speakeasy-group: webhooks
+      x-speakeasy-name-override: update
+      x-execution-weight: medium
+      summary: Update a webhook
+      description: Updates an existing webhook.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: The webhook identifier.
+        example: f33de69c-d13b-4691-908f-870d6e2e6b04
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWebhookRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EVMAddressActivityResponse'
+                - $ref: '#/components/schemas/PrimaryNetworkAddressActivityResponse'
+                - $ref: '#/components/schemas/ValidatorActivityResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.update({\n    id: \"f33de69c-d13b-4691-908f-870d6e2e6b04\",\n    updateWebhookRequest: {},\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/webhooks:generateOrRotateSharedSecret:
+    post:
+      operationId: generateOrRotateSharedSecret
+      x-speakeasy-group: webhooks
+      x-execution-weight: medium
+      summary: Generate or rotate a shared secret
+      description: Generates a new shared secret or rotate an existing one.
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedSecretsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.generateOrRotateSharedSecret();\n\n  console.log(result);\n}\n\nrun();"
+  /v1/webhooks:getSharedSecret:
+    get:
+      operationId: getSharedSecret
+      x-speakeasy-group: webhooks
+      x-execution-weight: small
+      summary: Get a shared secret
+      description: Get a previously generated shared secret.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedSecretsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.getSharedSecret();\n\n  console.log(result);\n}\n\nrun();"
+  /v1/webhooks/{id}/addresses:
+    patch:
+      operationId: addAddressesToWebhook
+      x-speakeasy-group: webhooks.addresses
+      x-speakeasy-name-override: add
+      x-execution-weight: medium
+      summary: Add addresses to EVM activity webhook
+      description: Add addresses to webhook. Only valid for EVM activity webhooks.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: The webhook identifier.
+        example: f33de69c-d13b-4691-908f-870d6e2e6b04
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressesChangeRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EVMAddressActivityResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.addresses.add({\n    id: \"f33de69c-d13b-4691-908f-870d6e2e6b04\",\n    addressesChangeRequest: {\n      addresses: [\n        \"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\n      ],\n    },\n  });\n\n  console.log(result);\n}\n\nrun();"
+    delete:
+      operationId: removeAddressesFromWebhook
+      x-speakeasy-group: webhooks.addresses
+      x-speakeasy-name-override: remove
+      x-execution-weight: medium
+      summary: Remove addresses from EVM activity  webhook
+      description: Remove addresses from webhook. Only valid for EVM activity webhooks.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: The webhook identifier.
+        example: f33de69c-d13b-4691-908f-870d6e2e6b04
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressesChangeRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EVMAddressActivityResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.addresses.remove({\n    id: \"f33de69c-d13b-4691-908f-870d6e2e6b04\",\n    addressesChangeRequest: {\n      addresses: [\n        \"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\n      ],\n    },\n  });\n\n  console.log(result);\n}\n\nrun();"
+    get:
+      operationId: getAddressesFromWebhook
+      x-speakeasy-group: webhooks.addresses
+      x-speakeasy-name-override: list
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List adresses by EVM activity webhooks
+      description: List adresses by webhook. Only valid for EVM activity webhooks.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: id
+        required: true
+        in: path
+        description: The webhook identifier.
+        example: f33de69c-d13b-4691-908f-870d6e2e6b04
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWebhookAddressesResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Webhooks
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.webhooks.addresses.list({\n    pageSize: 10,\n    id: \"f33de69c-d13b-4691-908f-870d6e2e6b04\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+components:
+  schemas:
+    UpdateWebhookRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        status:
+          $ref: '#/components/schemas/WebhookStatusType'
+        includeInternalTxs:
+          type: boolean
+          description: Whether to include traces in the webhook payload. Traces are only available for C-Chain on chainId 43113 and 43114.
+        includeLogs:
+          type: boolean
+    SharedSecretsResponse:
+      type: object
+      properties:
+        secret:
+          type: string
+      required:
+      - secret
+    WebhookStatusType:
+      type: string
+      enum:
+      - active
+      - inactive
+    ListWebhooksResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        webhooks:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/EVMAddressActivityResponse'
+            - $ref: '#/components/schemas/PrimaryNetworkAddressActivityResponse'
+            - $ref: '#/components/schemas/ValidatorActivityResponse'
+      required:
+      - webhooks
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    ListWebhookAddressesResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        addresses:
+          type: array
+          items:
+            type: string
+        totalAddresses:
+          type: number
+      required:
+      - addresses
+      - totalAddresses
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    ValidatorActivityRequest:
+      type: object
+      properties:
+        eventType:
+          type: string
+          enum:
+          - validator_activity
+        url:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        network:
+          $ref: '#/components/schemas/PrimaryNetworkType'
+        metadata:
+          description: Metadata for platform validator activity event
+          oneOf:
+          - $ref: '#/components/schemas/ValidatorActivityMetadata'
+          allOf:
+          - $ref: '#/components/schemas/ValidatorActivityMetadata'
+      required:
+      - eventType
+      - url
+      - network
+      - metadata
+    ValidatorActivityMetadata:
+      type: object
+      properties:
+        eventSignatures:
+          description: Array of hexadecimal strings of the event signatures.
+          examples:
+          - - '0x61cbb2a3dee0b6064c2e681aadd61677fb4ef319f0b547508d495626f5a62f64'
+          type: array
+          items:
+            type: string
+        keyType:
+          $ref: '#/components/schemas/ValidatorActivityKeyType'
+        keys:
+          description: Array of keys like NodeID or SubnetID corresponding to the keyType being monitored. ValidatorActivity event will only accept a single key
+          type: array
+          items:
+            type: string
+        subEvents:
+          description: Sub-events to monitor
+          allOf:
+          - $ref: '#/components/schemas/ValidatorActivitySubEvents'
+        nodeIds:
+          description: Array of node IDs to filter the events
+          type: array
+          items:
+            type: string
+        subnetIds:
+          description: Array of subnet IDs to filter the events
+          type: array
+          items:
+            type: string
+        l1ValidatorFeeBalanceThreshold:
+          type: string
+          description: L1 validator fee balance threshold in nAVAX
+      required:
+      - keyType
+      - keys
+      - subEvents
+    ValidatorActivityEventType:
+      type: string
+      enum:
+      - validator_activity
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    PrimaryNetworkAddressActivityRequest:
+      type: object
+      properties:
+        eventType:
+          type: string
+          enum:
+          - primary_network_address_activity
+        url:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        network:
+          $ref: '#/components/schemas/PrimaryNetworkType'
+        chainId:
+          type: string
+        metadata:
+          description: Metadata for platform address activity event
+          oneOf:
+          - $ref: '#/components/schemas/PrimaryNetworkAddressActivityMetadata'
+          allOf:
+          - $ref: '#/components/schemas/PrimaryNetworkAddressActivityMetadata'
+      required:
+      - eventType
+      - url
+      - network
+      - chainId
+      - metadata
+    ValidatorActivityResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        chainId:
+          type: string
+        status:
+          $ref: '#/components/schemas/WebhookStatusType'
+        createdAt:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        eventType:
+          $ref: '#/components/schemas/ValidatorActivityEventType'
+        metadata:
+          $ref: '#/components/schemas/ValidatorActivityMetadata'
+      required:
+      - id
+      - url
+      - chainId
+      - status
+      - createdAt
+      - name
+      - description
+      - eventType
+      - metadata
+    AddressActivityEventType:
+      type: string
+      enum:
+      - address_activity
+    EVMAddressActivityResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        chainId:
+          type: string
+        status:
+          $ref: '#/components/schemas/WebhookStatusType'
+        createdAt:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        eventType:
+          $ref: '#/components/schemas/AddressActivityEventType'
+        metadata:
+          $ref: '#/components/schemas/AddressActivityMetadata'
+        includeInternalTxs:
+          type: boolean
+          description: Whether to include traces in the webhook payload.
+        includeLogs:
+          type: boolean
+          description: Whether to include logs in the webhook payload.
+      required:
+      - id
+      - url
+      - chainId
+      - status
+      - createdAt
+      - name
+      - description
+      - eventType
+      - metadata
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    ValidatorActivitySubEvents:
+      type: object
+      properties:
+        validatorActivitySubEvents:
+          type: array
+          description: Array of validator activity sub-event types
+          items:
+            type: string
+            enum:
+            - validator_stake
+            - delegator_stake
+            - reward_distribution
+            - l1_validator_balance_increased
+            - l1_validator_disabled
+            - l1_validator_removed
+            - l1_validator_balance_threshold
+      required:
+      - validatorActivitySubEvents
+    PrimaryNetworkAddressActivityMetadata:
+      type: object
+      properties:
+        eventSignatures:
+          description: Array of hexadecimal strings of the event signatures.
+          examples:
+          - - '0x61cbb2a3dee0b6064c2e681aadd61677fb4ef319f0b547508d495626f5a62f64'
+          type: array
+          items:
+            type: string
+        keyType:
+          $ref: '#/components/schemas/PlatformAddressActivityKeyType'
+        keys:
+          description: Array of keys like addresses corresponding to the keyType being monitored. For PrimaryNetworkAddressActivity event, an array of multiple addresses can be provided. The maximum number of 'addresses' you can track depends on the Data API plan you are subscribed to.
+          type: array
+          items:
+            type: string
+        subEvents:
+          description: Sub-events to monitor
+          allOf:
+          - $ref: '#/components/schemas/PrimaryNetworkAddressActivitySubEvents'
+        balanceThresholdFilter:
+          description: Balance threshold filter
+          allOf:
+          - $ref: '#/components/schemas/PrimaryNetworkBalanceThresholdFilter'
+      required:
+      - keyType
+      - keys
+      - subEvents
+    PrimaryNetworkBalanceThresholdFilter:
+      type: object
+      properties:
+        balanceType:
+          $ref: '#/components/schemas/CommonBalanceType'
+        balanceThreshold:
+          type: string
+          description: Threshold for balance corresponding to balanceType in nAVAX
+      required:
+      - balanceType
+      - balanceThreshold
+    PrimaryNetworkAddressActivitySubEventType:
+      type: string
+      description: Array of address activity sub-event types
+      enum:
+      - balance_change
+      - balance_threshold
+      - reward_distribution
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    ValidatorActivityKeyType:
+      type: string
+      description: The type of key to monitor for the validator activity event type.
+      enum:
+      - nodeId
+      - subnetId
+    PrimaryNetworkType:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+    PrimaryNetworkAddressActivityResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        chainId:
+          type: string
+        status:
+          $ref: '#/components/schemas/WebhookStatusType'
+        createdAt:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        eventType:
+          $ref: '#/components/schemas/PrimaryNetworkAddressActivityEventType'
+        metadata:
+          $ref: '#/components/schemas/PrimaryNetworkAddressActivityMetadata'
+      required:
+      - id
+      - url
+      - chainId
+      - status
+      - createdAt
+      - name
+      - description
+      - eventType
+      - metadata
+    AddressActivityMetadata:
+      type: object
+      properties:
+        eventSignatures:
+          description: Array of hexadecimal strings of the event signatures.
+          examples:
+          - - '0x61cbb2a3dee0b6064c2e681aadd61677fb4ef319f0b547508d495626f5a62f64'
+          type: array
+          items:
+            type: string
+        addresses:
+          description: Ethereum address(es) for the address_activity event type. The maximum number of 'addresses' you can track depends  on the Data API plan you are subscribed to.
+          examples:
+          - - '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'
+          type: array
+          items:
+            type: string
+      required:
+      - addresses
+    EVMAddressActivityRequest:
+      type: object
+      properties:
+        eventType:
+          type: string
+          enum:
+          - address_activity
+        url:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        chainId:
+          type: string
+        metadata:
+          oneOf:
+          - $ref: '#/components/schemas/AddressActivityMetadata'
+        includeInternalTxs:
+          type: boolean
+          description: Whether to include traces in the webhook payload. Traces are only available for C-Chain on chainId 43113 and 43114.
+        includeLogs:
+          type: boolean
+          description: Whether to include logs in the webhook payload.
+      required:
+      - eventType
+      - url
+      - chainId
+      - metadata
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    PrimaryNetworkAddressActivitySubEvents:
+      type: object
+      properties:
+        addressActivitySubEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrimaryNetworkAddressActivitySubEventType'
+      required:
+      - addressActivitySubEvents
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    CommonBalanceType:
+      type: string
+      description: Type of balance to monitor
+      enum:
+      - unlockedUnstaked
+      - unlockedStaked
+      - lockedPlatform
+      - lockedStakeable
+      - lockedStaked
+      - pendingStaked
+      - unlocked
+      - locked
+      - atomicMemoryUnlocked
+      - atomicMemoryLocked
+    AddressesChangeRequest:
+      type: object
+      properties:
+        addresses:
+          description: Ethereum address(es) for the address_activity event type
+          examples:
+          - - '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'
+          type: array
+          items:
+            type: string
+      required:
+      - addresses
+    PlatformAddressActivityKeyType:
+      type: string
+      description: The type of key to monitor for the address activity event type.
+      enum:
+      - addresses
+    PrimaryNetworkAddressActivityEventType:
+      type: string
+      enum:
+      - primary_network_address_activity
+    WebhookStatus:
+      type: string
+      enum:
+      - active
+      - inactive
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-glacier-api-key
+      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 120000
+    exponent: 1.5
+  statusCodes:
+  - 5XX
+  retryConnectionErrors: true
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
+x-execution-weight-values:
+  free: 1
+  large: 50
+  medium: 20
+  none: 0
+  small: 10
+  xl: 100
+  xxl: 200
+x-rpc-method-execution-weights:
+  eth_accounts: free
+  eth_blockNumber: small
+  eth_call: small
+  eth_coinbase: small
+  eth_chainId: free
+  eth_gasPrice: small
+  eth_getBalance: small
+  eth_getBlockByHash: small
+  eth_getBlockByNumber: small
+  eth_getBlockTransactionCountByNumber: medium
+  eth_getCode: medium
+  eth_getLogs: xxl
+  eth_getStorageAt: medium
+  eth_getTransactionByBlockNumberAndIndex: medium
+  eth_getTransactionByHash: small
+  eth_getTransactionCount: small
+  eth_getTransactionReceipt: small
+  eth_signTransaction: medium
+  eth_sendTransaction: medium
+  eth_sign: medium
+  eth_sendRawTransaction: small
+  eth_syncing: free
+  net_listening: free
+  net_peerCount: medium
+  net_version: free
+  web3_clientVersion: small
+  web3_sha3: small
+  eth_newPendingTransactionFilter: medium
+  eth_maxPriorityFeePerGas: small
+  eth_baseFee: small
+  rpc_modules: free
+  eth_getChainConfig: small
+  eth_feeConfig: small
+  eth_getActivePrecompilesAt: small
+x-speakeasy-webhooks:
+  security:
+    type: signature
+    headerName: x-signature
+    signatureTextEncoding: base64
+    algorithm: hmac-sha256

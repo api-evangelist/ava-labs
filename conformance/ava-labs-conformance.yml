@@ -1,0 +1,28 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/ava-labs-data-api-openapi.yml, openapi/ava-labs-platform-api-openapi.yml, openapi/ava-labs-metrics-api-openapi.yml
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: Data API and Metrics API published as OpenAPI 3.1.0.
+- id: openapi-3.0
+  conforms: true
+  evidence: Platform Chain API published as OpenAPI 3.0.0.
+- id: json-rpc-2.0
+  conforms: true
+  evidence: Platform (P-Chain) API operations are JSON-RPC 2.0 methods (platform_*).
+- id: api-key-auth
+  conforms: true
+  evidence: Data API secured with x-glacier-api-key header apiKey scheme.
+- id: cursor-pagination
+  conforms: true
+  evidence: pageToken/pageSize request params with nextPageToken response field.
+- id: oauth2
+  conforms: false
+- id: openid-connect
+  conforms: false
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Errors use a flat {statusCode,error,message} JSON envelope, not application/problem+json.
+- id: rfc8594-sunset-header
+  conforms: false

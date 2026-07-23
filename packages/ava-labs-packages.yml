@@ -1,0 +1,28 @@
+generated: '2026-07-18'
+method: searched
+source: npm registry, pkg.go.dev, github.com/ava-labs
+packages:
+- language: typescript
+  registry: npm
+  name: '@avalabs/avacloud-sdk'
+  url: https://www.npmjs.com/package/@avalabs/avacloud-sdk
+  install: npm install @avalabs/avacloud-sdk
+  repository: https://github.com/ava-labs/avacloud-sdk-typescript
+  description: AvaCloud SDK for TypeScript — client for the Data API, Metrics API and Webhooks API.
+  official: true
+- language: javascript
+  registry: npm
+  name: '@avalabs/avalanchejs'
+  url: https://www.npmjs.com/package/@avalabs/avalanchejs
+  install: npm install @avalabs/avalanchejs
+  repository: https://github.com/ava-labs/avalanchejs
+  description: The Avalanche Platform JavaScript library (P/X/C-Chain transactions, keys, UTXOs).
+  official: true
+- language: go
+  registry: go
+  name: github.com/ava-labs/avalanchego
+  url: https://pkg.go.dev/github.com/ava-labs/avalanchego
+  install: go get github.com/ava-labs/avalanchego
+  repository: https://github.com/ava-labs/avalanchego
+  description: Go implementation of an Avalanche node; the reference client and platform library.
+  official: true

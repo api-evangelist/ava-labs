@@ -1,0 +1,1211 @@
+openapi: 3.1.0
+info:
+  title: Data AVAX Supply Chain Metrics API
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  version: 1.0.0
+  contact: {}
+servers:
+- url: https://glacier-api.avax.network
+security:
+- apiKey: []
+- {}
+tags:
+- name: Chain Metrics
+  description: Get network level staking and usage metrics.
+paths:
+  /v2/chains/{chainId}/metrics/{metric}:
+    get:
+      operationId: getEvmChainMetrics
+      x-execution-weight: small
+      x-speakeasy-group: metrics.chains
+      x-speakeasy-name-override: getMetrics
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.metrics.chains.getMetrics({\n    metric: \"activeAddresses\",\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    timeInterval: \"day\",\n    pageSize: 10,\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+      summary: Get metrics for EVM chains
+      description: 'EVM chain metrics are available for all Avalanche L1s on _Mainnet_ and _Fuji_ (testnet). You can request metrics by EVM chain ID. See the `/chains` endpoint for all supported chains.
+
+
+        All metrics are updated several times every hour. Each metric data point has a `value` and `timestamp` (Unix timestamp in seconds). All metric values include data within the duration of the associated timestamp plus the requested `timeInterval`. All timestamps are fixed to the hour. When requesting a timeInterval of **day**, **week**, or **month**, the timestamp will be 0:00 UTC of the day, Monday of the week, or first day of the month, respectively. The latest data point in any response may change on each update.
+
+
+        ### Metrics
+
+
+        <ins>activeAddresses</ins>: The number of distinct addresses seen within the selected `timeInterval` starting at the timestamp. Addresses counted are those that appear in the “from” and “to” fields of a transaction or ERC20/ERC721/ERC1155 transfer log event.
+
+
+        <ins>activeSenders</ins>: This metric follows the same structure as activeAddresses, but instead only counts addresses that appear in the “from” field of the respective transaction or transfer log event.
+
+
+        <ins>cumulativeTxCount</ins>: The cumulative transaction count from genesis up until 24 hours after the timestamp. This aggregation can be considered a “rolling sum” of the transaction count metric (txCount). Only `timeInterval=day` supported.
+
+
+        <ins>cumulativeAddresses</ins>: The cumulative count of unique addresses from genesis up until 24 hours after the timestamp. Addresses counted are those that appear in the “from” and “to” fields of a transaction or ERC20/ERC721/ERC1155 transfer log event. Only `timeInterval=day` supported.
+
+
+        <ins>cumulativeContracts</ins>: The cumulative count of contracts created from genesis up until the timestamp.  Contracts are counted by looking for the CREATE, CREATE2, and CREATE3 call types in all transaction traces (aka internal transactions). Only `timeInterval=day` supported.
+
+
+        <ins>cumulativeDeployers</ins>: The cumulative count of unique contract deployers from genesis up until 24 hours after the timestamp. Deployers counted are those that appear in the “from” field of transaction traces with the CREATE, CREATE2, and CREATE3 call types. Only `timeInterval=day` supported.
+
+
+        <ins>contracts</ins>: The count of contracts created within the requested timeInterval starting at the timestamp. Contracts are counted by looking for the CREATE, CREATE2, and CREATE3 call types in all transaction traces (aka internal transactions). Only `timeInterval=day` supported.
+
+
+        <ins>deployers</ins>: The count of unique deployers within the requested timeInterval starting at the timestamp. Deployers counted are those that appear in the “from” field of transaction traces with the CREATE, CREATE2, and CREATE3 call types. Only `timeInterval=day` supported.
+
+
+        <ins>gasUsed</ins>: The amount of gas used by transactions within the requested timeInterval starting at the timestamp.
+
+
+        <ins>txCount</ins>: The amount of transactions within the requested timeInterval starting at the timestamp.
+
+
+        <ins>avgGps</ins>: The average Gas used Per Second (GPS) within the day beginning at the timestamp.  The average is calculated by taking the sum of gas used by all blocks within the day and dividing it by the time interval between the last block of the previous day and the last block of the day that begins at the timestamp.  Only `timeInterval=day` supported.
+
+
+        <ins>maxGps</ins>: The max Gas used Per Second (GPS)  measured within the day beginning at the timestamp. Each GPS data point is calculated using the gas used in a single block divided by the time since the last block. Only `timeInterval=day` supported.
+
+
+        <ins>avgTps</ins>: The average Transactions Per Second (TPS) within the day beginning at the timestamp. The average is calculated by taking the sum of transactions within the day and dividing it by the time interval between the last block of the previous day and the last block of the day that begins at the timestamp. Only `timeInterval=day` supported.
+
+
+        <ins>maxTps</ins>: The max Transactions Per Second (TPS) measured within the day beginning at the timestamp. Each TPS data point is calculated by taking the number of transactions in a single block and dividing it by the time since the last block. Only `timeInterval=day` supported.
+
+
+        <ins>avgGasPrice</ins>: The average gas price within the day beginning at the timestamp. The gas price used is the price reported in transaction receipts. Only `timeInterval=day` supported.
+
+
+        <ins>maxGasPrice</ins>: The max gas price seen within the day beginning at the timestamp. The gas price used is the price reported in transaction receipts. Only `timeInterval=day` supported.
+
+
+        <ins>feesPaid</ins>: The sum of transaction fees paid within the day beginning at the timestamp. The fee is calculated as the gas used multiplied by the gas price as reported in all transaction receipts. Only `timeInterval=day` supported.'
+      parameters:
+      - name: metric
+        required: true
+        in: path
+        description: Which chain level metric to fetch.
+        example: activeAddresses
+        schema:
+          $ref: '#/components/schemas/ChainMetric'
+      - name: startTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items after a specific timestamp.
+        example: 1689541049
+        schema:
+          minimum: 0
+          type: integer
+      - name: endTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items before a specific timestamp.
+        example: 1689800249
+        schema:
+          minimum: 0
+          type: integer
+      - name: timeInterval
+        required: false
+        in: query
+        description: "Time interval granularity for data aggregation. Metrics\n    prefixed with \"cumulative\", \"max\", or \"avg\" only support timeInterval equal\n    to \"day\"."
+        example: day
+        schema:
+          $ref: '#/components/schemas/TimeIntervalGranularity'
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 2160.
+        schema:
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 2160
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported EVM chain ID or one of "total", "mainnet", or "testnet". Use the `/chains` endpoint to get a list of supported chain IDs.
+        example: '43114'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsApiResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Chain Metrics
+  /v2/chains/{chainId}/rollingWindowMetrics/{metric}:
+    get:
+      operationId: getEvmChainRollingWindowMetrics
+      x-execution-weight: small
+      x-speakeasy-group: metrics.chains
+      x-speakeasy-name-override: getRollingWindowMetrics
+      summary: Get rolling window metrics for EVM chains
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.metrics.chains.getRollingWindowMetrics({\n    metric: \"txCount\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+      description: Gets the rolling window metrics for an EVM chain for the last hour, day, week, month, 90 days, year, and all time. Active addresses/active senders only support last hour, day, and week.
+      parameters:
+      - name: metric
+        required: true
+        in: path
+        description: Which chain level metric to fetch for the rolling window.
+        example: txCount
+        schema:
+          $ref: '#/components/schemas/ChainRollingWindowMetric'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported EVM chain ID or one of "total", "mainnet", or "testnet". Use the `/chains` endpoint to get a list of supported chain IDs.
+        example: '43114'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollingWindowMetricsApiResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Chain Metrics
+  /v2/chains/{chainId}/teleporterMetrics/{metric}:
+    get:
+      operationId: getTeleporterMetricsByChain
+      x-execution-weight: small
+      x-speakeasy-group: metrics.chains
+      x-speakeasy-name-override: getTeleporterMetrics
+      description: Gets teleporter metrics for an EVM chain.
+      deprecated: true
+      parameters:
+      - name: metric
+        required: true
+        in: path
+        description: Which chain level teleporter metric to fetch.
+        example: teleporterSourceTxnCount
+        schema:
+          $ref: '#/components/schemas/TeleporterMetric'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported EVM chain ID or one of "total", "mainnet", or "testnet". Use the `/chains` endpoint to get a list of supported chain IDs.
+        example: '43114'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeleporterChainMetricsApiResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Chain Metrics
+  /v2/icm/timeseries:
+    get:
+      operationId: getICMTimeseries
+      x-execution-weight: small
+      x-speakeasy-group: metrics.chains
+      x-speakeasy-name-override: getICMTimeseries
+      summary: Get ICM timeseries metrics
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.metrics.chains.getICMTimeseries({\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    timeInterval: \"day\",\n    pageSize: 10,\n    groupBy: \"destBlockchainId\",\n    network: \"mainnet\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+      description: "Get historical ICM message counts with flexible grouping.\n\nUse filters (`srcBlockchainId`, `destBlockchainId`, `network`)  to select data, and the `groupBy` parameter for aggregation level.\n\n### Examples:\n\n  - **Specific pair**:   `?srcBlockchainId=...&destBlockchainId=...`\n\n  - **From one source (aggregated)**: `?srcBlockchainId=...`\n\n  - **From one source (by destination)**:   `?srcBlockchainId=...&groupBy=destBlockchainId`\n\n  - **To one destination (aggregated)**: `?destBlockchainId=...`\n\n  - **To one destination (by source)**:   `?destBlockchainId=...&groupBy=srcBlockchainId`\n\n  - **Network total**: `?network=mainnet`\n\n  - **Network breakdown**:   `?network=mainnet&groupBy=srcBlockchainId,destBlockchainId`."
+      parameters:
+      - name: startTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items after a specific timestamp.
+        example: 1689541049
+        schema:
+          minimum: 0
+          type: integer
+      - name: endTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items before a specific timestamp.
+        example: 1689800249
+        schema:
+          minimum: 0
+          type: integer
+      - name: srcBlockchainId
+        required: false
+        in: query
+        description: Query param for retrieving items for a specific source (initiating) blockchain id.
+        schema:
+          type: string
+      - name: destBlockchainId
+        required: false
+        in: query
+        description: Query param for retrieving items for a specific destination (receiving) blockchain id.
+        schema:
+          type: string
+      - name: timeInterval
+        required: false
+        in: query
+        description: "Time interval granularity for data aggregation. Metrics\n    prefixed with \"cumulative\", \"max\", or \"avg\" only support timeInterval equal\n    to \"day\"."
+        example: day
+        schema:
+          $ref: '#/components/schemas/TimeIntervalGranularity'
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 2160.
+        schema:
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 2160
+        example: '10'
+      - name: groupBy
+        required: false
+        in: query
+        description: Group results by srcBlockchainId, destBlockchainId, or both (comma-separated)
+        example: destBlockchainId
+        schema:
+          enum:
+          - srcBlockchainId
+          - destBlockchainId
+          - srcBlockchainId,destBlockchainId
+          type: string
+      - name: network
+        required: false
+        in: query
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ICMMetricsApiResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Chain Metrics
+  /v2/icm/summary:
+    get:
+      operationId: getICMSummary
+      x-execution-weight: small
+      x-speakeasy-group: metrics.chains
+      x-speakeasy-name-override: getICMSummary
+      summary: Get ICM summary metrics
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.metrics.chains.getICMSummary({\n    groupBy: \"destBlockchainId\",\n    network: \"mainnet\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+      description: "Get rolling window ICM message counts (last hour, day, month, 90 days, year, all time).\n\nUse filters (`srcBlockchainId`, `destBlockchainId`, `network`)  to select data, and the `groupBy` parameter for aggregation level.\n\n### Examples:\n\n  - **Specific pair**:   `?srcBlockchainId=...&destBlockchainId=...`\n\n  - **From one source (aggregated)**: `?srcBlockchainId=...`\n\n  - **From one source (by destination)**:   `?srcBlockchainId=...&groupBy=destBlockchainId`\n\n  - **To one destination (aggregated)**: `?destBlockchainId=...`\n\n  - **To one destination (by source)**:   `?destBlockchainId=...&groupBy=srcBlockchainId`\n\n  - **Network total**: `?network=mainnet`\n\n  - **Network breakdown**:   `?network=mainnet&groupBy=srcBlockchainId,destBlockchainId`."
+      parameters:
+      - name: srcBlockchainId
+        required: false
+        in: query
+        description: Query param for retrieving items for a specific source (initiating) blockchain id.
+        schema:
+          type: string
+      - name: destBlockchainId
+        required: false
+        in: query
+        description: Query param for retrieving items for a specific destination (receiving) blockchain id.
+        schema:
+          type: string
+      - name: groupBy
+        required: false
+        in: query
+        description: Group results by srcBlockchainId, destBlockchainId, or both (comma-separated)
+        example: destBlockchainId
+        schema:
+          enum:
+          - srcBlockchainId
+          - destBlockchainId
+          - srcBlockchainId,destBlockchainId
+          type: string
+      - name: network
+        required: false
+        in: query
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ICMRollingWindowMetricsApiResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Chain Metrics
+  /v2/networks/{network}/metrics/{metric}:
+    get:
+      operationId: getStakingMetrics
+      x-execution-weight: small
+      x-speakeasy-group: metrics.networks
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.metrics.networks.getStakingMetrics({\n    metric: \"validatorCount\",\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    pageSize: 10,\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+      summary: Get staking metrics for a given subnet
+      description: Gets staking metrics for a given subnet.
+      parameters:
+      - name: metric
+        required: true
+        in: path
+        description: Which network level metric to fetch.
+        example: validatorCount
+        schema:
+          $ref: '#/components/schemas/NetworkMetric'
+      - name: startTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items after a specific timestamp.
+        example: 1689541049
+        schema:
+          minimum: 0
+          type: integer
+      - name: endTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items before a specific timestamp.
+        example: 1689800249
+        schema:
+          minimum: 0
+          type: integer
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 2160.
+        schema:
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 2160
+        example: '10'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: subnetId
+        required: false
+        in: query
+        description: The subnet ID to filter by. If not provided, then all subnets will be returned.
+        example: 11111111111111111111111111111111LpoYY
+        schema:
+          default: 11111111111111111111111111111111LpoYY
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsApiResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Chain Metrics
+components:
+  schemas:
+    TeleporterMetricsValue:
+      type: object
+      properties:
+        value:
+          type: number
+          description: Aggregated value for the current metrics.
+      required:
+      - value
+    ICMMetricsValue:
+      type: object
+      properties:
+        value:
+          type: number
+          description: Aggregated value for the current metrics.
+        timestamp:
+          type: number
+          description: Unix Epoch timestamp for which metrics are aggregated. Depending on the interval of the metric this can be at the start of the relevant hour, day, month, year, etc.
+        srcBlockchainId:
+          type: string
+          description: Source blockchainId.
+        destBlockchainId:
+          type: string
+          description: Destination blockchainId.
+      required:
+      - value
+      - timestamp
+      - srcBlockchainId
+      - destBlockchainId
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    ICMRollingWindowMetricsValue:
+      type: object
+      properties:
+        lastHour:
+          type: number
+          description: Aggregated value for the current metrics in last hour.
+        lastDay:
+          type: number
+          description: Aggregated value for the current metrics in last day.
+        lastWeek:
+          type: number
+          description: Aggregated value for the current metrics in last week.
+        lastMonth:
+          type: number
+          description: Aggregated value for the current metrics in last month.
+        last90Days:
+          type: number
+          description: Aggregated value for the current metrics in last 90 days.
+        lastYear:
+          type: number
+          description: Aggregated value for the current metrics in last year.
+        allTime:
+          type: number
+          description: Aggregated value for the current metrics for all time.
+        srcBlockchainId:
+          type: string
+          description: Source blockchainId.
+        destBlockchainId:
+          type: string
+          description: Destination blockchainId.
+      required:
+      - srcBlockchainId
+      - destBlockchainId
+    TimeIntervalGranularity:
+      type: string
+      enum:
+      - hour
+      - day
+      - week
+      - month
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    ICMMetricsApiResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        results:
+          description: Array of current ICM metrics values.
+          type: array
+          items:
+            $ref: '#/components/schemas/ICMMetricsValue'
+      required:
+      - results
+    MetricsValue:
+      type: object
+      properties:
+        value:
+          type: number
+          description: Aggregated value for the current metrics.
+        timestamp:
+          type: number
+          description: Unix Epoch timestamp for which metrics are aggregated. Depending on the interval of the metric this can be at the start of the relevant hour, day, month, year, etc.
+      required:
+      - value
+      - timestamp
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    ChainRollingWindowMetricsValue:
+      type: object
+      properties:
+        lastHour:
+          type: number
+          description: Aggregated value for the current metrics in last hour.
+        lastDay:
+          type: number
+          description: Aggregated value for the current metrics in last day.
+        lastWeek:
+          type: number
+          description: Aggregated value for the current metrics in last week.
+        lastMonth:
+          type: number
+          description: Aggregated value for the current metrics in last month.
+        last90Days:
+          type: number
+          description: Aggregated value for the current metrics in last 90 days.
+        lastYear:
+          type: number
+          description: Aggregated value for the current metrics in last year.
+        allTime:
+          type: number
+          description: Aggregated value for the current metrics for all time.
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    ChainRollingWindowMetric:
+      type: string
+      enum:
+      - gasUsed
+      - txCount
+      - avgGps
+      - maxGps
+      - avgTps
+      - maxTps
+      - avgGasPrice
+      - maxGasPrice
+      - feesPaid
+      - contracts
+      - deployers
+      - activeAddresses
+      - activeSenders
+    ICMRollingWindowMetricsApiResponse:
+      type: object
+      properties:
+        result:
+          description: Array of current metrics values for different windows.
+          allOf:
+          - $ref: '#/components/schemas/ICMRollingWindowMetricsValue'
+      required:
+      - result
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    TeleporterMetric:
+      type: string
+      enum:
+      - teleporterSourceTxnCount
+      - teleporterDestinationTxnCount
+      - teleporterTotalTxnCount
+    TeleporterChainMetricsApiResponse:
+      type: object
+      properties:
+        result:
+          description: current metrics value for a given teleporter metric.
+          allOf:
+          - $ref: '#/components/schemas/TeleporterMetricsValue'
+      required:
+      - result
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    ChainMetric:
+      type: string
+      enum:
+      - activeAddresses
+      - activeSenders
+      - cumulativeTxCount
+      - cumulativeAddresses
+      - cumulativeContracts
+      - cumulativeDeployers
+      - contracts
+      - deployers
+      - gasUsed
+      - txCount
+      - avgGps
+      - maxGps
+      - avgTps
+      - maxTps
+      - avgGasPrice
+      - maxGasPrice
+      - feesPaid
+    RollingWindowMetricsApiResponse:
+      type: object
+      properties:
+        result:
+          description: Array of current metrics values for different windows.
+          allOf:
+          - $ref: '#/components/schemas/ChainRollingWindowMetricsValue'
+      required:
+      - result
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    MetricsApiResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        results:
+          description: Array of current metrics values at different timestamps.
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricsValue'
+      required:
+      - results
+    NetworkMetric:
+      type: string
+      enum:
+      - delegatorCount
+      - delegatorWeight
+      - validatorCount
+      - validatorWeight
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-glacier-api-key
+      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 120000
+    exponent: 1.5
+  statusCodes:
+  - 5XX
+  retryConnectionErrors: true
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
+x-execution-weight-values:
+  free: 1
+  large: 50
+  medium: 20
+  none: 0
+  small: 10
+  xl: 100
+  xxl: 200
+x-rpc-method-execution-weights:
+  eth_accounts: free
+  eth_blockNumber: small
+  eth_call: small
+  eth_coinbase: small
+  eth_chainId: free
+  eth_gasPrice: small
+  eth_getBalance: small
+  eth_getBlockByHash: small
+  eth_getBlockByNumber: small
+  eth_getBlockTransactionCountByNumber: medium
+  eth_getCode: medium
+  eth_getLogs: xxl
+  eth_getStorageAt: medium
+  eth_getTransactionByBlockNumberAndIndex: medium
+  eth_getTransactionByHash: small
+  eth_getTransactionCount: small
+  eth_getTransactionReceipt: small
+  eth_signTransaction: medium
+  eth_sendTransaction: medium
+  eth_sign: medium
+  eth_sendRawTransaction: small
+  eth_syncing: free
+  net_listening: free
+  net_peerCount: medium
+  net_version: free
+  web3_clientVersion: small
+  web3_sha3: small
+  eth_newPendingTransactionFilter: medium
+  eth_maxPriorityFeePerGas: small
+  eth_baseFee: small
+  rpc_modules: free
+  eth_getChainConfig: small
+  eth_feeConfig: small
+  eth_getActivePrecompilesAt: small
+x-speakeasy-webhooks:
+  security:
+    type: signature
+    headerName: x-signature
+    signatureTextEncoding: base64
+    algorithm: hmac-sha256

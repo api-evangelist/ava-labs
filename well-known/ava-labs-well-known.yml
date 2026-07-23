@@ -1,0 +1,26 @@
+generated: '2026-07-18'
+method: searched
+source: live probes of /.well-known/ on Ava Labs / AvaCloud hosts
+note: No /.well-known/ discovery documents were served (all probes non-200). Absence is valid recorded data.
+hosts:
+- host: https://developers.avacloud.io
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+- host: https://glacier-api.avax.network
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+- host: https://metrics.avax.network
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+- host: https://api.avax.network
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+- host: https://avalabs.org
+  documents:
+  - {path: /.well-known/security.txt, status: 404}

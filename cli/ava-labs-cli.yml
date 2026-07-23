@@ -1,0 +1,31 @@
+generated: '2026-07-18'
+method: searched
+source: https://github.com/ava-labs/avalanche-cli, https://build.avax.network/docs
+name: Avalanche-CLI
+binary: avalanche
+repository: https://github.com/ava-labs/avalanche-cli
+description: >-
+  First-party command-line tool for creating and managing Avalanche L1s (subnets),
+  running local networks, and deploying/interacting with blockchains.
+install:
+- method: script
+  command: curl -sSfL https://raw.githubusercontent.com/ava-labs/avalanche-cli/main/scripts/install.sh | sh -s
+- method: homebrew
+  command: brew install ava-labs/tap/avalanche-cli
+command_groups:
+- name: blockchain
+  description: Create, deploy, describe and manage L1/subnet blockchains.
+- name: network
+  description: Start, stop and manage a local Avalanche network for development.
+- name: node
+  description: Create and manage validator nodes and node clusters.
+- name: key
+  description: Create and manage signing keys used by the CLI.
+- name: subnet
+  description: Legacy subnet lifecycle commands (create/deploy/describe).
+- name: interchain
+  description: Manage Interchain Messaging (ICM) and token transfers between L1s.
+key_flows:
+- Create and deploy a custom EVM L1 to Fuji testnet then mainnet.
+- Spin up a local multi-node network for integration testing.
+- Deploy Interchain Messaging relayers between L1s.

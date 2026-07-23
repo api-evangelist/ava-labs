@@ -1,0 +1,30 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/ava-labs-data-api-openapi.yml, https://developers.avacloud.io
+authentication:
+  style: api-key
+  header: x-glacier-api-key
+  scope: Data API and Webhooks API; keys obtained at https://avacloud.io/. Metrics API and public RPC are unauthenticated.
+  cross_ref: authentication/ava-labs-authentication.yml
+idempotency:
+  supported: false
+  note: No idempotency-key header or parameter is documented in the specs; write operations (webhooks CRUD) are not advertised as idempotent.
+pagination:
+  style: cursor
+  request_params: [pageToken, pageSize]
+  response_fields: [nextPageToken]
+  note: Cursor pagination; pass the returned nextPageToken back as pageToken to page forward.
+versioning:
+  style: uri-path
+  current: v1
+  note: Data API paths are prefixed /v1; changelog is date-based rather than semver.
+error_envelope:
+  shape: '{ statusCode, error, message }'
+  content_type: application/json
+  cross_ref: errors/ava-labs-problem-types.yml
+rate_limiting:
+  note: API keys raise rate limits; unauthenticated access is throttled. 429 signals the limit was hit.
+  cross_ref: errors/ava-labs-problem-types.yml
+networks:
+  note: Most endpoints select network via mainnet vs testnet (Fuji); some via a chainId path parameter.
+  cross_ref: sandbox/ava-labs-sandbox.yml

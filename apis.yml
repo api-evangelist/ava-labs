@@ -1,8 +1,14 @@
 aid: ava-labs
 name: Ava Labs
-description: 'Ava Labs is a company surfaced as a portfolio company of initialized-capital, polychain
-  and added to the API Evangelist network as a stub for enrichment. Sector: crypto. This profile is a
-  lead awaiting the enrichment pipeline.'
+description: >-
+  Ava Labs is the company behind Avalanche, a high-throughput, low-latency smart-contract
+  blockchain platform. Through AvaCloud it ships a public developer surface for building on
+  Avalanche and its L1s (subnets): a Data API (glacier-api.avax.network) for balances, tokens,
+  transactions, blocks, NFTs and Interchain Messaging; a Metrics API for chain performance and
+  staking analytics; a Webhooks API for real-time address-activity events; and standard
+  JSON-RPC access to the Primary Network's P-Chain, X-Chain and C-Chain. First-party SDKs
+  (AvaCloud SDK for TypeScript, AvalancheJS, AvalancheGo in Go) and the Avalanche-CLI round out
+  the toolchain. This profile was enriched from Ava Labs' published OpenAPI specs and docs.
 url: https://raw.githubusercontent.com/api-evangelist/ava-labs/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -11,18 +17,447 @@ x-backed-by:
 - polychain
 x-tier: stub
 x-tier-reason: portfolio-lead
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-18'
+image: https://avatars.githubusercontent.com/u/44277073?v=4
 tags:
 - Company
 - Crypto
-apis: []
+- Blockchain
+- Avalanche
+- Web3
+- Data API
+- Developer Platform
+- Infrastructure
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- name: Avalanche Platform Chain API
+  description: >-
+    JSON-RPC access to the Avalanche Primary Network Platform Chain (P-Chain) — balances, UTXOs, subnets,
+    validators, staking, supply and blockchain status.
+  humanURL: https://build.avax.network/docs/rpcs/p-chain
+  baseURL: https://api.avax.network/ext/bc
+  tags:
+  - RPC
+  - JSON-RPC
+  - Avalanche
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-platform-api-openapi.yml
+  - type: Overlay
+    url: overlays/ava-labs-platform-api-overlay.yaml
+- aid: ava-labs:ava-labs-avax-supply-api
+  name: Ava Labs AVAX Supply API
+  description: Find information about AVAX supply.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - AVAX Supply
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-avax-supply-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-chain-metrics-api
+  name: Ava Labs Chain Metrics API
+  description: Get network level staking and usage metrics.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Chain Metrics
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-chain-metrics-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-chain-throughput-api
+  name: Ava Labs Chain Throughput API
+  description: Get throughput metrics for a given chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Chain Throughput
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-chain-throughput-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-cumulative-api
+  name: Ava Labs Cumulative API
+  description: Get cumulative metrics for a given chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Cumulative
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-cumulative-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-data-api-usage-metrics-api
+  name: Ava Labs Data API Usage Metrics API
+  description: Usage metrics and logs for the Data API.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Data API Usage Metrics
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-data-api-usage-metrics-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-evm-balances-api
+  name: Ava Labs EVM Balances API
+  description: Find information about balances on EVM-compatible chains, such as the Avalanche C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - EVM Balances
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-evm-balances-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-evm-blocks-api
+  name: Ava Labs EVM Blocks API
+  description: Find information about blocks on EVM-compatible chains, such as the Avalanche C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - EVM Blocks
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-evm-blocks-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-evm-chains-api
+  name: Ava Labs EVM Chains API
+  description: Find information about indexed EVM-compatible chains, such as the Avalanche C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - EVM Chains
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-evm-chains-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-evm-contracts-api
+  name: Ava Labs EVM Contracts API
+  description: >-
+    Find information about contracts on EVM-compatible chains, such as the Avalanche C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - EVM Contracts
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-evm-contracts-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-evm-transactions-api
+  name: Ava Labs EVM Transactions API
+  description: >-
+    Find information about transactions on EVM-compatible chains, such as the Avalanche C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - EVM Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-evm-transactions-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-health-check-api
+  name: Ava Labs Health Check API
+  description: The Health Check API from Ava Labs — 2 operation(s) for health check.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Health Check
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-health-check-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-interchain-messaging-api
+  name: Ava Labs Interchain Messaging API
+  description: Find information about Interchain Messaging transactions.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Interchain Messaging
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-interchain-messaging-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-l1-validator-metrics-api
+  name: Ava Labs L1 Validator Metrics API
+  description: Get network level l1 validator metrics.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - L1 Validator Metrics
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-l1-validator-metrics-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-looking-glass-api
+  name: Ava Labs Looking Glass API
+  description: Looking Glass is a tool that allows users to look up information for future airdrops.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Looking Glass
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-looking-glass-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-nfts-api
+  name: Ava Labs NFTs API
+  description: The NFTs API from Ava Labs — 3 operation(s) for nfts.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - NFTs
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-nfts-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-operations-api
+  name: Ava Labs Operations API
+  description: The Operations API from Ava Labs — 2 operation(s) for operations.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Operations
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-operations-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-primary-network-api
+  name: Ava Labs Primary Network API
+  description: The Primary Network API from Ava Labs — 11 operation(s) for primary network.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Primary Network
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-primary-network-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-primary-network-balances-api
+  name: Ava Labs Primary Network Balances API
+  description: >-
+    Find information about balances on Avalanche's Primary Network Chains - the P-Chain, the X-Chain,
+    and the C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Primary Network Balances
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-primary-network-balances-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-primary-network-blocks-api
+  name: Ava Labs Primary Network Blocks API
+  description: >-
+    Find information about blocks on Avalanche's Primary Network Chains - the P-Chain, the X-Chain, and
+    the C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Primary Network Blocks
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-primary-network-blocks-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-primary-network-rewards-api
+  name: Ava Labs Primary Network Rewards API
+  description: Find information about rewards on Avalanche's Primary Network.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Primary Network Rewards
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-primary-network-rewards-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-primary-network-transactions-api
+  name: Ava Labs Primary Network Transactions API
+  description: >-
+    Find information about transactions on Avalanche's Primary Network Chains - the P-Chain, the X-Chain,
+    and the C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Primary Network Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-primary-network-transactions-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-primary-network-utxos-api
+  name: Ava Labs Primary Network UTXOs API
+  description: >-
+    Find information about utxos on Avalanche's Primary Network Chains - the P-Chain, the X-Chain, and
+    the C-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Primary Network UTXOs
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-primary-network-utxos-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-primary-network-vertices-api
+  name: Ava Labs Primary Network Vertices API
+  description: Find information about vertices on Avalanche's X-Chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Primary Network Vertices
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-primary-network-vertices-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-signature-aggregator-api
+  name: Ava Labs Signature Aggregator API
+  description: Request signatures for a Warp message from Subnet validators
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Signature Aggregator
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-signature-aggregator-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-staking-information-api
+  name: Ava Labs Staking Information API
+  description: Get staking information for a given chain.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Staking Information
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-staking-information-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-teleporter-api
+  name: Ava Labs Teleporter API
+  description: Find information about Teleporter transactions.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Teleporter
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-teleporter-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-webhooks-api
+  name: Ava Labs Webhooks API
+  description: Manage webhooks and get notified for various onchain activities.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-webhooks-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
 common:
 - type: Website
   url: https://avalabs.org/
+- type: DeveloperPortal
+  url: https://developers.avacloud.io/
+- type: Documentation
+  url: https://developers.avacloud.io/
+- type: APIReference
+  url: https://developers.avacloud.io/data-api/overview
+- type: GettingStarted
+  url: https://developers.avacloud.io/data-api/getting-started
+- type: GitHubOrganization
+  url: https://github.com/ava-labs
+- type: Blog
+  url: https://www.avax.network/blog
+- type: SignUp
+  url: https://avacloud.io/
+- type: StatusPage
+  url: https://status.avax.network
+- type: ChangeLog
+  url: changelog/ava-labs-changelog.yml
+- type: TermsOfService
+  url: https://www.avalabs.org/terms-of-use
+- type: PrivacyPolicy
+  url: https://www.avalabs.org/privacy-policy
+- type: LLMsTxt
+  url: llms/ava-labs-llms.txt
+- type: Packages
+  url: packages/ava-labs-packages.yml
+- type: SDKs
+  url: packages/ava-labs-packages.yml
+- type: CLI
+  url: cli/ava-labs-cli.yml
+- type: Sandbox
+  url: sandbox/ava-labs-sandbox.yml
+- type: MCPServer
+  url: mcp/ava-labs-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: WellKnown
+  url: well-known/ava-labs-well-known.yml
+- type: Authentication
+  url: authentication/ava-labs-authentication.yml
+- type: Conventions
+  url: conventions/ava-labs-conventions.yml
+- type: ErrorCatalog
+  url: errors/ava-labs-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/ava-labs-lifecycle.yml
+- type: Conformance
+  url: conformance/ava-labs-conformance.yml
+- type: DataModel
+  url: data-model/ava-labs-data-model.yml
+- type: DomainSecurity
+  url: security/ava-labs-domain-security.yml
+- type: AgenticAccess
+  url: agentic-access/ava-labs-agentic-access.yml
+- type: Webhooks
+  url: asyncapi/ava-labs-webhooks.yml
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence

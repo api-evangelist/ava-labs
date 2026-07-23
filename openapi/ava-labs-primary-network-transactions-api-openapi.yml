@@ -1,0 +1,1874 @@
+openapi: 3.1.0
+info:
+  title: Data AVAX Supply Primary Network Transactions API
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  version: 1.0.0
+  contact: {}
+servers:
+- url: https://glacier-api.avax.network
+security:
+- apiKey: []
+- {}
+tags:
+- name: Primary Network Transactions
+  description: Find information about transactions on Avalanche's Primary Network Chains - the P-Chain, the X-Chain, and the C-Chain.
+paths:
+  /v1/networks/{network}/blockchains/{blockchainId}/transactions/{txHash}:
+    get:
+      operationId: getTxByHash
+      x-execution-weight: medium
+      x-speakeasy-group: data.primaryNetwork.transactions
+      x-speakeasy-name-override: get
+      summary: Get transaction
+      description: Gets the details of a single transaction on one of the Primary Network chains.
+      parameters:
+      - name: blockchainId
+        required: true
+        in: path
+        description: A primary network blockchain id or alias.
+        example: p-chain
+        schema:
+          $ref: '#/components/schemas/BlockchainId'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: txHash
+        required: true
+        in: path
+        description: A primary network (P or X chain) transaction hash.
+        example: 3P91K6nuDFvDodcRuJTsgdf9SvYe5pMiKk38HppsoeAiEztCP
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/PChainTransaction'
+                - $ref: '#/components/schemas/XChainNonLinearTransaction'
+                - $ref: '#/components/schemas/XChainLinearTransaction'
+                - $ref: '#/components/schemas/CChainExportTransaction'
+                - $ref: '#/components/schemas/CChainImportTransaction'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.transactions.get({\n    blockchainId: \"p-chain\",\n    txHash: \"3P91K6nuDFvDodcRuJTsgdf9SvYe5pMiKk38HppsoeAiEztCP\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/networks/{network}/blockchains/{blockchainId}/transactions:
+    get:
+      operationId: listLatestPrimaryNetworkTransactions
+      x-speakeasy-group: data.primaryNetwork.transactions
+      x-speakeasy-name-override: listLatest
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: xl
+      summary: List latest transactions
+      description: 'Lists the latest transactions on one of the Primary Network chains.
+
+
+        Transactions are filterable by addresses, txTypes, and timestamps. When querying for latest transactions without an address parameter, filtering by txTypes and timestamps is not supported. An address filter must be provided to utilize txTypes and timestamp filters.
+
+
+        For P-Chain, you can fetch all L1 validators related transactions like ConvertSubnetToL1Tx, IncreaseL1ValidatorBalanceTx etc. using the unique L1 validation ID. These transactions are further filterable by txTypes and timestamps as well.
+
+
+        Given that each transaction may return a large number of UTXO objects, bounded only by the maximum transaction size, the query may return less transactions than the provided page size. The result will contain less results than the page size if the number of utxos contained in the resulting transactions reach a performance threshold.'
+      parameters:
+      - name: addresses
+        required: false
+        in: query
+        description: A comma separated list of X-Chain or P-Chain wallet addresses, starting with "avax"/"fuji", "P-avax"/"P-fuji" or "X-avax"/"X-fuji". Also accepts EVM formatted addresses starting with "0x" for C-Chain-related atomic transaction lookups.
+        example: avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg
+        schema:
+          type: string
+      - name: l1ValidationId
+        required: false
+        in: query
+        schema:
+          type: string
+      - name: txTypes
+        required: false
+        in: query
+        example:
+        - AddValidatorTx
+        description: Query param for filtering items based on transaction types.
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrimaryNetworkTxType'
+      - name: startTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items after a specific timestamp.
+        example: 1689541049
+        schema:
+          minimum: 0
+          type: integer
+      - name: endTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items before a specific timestamp.
+        example: 1689800249
+        schema:
+          minimum: 0
+          type: integer
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: blockchainId
+        required: true
+        in: path
+        description: A primary network blockchain id or alias.
+        example: p-chain
+        schema:
+          $ref: '#/components/schemas/BlockchainId'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: sortOrder
+        required: false
+        in: query
+        example: asc
+        description: The order by which to sort results. Use "asc" for ascending order, "desc" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided.
+        schema:
+          $ref: '#/components/schemas/SortOrder'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ListPChainTransactionsResponse'
+                - $ref: '#/components/schemas/ListXChainTransactionsResponse'
+                - $ref: '#/components/schemas/ListCChainAtomicTransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.transactions.listLatest({\n    addresses: \"avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg\",\n    txTypes: [\n      \"AddValidatorTx\",\n    ],\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    pageSize: 10,\n    blockchainId: \"p-chain\",\n    sortOrder: \"asc\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/networks/{network}/blockchains/{blockchainId}/transactions:listStaking:
+    get:
+      operationId: listActivePrimaryNetworkStakingTransactions
+      x-speakeasy-group: data.primaryNetwork.transactions
+      x-speakeasy-name-override: listActiveStakingTransactions
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: xl
+      summary: List staking transactions
+      description: Lists active staking transactions on the P-Chain for the supplied addresses.
+      parameters:
+      - name: addresses
+        required: false
+        in: query
+        description: A comma separated list of X-Chain or P-Chain wallet addresses, starting with "avax"/"fuji", "P-avax"/"P-fuji" or "X-avax"/"X-fuji".
+        example: avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg
+        schema:
+          type: string
+      - name: txTypes
+        required: false
+        in: query
+        example:
+        - AddValidatorTx
+        description: Query param for filtering items based on transaction types.
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrimaryNetworkTxType'
+      - name: startTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items after a specific timestamp.
+        example: 1689541049
+        schema:
+          minimum: 0
+          type: integer
+      - name: endTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items before a specific timestamp.
+        example: 1689800249
+        schema:
+          minimum: 0
+          type: integer
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: blockchainId
+        required: true
+        in: path
+        description: A primary network blockchain id or alias.
+        example: p-chain
+        schema:
+          $ref: '#/components/schemas/PChainId'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: sortOrder
+        required: false
+        in: query
+        example: asc
+        description: The order by which to sort results. Use "asc" for ascending order, "desc" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided.
+        schema:
+          $ref: '#/components/schemas/SortOrder'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPChainTransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.transactions.listActiveStakingTransactions({\n    addresses: \"avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg\",\n    txTypes: [\n      \"AddValidatorTx\",\n    ],\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    pageSize: 10,\n    blockchainId: \"p-chain\",\n    sortOrder: \"asc\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/networks/{network}/blockchains/{blockchainId}/assets/{assetId}/transactions:
+    get:
+      operationId: listAssetTransactions
+      x-speakeasy-group: data.primaryNetwork.transactions
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: xl
+      summary: List asset transactions
+      description: Lists asset transactions corresponding to the given asset id on the X-Chain.
+      parameters:
+      - name: txTypes
+        required: false
+        in: query
+        example:
+        - AddValidatorTx
+        description: Query param for filtering items based on transaction types.
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrimaryNetworkTxType'
+      - name: startTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items after a specific timestamp.
+        example: 1689541049
+        schema:
+          minimum: 0
+          type: integer
+      - name: endTimestamp
+        required: false
+        in: query
+        description: Query param for retrieving items before a specific timestamp.
+        example: 1689800249
+        schema:
+          minimum: 0
+          type: integer
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: blockchainId
+        required: true
+        in: path
+        description: A primary network blockchain id or alias.
+        example: x-chain
+        schema:
+          $ref: '#/components/schemas/XChainId'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: assetId
+        required: true
+        in: path
+        description: Asset ID for any asset on X-Chain
+        example: th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListXChainTransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.transactions.listAssetTransactions({\n    txTypes: [\n      \"AddValidatorTx\",\n    ],\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    pageSize: 10,\n    blockchainId: \"x-chain\",\n    assetId: \"th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+components:
+  schemas:
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    BlsCredentials:
+      type: object
+      properties:
+        publicKey:
+          type: string
+        proofOfPossession:
+          type: string
+      required:
+      - publicKey
+      - proofOfPossession
+    RewardType:
+      type: string
+      enum:
+      - VALIDATOR
+      - DELEGATOR
+      - VALIDATOR_FEE
+    CChainImportTransaction:
+      type: object
+      properties:
+        txHash:
+          type: string
+          description: Unique ID for this transaction.
+          examples:
+          - 3j9JpF1aGuQtLLbo3YkvvKkWrCZViXZjdeJQWUSEY5hcqUn2c
+        blockHeight:
+          type: number
+          description: Height of the block this transaction belongs to.
+          examples:
+          - 1005
+        blockHash:
+          type: string
+          description: Hash of the block this transaction belongs to.
+          examples:
+          - '0x57a5cb7704561d1d59bd563b6421021b7563960c05ba3ae0e36fc36917c742ee'
+        timestamp:
+          type: number
+          description: Latest timestamp in seconds this transaction was accepted.
+          examples:
+          - 1600762738
+        memo:
+          type: string
+          description: Hex encoded memo bytes for this transaction.
+          examples:
+          - '0x546865204176616c616e6368652050726f6a656374'
+        amountUnlocked:
+          description: Assets unlocked by inputs of this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        amountCreated:
+          description: Assets created by outputs of this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        sourceChain:
+          type: string
+          description: Source chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        destinationChain:
+          type: string
+          description: Destination chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        txType:
+          type: string
+          description: Type of transaction.
+          enum:
+          - ImportTx
+          examples:
+          - ImportTx
+        evmOutputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/EVMOutput'
+        consumedUtxos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Utxo'
+      required:
+      - txHash
+      - blockHeight
+      - blockHash
+      - timestamp
+      - memo
+      - amountUnlocked
+      - amountCreated
+      - sourceChain
+      - destinationChain
+      - txType
+      - evmOutputs
+      - consumedUtxos
+    TransactionVertexDetail:
+      type: object
+      properties:
+        hash:
+          type: string
+          description: Vertex ID of the vertex this transaction belongs to.
+          examples:
+          - 82qPRREHmh8Cfta4PGD6GymY9ZLyvgYugqW6hj9FykpMVRz1S
+        height:
+          type: number
+          description: Vertex height of the vertex this transaction belongs to.
+          examples:
+          - 1961
+        timestamp:
+          type: number
+          description: Timestamp in seconds this vertex was accepted.
+          examples:
+          - 1600762738
+      required:
+      - hash
+      - height
+      - timestamp
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    BlockchainInfo:
+      type: object
+      properties:
+        chainName:
+          type: string
+        vmId:
+          type: string
+        genesisData:
+          type: object
+          description: The genesis data of the blockchain.  Present for CreateChainTx. EVM based chains will return the genesis data as an object. Non-EVM based chains will return the genesis data as an encoded string. The encoding depends on the VM
+      required:
+      - chainName
+      - vmId
+    EVMOutput:
+      type: object
+      properties:
+        toAddress:
+          type: string
+          description: EVM address to which the asset is imported in ImportTx
+          examples:
+          - '0xD0f2898e49d941D6d479B381d3C8F0bd8d983b4c'
+        asset:
+          description: AssetAmount details for the asset being transferred.
+          allOf:
+          - $ref: '#/components/schemas/AssetAmount'
+      required:
+      - toAddress
+      - asset
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    PChainUtxo:
+      type: object
+      properties:
+        addresses:
+          description: Addresses that are eligible to sign the consumption of this output.
+          examples:
+          - - avax1qm2a25eytsrj235hxg6jc0mwk99tss64eqevsw
+          type: array
+          items:
+            type: string
+        asset:
+          $ref: '#/components/schemas/AssetAmount'
+        consumedOnChainId:
+          type: string
+          description: Blockchain ID on which this output is consumed on.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        consumingTxHash:
+          type: string
+          description: Transaction ID that consumed this output.
+          examples:
+          - 3j9JpF1aGuQtLLbo3YkvvKkWrCZViXZjdeJQWUSEY5hcqUn2c
+        createdOnChainId:
+          type: string
+          description: Blockchain ID on which this output is created on.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        utxoId:
+          type: string
+          description: UTXO ID for this output.
+          examples:
+          - 68vLva9kfKUsX88ZPM8jdbf8qHUZRoZSFH6NdpAVTspkfrXDC
+        utxoBytes:
+          type: string
+          description: The bytes of the UTXO
+        amount:
+          type: string
+          deprecated: true
+        assetId:
+          type: string
+          deprecated: true
+        blockNumber:
+          type: string
+        blockTimestamp:
+          type: number
+        consumingBlockNumber:
+          type: string
+          description: Block height in which the transaction consuming this UTXO was included
+        consumingBlockTimestamp:
+          type: number
+          description: Timestamp in seconds at which this UTXO is used in a consuming transaction
+        platformLocktime:
+          type: number
+          description: Timestamp in seconds after which this UTXO can be consumed
+        outputIndex:
+          type: number
+          description: The index of the UTXO in the transaction
+        rewardType:
+          $ref: '#/components/schemas/RewardType'
+        stakeableLocktime:
+          type: number
+          description: Timestamp in seconds before which a UTXO can only be used for staking transactions. After stakeable locktime, a UTXO can be used for anything
+        staked:
+          type: boolean
+        threshold:
+          type: number
+          description: The minimum number of signatures required to spend this UTXO
+        txHash:
+          type: string
+          description: The hash of the transaction that created this UTXO
+        utxoEndTimestamp:
+          type: number
+          description: Timestamp in seconds after which the staked UTXO will be unlocked.
+        utxoStartTimestamp:
+          type: number
+          description: Timestamp in seconds at which the staked UTXO was locked.
+        utxoType:
+          $ref: '#/components/schemas/UtxoType'
+      required:
+      - addresses
+      - asset
+      - consumedOnChainId
+      - createdOnChainId
+      - utxoId
+      - amount
+      - assetId
+      - blockNumber
+      - blockTimestamp
+      - outputIndex
+      - txHash
+      - utxoType
+    L1ValidatorDetailsTransaction:
+      type: object
+      properties:
+        validationId:
+          type: string
+          description: Unique L1 validation ID used network-wide to identify L1 validation until its weight is reduced to 0 i.e. removed.
+        validationIdHex:
+          type: string
+          description: Unique L1 validation ID used network-wide to identify L1 validation until its weight is reduced to 0 i.e. removed. In hex format
+        nodeId:
+          type: string
+        subnetId:
+          type: string
+        weight:
+          type: number
+          description: Weight of the L1 validator used while sampling validators within the L1. A zero-weight L1 validator means it has been removed from the L1, and the validationID is no longer valid
+        remainingBalance:
+          type: number
+          description: Remaining L1 validator balance in nAVAX until inactive. It can rejoin L1 sampling by increasing balance with IncreaseL1ValidatorBalanceTx
+        balanceChange:
+          type: number
+          description: The increase in L1 validator balance (nAVAX) in the current transaction. When the balance is returned after the L1 validator is disabled or removed, this value is negative
+        blsCredentials:
+          type: object
+      required:
+      - validationId
+      - validationIdHex
+      - nodeId
+      - subnetId
+      - weight
+      - remainingBalance
+    UtxoCredential:
+      type: object
+      properties:
+        signature:
+          type: string
+          description: Signature provided to consume the output.
+          examples:
+          - bWWoZUu0Z3STjuk/+2az7M4vP0oqc9NtiA7kOdqINCIE/2+5va5R1KNCWwEX5jE1xVHLvAxU2LHTN5gK8m84HwA
+        publicKey:
+          type: string
+          description: Public key associated with the signature.
+          examples:
+          - AdMQOtubgBFFJu++0faHPIIA6KmdZ2ERErMRGzyy6juI
+    Utxo:
+      type: object
+      properties:
+        addresses:
+          description: Addresses that are eligible to sign the consumption of this output.
+          examples:
+          - - avax1qm2a25eytsrj235hxg6jc0mwk99tss64eqevsw
+          type: array
+          items:
+            type: string
+        asset:
+          $ref: '#/components/schemas/AssetAmount'
+        consumedOnChainId:
+          type: string
+          description: Blockchain ID on which this output is consumed on.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        consumingTxHash:
+          type: string
+          description: Transaction ID that consumed this output.
+          examples:
+          - 3j9JpF1aGuQtLLbo3YkvvKkWrCZViXZjdeJQWUSEY5hcqUn2c
+        createdOnChainId:
+          type: string
+          description: Blockchain ID on which this output is created on.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        utxoId:
+          type: string
+          description: UTXO ID for this output.
+          examples:
+          - 68vLva9kfKUsX88ZPM8jdbf8qHUZRoZSFH6NdpAVTspkfrXDC
+        utxoBytes:
+          type: string
+          description: The bytes of the UTXO
+        consumingTxTimestamp:
+          type: number
+          description: Unix timestamp in seconds at which this output was consumed.
+          examples:
+          - 1599696000
+        creationTxHash:
+          type: string
+          description: Transaction ID that created this output.
+          examples:
+          - FvwEAhmxKfeiG8SnEvq42hc6whRyY3EFYAvebMqDNDGCgxN5Z
+        credentials:
+          description: Credentials that signed the transaction to consume this utxo
+          type: array
+          items:
+            $ref: '#/components/schemas/UtxoCredential'
+        groupId:
+          type: number
+          description: Index representing the minting set for the NFT mint output.
+        locktime:
+          type: number
+          description: Locktime in seconds after which this output can be consumed.
+          examples:
+          - 0
+        outputIndex:
+          type: string
+          description: Postion of this output in a list of lexiographically sorted outputs of a transaction.
+          examples:
+          - '38'
+        payload:
+          type: string
+          description: Hex encoded data for NFT assets.
+        threshold:
+          type: number
+          description: Minimum number of signatures required to consume this output.
+          examples:
+          - 1
+        timestamp:
+          type: number
+          description: Unix timestamp in seconds at which this outptut was created.
+          examples:
+          - 1599696000
+        utxoType:
+          type: string
+          description: Type of output.
+          examples:
+          - mint
+      required:
+      - addresses
+      - asset
+      - consumedOnChainId
+      - createdOnChainId
+      - utxoId
+      - creationTxHash
+      - locktime
+      - outputIndex
+      - threshold
+      - timestamp
+      - utxoType
+    PrimaryNetworkChainName:
+      type: string
+      enum:
+      - p-chain
+      - x-chain
+      - c-chain
+    PrimaryNetworkAssetCap:
+      type: string
+      description: Cap represents if an asset is a variable or fixed cap asset.
+      enum:
+      - fixed
+      - variable
+    XChainNonLinearTransaction:
+      type: object
+      properties:
+        txHash:
+          type: string
+          description: Unique ID for this transaction.
+          examples:
+          - 3j9JpF1aGuQtLLbo3YkvvKkWrCZViXZjdeJQWUSEY5hcqUn2c
+        chainFormat:
+          type: string
+          description: Represents chain format this transaction is included in.
+          enum:
+          - non-linear
+          - linear
+          examples:
+          - non-linear
+        timestamp:
+          type: number
+          description: Latest timestamp in seconds this transaction was accepted out of the same transaction accepted in other vertices.
+          examples:
+          - 1600762738
+        txType:
+          examples:
+          - BaseTx
+          $ref: '#/components/schemas/XChainTransactionType'
+        memo:
+          type: string
+          description: Hex encoded memo bytes for this transaction.
+          examples:
+          - '0x546865204176616c616e6368652050726f6a656374'
+        consumedUtxos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Utxo'
+        emittedUtxos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Utxo'
+        amountUnlocked:
+          description: Assets unlocked by inputs of this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        amountCreated:
+          description: Assets created by outputs of this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        sourceChain:
+          type: string
+          description: Source chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        destinationChain:
+          type: string
+          description: Destination chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        assetCreated:
+          description: AssetAmount details of the asset created in CreateAssetTx
+          allOf:
+          - $ref: '#/components/schemas/XChainAssetDetails'
+        vertices:
+          description: A transaction on X-Chain can be accepted over multiple vertices.
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionVertexDetail'
+      required:
+      - txHash
+      - chainFormat
+      - timestamp
+      - txType
+      - memo
+      - consumedUtxos
+      - emittedUtxos
+      - amountUnlocked
+      - amountCreated
+      - vertices
+    BlockchainId:
+      type: string
+      enum:
+      - 11111111111111111111111111111111LpoYY
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
+      - yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp
+      - p-chain
+      - x-chain
+      - c-chain
+    EVMInput:
+      type: object
+      properties:
+        fromAddress:
+          type: string
+          description: EVM address from which the asset is exported in ExportTx.
+          examples:
+          - '0xD0f2898e49d941D6d479B381d3C8F0bd8d983b4c'
+        asset:
+          description: AssetAmount details for the asset being transferred.
+          allOf:
+          - $ref: '#/components/schemas/AssetAmount'
+        credentials:
+          description: Credentials that signed this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/UtxoCredential'
+      required:
+      - fromAddress
+      - asset
+      - credentials
+    L1ValidatorManagerDetails:
+      type: object
+      properties:
+        blockchainId:
+          type: string
+        contractAddress:
+          type: string
+      required:
+      - blockchainId
+      - contractAddress
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    PChainId:
+      type: string
+      enum:
+      - 11111111111111111111111111111111LpoYY
+      - p-chain
+    CChainExportTransaction:
+      type: object
+      properties:
+        txHash:
+          type: string
+          description: Unique ID for this transaction.
+          examples:
+          - 3j9JpF1aGuQtLLbo3YkvvKkWrCZViXZjdeJQWUSEY5hcqUn2c
+        blockHeight:
+          type: number
+          description: Height of the block this transaction belongs to.
+          examples:
+          - 1005
+        blockHash:
+          type: string
+          description: Hash of the block this transaction belongs to.
+          examples:
+          - '0x57a5cb7704561d1d59bd563b6421021b7563960c05ba3ae0e36fc36917c742ee'
+        timestamp:
+          type: number
+          description: Latest timestamp in seconds this transaction was accepted.
+          examples:
+          - 1600762738
+        memo:
+          type: string
+          description: Hex encoded memo bytes for this transaction.
+          examples:
+          - '0x546865204176616c616e6368652050726f6a656374'
+        amountUnlocked:
+          description: Assets unlocked by inputs of this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        amountCreated:
+          description: Assets created by outputs of this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        sourceChain:
+          type: string
+          description: Source chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        destinationChain:
+          type: string
+          description: Destination chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        txType:
+          type: string
+          description: Type of transaction.
+          enum:
+          - ExportTx
+          examples:
+          - ExportTx
+        evmInputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/EVMInput'
+        emittedUtxos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Utxo'
+      required:
+      - txHash
+      - blockHeight
+      - blockHash
+      - timestamp
+      - memo
+      - amountUnlocked
+      - amountCreated
+      - sourceChain
+      - destinationChain
+      - txType
+      - evmInputs
+      - emittedUtxos
+    PChainTransactionType:
+      type: string
+      enum:
+      - AddValidatorTx
+      - AddSubnetValidatorTx
+      - AddDelegatorTx
+      - CreateChainTx
+      - CreateSubnetTx
+      - ImportTx
+      - ExportTx
+      - AdvanceTimeTx
+      - RewardValidatorTx
+      - RemoveSubnetValidatorTx
+      - TransformSubnetTx
+      - AddPermissionlessValidatorTx
+      - AddPermissionlessDelegatorTx
+      - BaseTx
+      - TransferSubnetOwnershipTx
+      - ConvertSubnetToL1Tx
+      - RegisterL1ValidatorTx
+      - SetL1ValidatorWeightTx
+      - DisableL1ValidatorTx
+      - IncreaseL1ValidatorBalanceTx
+      - UNKNOWN
+    PChainTransaction:
+      type: object
+      properties:
+        txHash:
+          type: string
+          description: A P-Chain transaction hash.
+          examples:
+          - 3P91K6nuDFvDodcRuJTsgdf9SvYe5pMiKk38HppsoeAiEztCP
+        txType:
+          examples:
+          - AddDelegatorTx
+          $ref: '#/components/schemas/PChainTransactionType'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockNumber:
+          type: string
+          description: The height of the block in which the transaction was included
+        blockHash:
+          type: string
+        consumedUtxos:
+          description: The consumed UTXOs of the transaction
+          type: array
+          items:
+            $ref: '#/components/schemas/PChainUtxo'
+        emittedUtxos:
+          description: The newly created UTXOs of the transaction
+          type: array
+          items:
+            $ref: '#/components/schemas/PChainUtxo'
+        sourceChain:
+          type: string
+          description: Source chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        destinationChain:
+          type: string
+          description: Destination chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        value:
+          description: A list of objects containing P-chain Asset basic info and the amount of that Asset ID. The amount of nAVAX present in the newly created UTXOs of the transaction
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        amountBurned:
+          description: A list of objects containing P-chain Asset basic info and the amount of that Asset ID. The nAVAX amount burned in a transaction, partially or fully contributing to the transaction fee
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        amountStaked:
+          description: A list of objects containing P-chain Asset basic info and the amount of that Asset ID. Present for AddValidatorTx, AddPermissionlessValidatorTx, AddDelegatorTx
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        amountL1ValidatorBalanceBurned:
+          description: A list of objects containing P-chain Asset basic info and the amount of that Asset ID. The amount of nAVAX locked for pay-as-you-go continuous fees to sustain L1 validation.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        startTimestamp:
+          type: number
+          description: Present for AddValidatorTx, AddSubnetValidatorTx, AddPermissionlessValidatorTx, AddDelegatorTx
+        endTimestamp:
+          type: number
+          description: Present for AddValidatorTx, AddSubnetValidatorTx, AddPermissionlessValidatorTx, AddDelegatorTx
+        delegationFeePercent:
+          type: string
+          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations. Present for AddValidatorTx, AddPermissionlessValidatorTx
+        nodeId:
+          type: string
+          description: The NodeID of the validator node linked to the stake transaction. Present for AddValidatorTx, AddSubnetValidatorTx, RemoveSubnetValidatorTx, AddPermissionlessValidatorTx, AddDelegatorTx
+        subnetId:
+          type: string
+          description: Present for AddValidatorTx, AddSubnetValidatorTx, RemoveSubnetValidatorTx, AddPermissionlessValidatorTx, AddDelegatorTx, CreateChainTx, CreateSubnetTx
+        l1ValidatorManagerDetails:
+          description: Details of the L1's validator manager contract and blockchain. Present for the ConvertSubnetToL1Tx which transforms a subnet into L1
+          allOf:
+          - $ref: '#/components/schemas/L1ValidatorManagerDetails'
+        l1ValidatorDetails:
+          description: Details of L1 validators registered or changed in the current transaction. The details reflect the state at the time of the transaction, not in real-time
+          type: array
+          items:
+            $ref: '#/components/schemas/L1ValidatorDetailsTransaction'
+        estimatedReward:
+          type: string
+          description: Estimated reward from the staking transaction, if successful. Present for AddValidatorTx, AddPermissionlessValidatorTx, AddDelegatorTx
+        rewardTxHash:
+          type: string
+          description: Reward transaction hash for the completed validations or delegations
+        rewardAddresses:
+          type: array
+          items:
+            type: string
+        memo:
+          type: string
+        stakingTxHash:
+          type: string
+          description: Staking transaction corresponding to the RewardValidatorTx
+        subnetOwnershipInfo:
+          description: Subnet owner details for the CreateSubnetTx or TransferSubnetOwnershipTx
+          allOf:
+          - $ref: '#/components/schemas/SubnetOwnershipInfo'
+        blsCredentials:
+          description: Public Key and PoP of new validator registrations. Present for AddPermissionlessValidatorTx
+          allOf:
+          - $ref: '#/components/schemas/BlsCredentials'
+        blockchainInfo:
+          description: Details of the blockchain that was created in the CreateChainTx
+          allOf:
+          - $ref: '#/components/schemas/BlockchainInfo'
+      required:
+      - txHash
+      - txType
+      - blockTimestamp
+      - blockNumber
+      - blockHash
+      - consumedUtxos
+      - emittedUtxos
+      - value
+      - amountBurned
+      - amountStaked
+      - amountL1ValidatorBalanceBurned
+    PrimaryNetworkAssetType:
+      type: string
+      description: Type of asset like SECP256K1 or NFT.
+      enum:
+      - secp256k1
+      - nft
+    UtxoType:
+      type: string
+      description: Indicates whether the UTXO is staked or transferable
+      enum:
+      - STAKE
+      - TRANSFER
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    PrimaryNetworkTxType:
+      type: string
+      enum:
+      - AddValidatorTx
+      - AddSubnetValidatorTx
+      - AddDelegatorTx
+      - CreateChainTx
+      - CreateSubnetTx
+      - ImportTx
+      - ExportTx
+      - AdvanceTimeTx
+      - RewardValidatorTx
+      - RemoveSubnetValidatorTx
+      - TransformSubnetTx
+      - AddPermissionlessValidatorTx
+      - AddPermissionlessDelegatorTx
+      - BaseTx
+      - TransferSubnetOwnershipTx
+      - ConvertSubnetToL1Tx
+      - RegisterL1ValidatorTx
+      - SetL1ValidatorWeightTx
+      - DisableL1ValidatorTx
+      - IncreaseL1ValidatorBalanceTx
+      - UNKNOWN
+      - CreateAssetTx
+      - OperationTx
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    XChainTransactionType:
+      type: string
+      description: Type of transaction.
+      enum:
+      - BaseTx
+      - CreateAssetTx
+      - OperationTx
+      - ImportTx
+      - ExportTx
+      - UNKNOWN
+    AssetAmount:
+      type: object
+      properties:
+        assetId:
+          type: string
+          description: Unique ID for an asset.
+          examples:
+          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
+        name:
+          type: string
+          description: Name of this asset.
+          examples:
+          - Avalanche
+        symbol:
+          type: string
+          description: Symbol for this asset (max 4 characters).
+          examples:
+          - AVAX
+        denomination:
+          type: number
+          description: Denomination of this asset to represent fungibility.
+          examples:
+          - 9
+        type:
+          examples:
+          - secp256k1
+          $ref: '#/components/schemas/PrimaryNetworkAssetType'
+        amount:
+          type: string
+          description: Amount of the asset.
+          examples:
+          - '5001000'
+      required:
+      - assetId
+      - name
+      - symbol
+      - denomination
+      - type
+      - amount
+    ListCChainAtomicTransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/CChainExportTransaction'
+            - $ref: '#/components/schemas/CChainImportTransaction'
+        chainInfo:
+          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
+      required:
+      - transactions
+      - chainInfo
+    XChainLinearTransaction:
+      type: object
+      properties:
+        txHash:
+          type: string
+          description: Unique ID for this transaction.
+          examples:
+          - 3j9JpF1aGuQtLLbo3YkvvKkWrCZViXZjdeJQWUSEY5hcqUn2c
+        chainFormat:
+          type: string
+          description: Represents chain format this transaction is included in.
+          enum:
+          - non-linear
+          - linear
+          examples:
+          - non-linear
+        timestamp:
+          type: number
+          description: Latest timestamp in seconds this transaction was accepted out of the same transaction accepted in other vertices.
+          examples:
+          - 1600762738
+        txType:
+          examples:
+          - BaseTx
+          $ref: '#/components/schemas/XChainTransactionType'
+        memo:
+          type: string
+          description: Hex encoded memo bytes for this transaction.
+          examples:
+          - '0x546865204176616c616e6368652050726f6a656374'
+        consumedUtxos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Utxo'
+        emittedUtxos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Utxo'
+        amountUnlocked:
+          description: Assets unlocked by inputs of this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        amountCreated:
+          description: Assets created by outputs of this transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAmount'
+        sourceChain:
+          type: string
+          description: Source chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        destinationChain:
+          type: string
+          description: Destination chain for an atomic transaction.
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        assetCreated:
+          description: AssetAmount details of the asset created in CreateAssetTx
+          allOf:
+          - $ref: '#/components/schemas/XChainAssetDetails'
+        blockHeight:
+          type: number
+          description: Height of the block this transaction belongs to.
+          examples:
+          - 1005
+        blockHash:
+          type: string
+          description: Hash of the block this transaction belongs to.
+          examples:
+          - 82qPRREHmh8Cfta4PGD6GymY9ZLyvgYugqW6hj9FykpMVRz1S
+      required:
+      - txHash
+      - chainFormat
+      - timestamp
+      - txType
+      - memo
+      - consumedUtxos
+      - emittedUtxos
+      - amountUnlocked
+      - amountCreated
+      - blockHeight
+      - blockHash
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    ListXChainTransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/XChainNonLinearTransaction'
+            - $ref: '#/components/schemas/XChainLinearTransaction'
+        chainInfo:
+          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
+      required:
+      - transactions
+      - chainInfo
+    SubnetOwnershipInfo:
+      type: object
+      properties:
+        locktime:
+          type: number
+          description: Locktime in seconds after which Subnet owners can control this Subnet.
+          examples:
+          - 0
+        threshold:
+          type: number
+          description: Minimum number of signatures required to sign the Subnet update transactions.
+          examples:
+          - 1
+        addresses:
+          description: Addresses that are eligible to sign the Subnet update transactions.
+          examples:
+          - - avax1qm2a25eytsrj235hxg6jc0mwk99tss64eqevsw
+          type: array
+          items:
+            type: string
+      required:
+      - locktime
+      - threshold
+      - addresses
+    XChainId:
+      type: string
+      enum:
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - x-chain
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    XChainAssetDetails:
+      type: object
+      properties:
+        assetId:
+          type: string
+          description: Unique ID for an asset.
+          examples:
+          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
+        name:
+          type: string
+          description: Name of this asset.
+          examples:
+          - Avalanche
+        symbol:
+          type: string
+          description: Symbol for this asset (max 4 characters).
+          examples:
+          - AVAX
+        denomination:
+          type: number
+          description: Denomination of this asset to represent fungibility.
+          examples:
+          - 9
+        type:
+          examples:
+          - secp256k1
+          $ref: '#/components/schemas/PrimaryNetworkAssetType'
+        createdAtTimestamp:
+          type: number
+          description: Timestamp in seconds this asset was created on.
+          examples:
+          - 1675444720
+        cap:
+          examples:
+          - fixed
+          $ref: '#/components/schemas/PrimaryNetworkAssetCap'
+      required:
+      - assetId
+      - name
+      - symbol
+      - denomination
+      - type
+      - createdAtTimestamp
+      - cap
+    PrimaryNetworkChainInfo:
+      type: object
+      properties:
+        chainName:
+          $ref: '#/components/schemas/PrimaryNetworkChainName'
+        network:
+          $ref: '#/components/schemas/Network'
+      required:
+      - chainName
+      - network
+    ListPChainTransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PChainTransaction'
+        chainInfo:
+          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
+      required:
+      - transactions
+      - chainInfo
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-glacier-api-key
+      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 120000
+    exponent: 1.5
+  statusCodes:
+  - 5XX
+  retryConnectionErrors: true
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
+x-execution-weight-values:
+  free: 1
+  large: 50
+  medium: 20
+  none: 0
+  small: 10
+  xl: 100
+  xxl: 200
+x-rpc-method-execution-weights:
+  eth_accounts: free
+  eth_blockNumber: small
+  eth_call: small
+  eth_coinbase: small
+  eth_chainId: free
+  eth_gasPrice: small
+  eth_getBalance: small
+  eth_getBlockByHash: small
+  eth_getBlockByNumber: small
+  eth_getBlockTransactionCountByNumber: medium
+  eth_getCode: medium
+  eth_getLogs: xxl
+  eth_getStorageAt: medium
+  eth_getTransactionByBlockNumberAndIndex: medium
+  eth_getTransactionByHash: small
+  eth_getTransactionCount: small
+  eth_getTransactionReceipt: small
+  eth_signTransaction: medium
+  eth_sendTransaction: medium
+  eth_sign: medium
+  eth_sendRawTransaction: small
+  eth_syncing: free
+  net_listening: free
+  net_peerCount: medium
+  net_version: free
+  web3_clientVersion: small
+  web3_sha3: small
+  eth_newPendingTransactionFilter: medium
+  eth_maxPriorityFeePerGas: small
+  eth_baseFee: small
+  rpc_modules: free
+  eth_getChainConfig: small
+  eth_feeConfig: small
+  eth_getActivePrecompilesAt: small
+x-speakeasy-webhooks:
+  security:
+    type: signature
+    headerName: x-signature
+    signatureTextEncoding: base64
+    algorithm: hmac-sha256

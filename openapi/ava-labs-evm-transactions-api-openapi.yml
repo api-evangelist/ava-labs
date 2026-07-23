@@ -1,0 +1,2980 @@
+openapi: 3.1.0
+info:
+  title: Data AVAX Supply EVM Transactions API
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  version: 1.0.0
+  contact: {}
+servers:
+- url: https://glacier-api.avax.network
+security:
+- apiKey: []
+- {}
+tags:
+- name: EVM Transactions
+  description: Find information about transactions on EVM-compatible chains, such as the Avalanche C-Chain.
+paths:
+  /v1/transactions:
+    get:
+      operationId: listLatestTransactionsAllChains
+      x-speakeasy-group: data.evm.transactions
+      x-speakeasy-name-override: listLatestAllChains
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      summary: List the latest transactions across all supported EVM chains
+      description: Lists the most recent transactions from all supported EVM-compatible  chains. The results can be filtered based on transaction status.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: network
+        required: false
+        in: query
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: status
+        required: false
+        in: query
+        description: A status filter for listed transactions.
+        schema:
+          $ref: '#/components/schemas/TransactionStatus'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNativeTransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.data.evm.transactions.listLatestAllChains({\n    pageSize: 10,\n    network: \"mainnet\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/contracts/{address}/transactions:getDeployment:
+    get:
+      operationId: getDeploymentTransaction
+      x-speakeasy-group: data.evm.contracts
+      x-execution-weight: medium
+      summary: Get deployment transaction
+      description: If the address is a smart contract, returns the transaction in which it was deployed.
+      parameters:
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: Contract address on the relevant chain.
+        example: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'
+        schema:
+          type: string
+      - name: currency
+        required: false
+        in: query
+        description: The currency that return values should use. Defaults to USD.
+        example: usd
+        schema:
+          $ref: '#/components/schemas/CurrencyCode'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTransactionResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.contracts.getDeploymentTransaction({\n    address: \"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\n    currency: \"usd\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/chains/{chainId}/contracts/{address}/deployments:
+    get:
+      operationId: listContractDeployments
+      x-speakeasy-group: data.evm.address.contracts
+      x-speakeasy-name-override: listDeployments
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List deployed contracts
+      description: Lists all contracts deployed by the given address.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: A wallet address.
+        example: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListContractsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.address.contracts.listDeployments({\n    pageSize: 10,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/tokens/{address}/transfers:
+    get:
+      operationId: listTransfers
+      x-speakeasy-group: data.evm.contracts
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List ERC transfers
+      description: Lists ERC transfers for an ERC-20, ERC-721, or ERC-1155 contract address.
+      parameters:
+      - name: startBlock
+        required: false
+        in: query
+        description: The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block.
+        example: '6479329'
+        schema:
+          type: number
+      - name: endBlock
+        required: false
+        in: query
+        description: The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block.
+        example: '6479330'
+        schema:
+          type: number
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: A wallet address.
+        example: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTransfersResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.contracts.listTransfers({\n    startBlock: 6479329,\n    endBlock: 6479330,\n    pageSize: 10,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/addresses/{address}/transactions:
+    get:
+      operationId: listTransactions
+      x-speakeasy-group: data.evm.address.transactions
+      x-speakeasy-name-override: list
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List transactions
+      description: 'Returns a list of transactions where the given wallet address had an on-chain interaction for the given chain. The ERC-20 transfers, ERC-721 transfers, ERC-1155, and internal transactions returned are only those where the input address had an interaction. Specifically, those lists only inlcude entries where the input address was the sender (`from` field) or the receiver (`to` field) for the sub-transaction. Therefore the transactions returned from this list may not be complete representations of the on-chain data. For a complete view of a transaction use the `/chains/:chainId/transactions/:txHash` endpoint.
+
+
+        Filterable by block ranges.'
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: startBlock
+        required: false
+        in: query
+        description: The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block.
+        example: '6479329'
+        schema:
+          type: number
+      - name: endBlock
+        required: false
+        in: query
+        description: The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block.
+        example: '6479330'
+        schema:
+          type: number
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: A wallet address.
+        example: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        schema:
+          type: string
+      - name: sortOrder
+        required: false
+        in: query
+        example: asc
+        description: The order by which to sort results. Use "asc" for ascending order, "desc" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided.
+        schema:
+          $ref: '#/components/schemas/SortOrder'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTransactionDetailsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.address.transactions.list({\n    pageSize: 10,\n    startBlock: 6479329,\n    endBlock: 6479330,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n    sortOrder: \"asc\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/addresses/{address}/transactions:listNative:
+    get:
+      operationId: listNativeTransactions
+      x-speakeasy-group: data.evm.address.transactions
+      x-speakeasy-name-override: listNative
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List native transactions
+      description: Lists native transactions for an address. Filterable by block range.
+      parameters:
+      - name: startBlock
+        required: false
+        in: query
+        description: The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block.
+        example: '6479329'
+        schema:
+          type: number
+      - name: endBlock
+        required: false
+        in: query
+        description: The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block.
+        example: '6479330'
+        schema:
+          type: number
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: A wallet address.
+        example: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNativeTransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.address.transactions.listNative({\n    startBlock: 6479329,\n    endBlock: 6479330,\n    pageSize: 10,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/addresses/{address}/transactions:listErc20:
+    get:
+      operationId: listErc20Transactions
+      x-speakeasy-group: data.evm.address.transactions
+      x-speakeasy-name-override: listErc20
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List ERC-20 transfers
+      description: Lists ERC-20 transfers for an address. Filterable by block range.
+      parameters:
+      - name: startBlock
+        required: false
+        in: query
+        description: The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block.
+        example: '6479329'
+        schema:
+          type: number
+      - name: endBlock
+        required: false
+        in: query
+        description: The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block.
+        example: '6479330'
+        schema:
+          type: number
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: A wallet address.
+        example: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListErc20TransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.address.transactions.listErc20({\n    startBlock: 6479329,\n    endBlock: 6479330,\n    pageSize: 10,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/addresses/{address}/transactions:listErc721:
+    get:
+      operationId: listErc721Transactions
+      x-speakeasy-group: data.evm.address.transactions
+      x-speakeasy-name-override: listErc721
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List ERC-721 transfers
+      description: Lists ERC-721 transfers for an address. Filterable by block range.
+      parameters:
+      - name: startBlock
+        required: false
+        in: query
+        description: The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block.
+        example: '6479329'
+        schema:
+          type: number
+      - name: endBlock
+        required: false
+        in: query
+        description: The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block.
+        example: '6479330'
+        schema:
+          type: number
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: A wallet address.
+        example: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListErc721TransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.address.transactions.listErc721({\n    startBlock: 6479329,\n    endBlock: 6479330,\n    pageSize: 10,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/addresses/{address}/transactions:listErc1155:
+    get:
+      operationId: listErc1155Transactions
+      x-speakeasy-group: data.evm.address.transactions
+      x-speakeasy-name-override: listErc1155
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List ERC-1155 transfers
+      description: Lists ERC-1155 transfers for an address. Filterable by block range.
+      parameters:
+      - name: startBlock
+        required: false
+        in: query
+        description: The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block.
+        example: '6479329'
+        schema:
+          type: number
+      - name: endBlock
+        required: false
+        in: query
+        description: The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block.
+        example: '6479330'
+        schema:
+          type: number
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: A wallet address.
+        example: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListErc1155TransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.address.transactions.listErc1155({\n    startBlock: 6479329,\n    endBlock: 6479330,\n    pageSize: 10,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/addresses/{address}/transactions:listInternals:
+    get:
+      operationId: listInternalTransactions
+      x-speakeasy-group: data.evm.address.transactions
+      x-speakeasy-name-override: listInternal
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List internal transactions
+      description: 'Returns a list of internal transactions for an address and chain. Filterable by block range.
+
+
+        Note that the internal transactions list only contains `CALL` or `CALLCODE` transactions with a non-zero value and `CREATE`/`CREATE2`/`CREATE3` transactions. To get a complete list of internal transactions use the `debug_` prefixed RPC methods on an archive node.'
+      parameters:
+      - name: startBlock
+        required: false
+        in: query
+        description: The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block.
+        example: '6479329'
+        schema:
+          type: number
+      - name: endBlock
+        required: false
+        in: query
+        description: The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block.
+        example: '6479330'
+        schema:
+          type: number
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: address
+        required: true
+        in: path
+        description: A wallet address.
+        example: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListInternalTransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.address.transactions.listInternal({\n    startBlock: 6479329,\n    endBlock: 6479330,\n    pageSize: 10,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/chains/{chainId}/transactions/{txHash}:
+    get:
+      operationId: getTransaction
+      x-speakeasy-group: data.evm.transactions
+      x-speakeasy-name-override: get
+      x-execution-weight: medium
+      summary: Get transaction
+      description: Gets the details of a single transaction.
+      parameters:
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: txHash
+        required: true
+        in: path
+        description: A transaction hash.
+        example: '0x8bf584d7b14b92a32a339872a66b134a70ba3ba7c305823f348db6f860253f45'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTransactionResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.transactions.get({\n    txHash: \"0x8bf584d7b14b92a32a339872a66b134a70ba3ba7c305823f348db6f860253f45\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/chains/{chainId}/blocks/{blockId}/transactions:
+    get:
+      operationId: getTransactionsForBlock
+      x-speakeasy-group: data.evm.blocks
+      x-speakeasy-name-override: listTransactions
+      x-execution-weight: medium
+      summary: List transactions for a block
+      description: Lists the transactions that occured in a given block.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 0. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: blockId
+        required: true
+        in: path
+        description: A block identifier which is either a block number or the block hash.
+        example: '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNativeTransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.blocks.listTransactions({\n    pageSize: 10,\n    blockId: \"0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/chains/{chainId}/transactions:
+    get:
+      operationId: listLatestTransactions
+      x-speakeasy-group: data.evm.transactions
+      x-speakeasy-name-override: listLatest
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-execution-weight: medium
+      summary: List latest transactions
+      description: Lists the latest transactions. Filterable by status.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: chainId
+        required: true
+        in: path
+        description: A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids.
+        example: '43114'
+        schema:
+          type: string
+      - name: status
+        required: false
+        in: query
+        description: A status filter for listed transactions.
+        schema:
+          $ref: '#/components/schemas/TransactionStatus'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNativeTransactionsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - EVM Transactions
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.transactions.listLatest({\n    pageSize: 10,\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+components:
+  schemas:
+    ResourceLinkType:
+      type: string
+      enum:
+      - Blog
+      - CoinGecko
+      - CoinMarketCap
+      - Discord
+      - Documentation
+      - Facebook
+      - Github
+      - Instagram
+      - LinkedIn
+      - Medium
+      - Reddit
+      - Support
+      - Telegram
+      - TikTok
+      - Twitter
+      - Website
+      - Whitepaper
+      - Youtube
+    Money:
+      type: object
+      properties:
+        currencyCode:
+          examples:
+          - usd
+          $ref: '#/components/schemas/CurrencyCode'
+        value:
+          type: number
+          description: Monetary value in base 10 decimals.
+          examples:
+          - '42.42'
+      required:
+      - currencyCode
+      - value
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    Erc1155TokenMetadata:
+      type: object
+      properties:
+        indexStatus:
+          examples:
+          - indexed
+          $ref: '#/components/schemas/NftTokenMetadataStatus'
+        metadataLastUpdatedTimestamp:
+          type: number
+        name:
+          type: string
+        symbol:
+          type: string
+        imageUri:
+          type: string
+        description:
+          type: string
+        animationUri:
+          type: string
+        externalUrl:
+          type: string
+        background:
+          type: string
+        decimals:
+          type: number
+        properties:
+          type: string
+      required:
+      - indexStatus
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    InternalTransactionOpCall:
+      type: string
+      enum:
+      - UNKNOWN
+      - CALL
+      - CREATE
+      - CREATE2
+      - CREATE3
+      - CALLCODE
+      - DELEGATECALL
+      - STATICCALL
+    Erc1155Transfer:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        logIndex:
+          type: number
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        erc1155Token:
+          $ref: '#/components/schemas/Erc1155Token'
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - txHash
+      - from
+      - to
+      - logIndex
+      - value
+      - erc1155Token
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    ListNativeTransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NativeTransaction'
+      required:
+      - transactions
+    Erc721TokenMetadata:
+      type: object
+      properties:
+        indexStatus:
+          examples:
+          - indexed
+          $ref: '#/components/schemas/NftTokenMetadataStatus'
+        metadataLastUpdatedTimestamp:
+          type: number
+        name:
+          type: string
+        symbol:
+          type: string
+        imageUri:
+          type: string
+        description:
+          type: string
+        animationUri:
+          type: string
+        externalUrl:
+          type: string
+        background:
+          type: string
+        attributes:
+          type: string
+      required:
+      - indexStatus
+    NetworkTokenDetails:
+      type: object
+      properties:
+        networkToken:
+          $ref: '#/components/schemas/NetworkToken'
+        currentPrice:
+          description: The current token price, if available.
+          allOf:
+          - $ref: '#/components/schemas/Money'
+        historicalPrice:
+          description: The historical token price at the time the transaction occured, if available. Note, this is only provided if the transaction occured more than 24 hours ago.
+          allOf:
+          - $ref: '#/components/schemas/Money'
+      required:
+      - networkToken
+    TransactionStatus:
+      type: string
+      enum:
+      - failed
+      - success
+    ListErc721TransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc721Transfer'
+      required:
+      - transactions
+    Method:
+      type: object
+      properties:
+        callType:
+          examples:
+          - CONTRACT_CALL
+          $ref: '#/components/schemas/TransactionMethodType'
+        methodHash:
+          type: string
+          description: The contract method hash identifier. The method hash is only set if the `callType` is `CONTRACT_CALL`.
+          examples:
+          - '0xa9059cbb'
+        methodName:
+          type: string
+          description: The contract method name including parameter types. If the `callType` is `NATIVE_TRANSFER` this is set to 'Native Transfer'. If the `callType` is `CONTRACT_CREATION` this is set to 'Contract Created'.
+          examples:
+          - transfer(address,uint256)
+      required:
+      - callType
+      - methodHash
+    ListErc1155TransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc1155Transfer'
+      required:
+      - transactions
+    Erc721TransferDetails:
+      type: object
+      properties:
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        logIndex:
+          type: number
+        erc721Token:
+          $ref: '#/components/schemas/Erc721Token'
+      required:
+      - from
+      - to
+      - logIndex
+      - erc721Token
+    InternalTransaction:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        internalTxType:
+          $ref: '#/components/schemas/InternalTransactionOpCall'
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        isReverted:
+          type: boolean
+          description: True if the internal transaction was reverted.
+        gasUsed:
+          type: string
+        gasLimit:
+          type: string
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - txHash
+      - from
+      - to
+      - internalTxType
+      - value
+      - isReverted
+      - gasUsed
+      - gasLimit
+    NftTokenMetadataStatus:
+      type: string
+      description: The metadata indexing status of the nft.
+      enum:
+      - UNKNOWN
+      - MISSING_TOKEN
+      - INVALID_TOKEN_URI
+      - INVALID_TOKEN_URI_SCHEME
+      - UNREACHABLE_TOKEN_URI
+      - THROTTLED_TOKEN_URI
+      - METADATA_CONTENT_TOO_LARGE
+      - INVALID_METADATA
+      - INVALID_METADATA_JSON
+      - INDEXED
+      - UNINDEXED
+    ListErc20TransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc20Transfer'
+      required:
+      - transactions
+    ListTransactionDetailsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionDetails'
+      required:
+      - transactions
+    TransactionDirectionType:
+      type: string
+      enum:
+      - SOURCE_TRANSACTION
+      - DESTINATION_TRANSACTION
+    ListTransfersResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transfers:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/Erc20Transfer'
+            - $ref: '#/components/schemas/Erc721Transfer'
+            - $ref: '#/components/schemas/Erc1155Transfer'
+      required:
+      - transfers
+    CurrencyCode:
+      type: string
+      description: ISO 4217 currency code.
+      enum:
+      - usd
+      - eur
+      - aud
+      - cad
+      - chf
+      - clp
+      - cny
+      - czk
+      - dkk
+      - gbp
+      - hkd
+      - huf
+      - jpy
+      - nzd
+    Erc1155Contract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - ERC-1155
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        pricingProviders:
+          $ref: '#/components/schemas/PricingProviders'
+      required:
+      - address
+      - ercType
+    GetTransactionResponse:
+      type: object
+      properties:
+        erc20Transfers:
+          description: The list of ERC-20 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc20TransferDetails'
+        erc721Transfers:
+          description: The list of ERC-721 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc721TransferDetails'
+        erc1155Transfers:
+          description: The list of ERC-1155 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc1155TransferDetails'
+        internalTransactions:
+          description: The list of internal transactions. Note that this list only includes CALL and CALLCODE internal transactions that had a non-zero value and CREATE/CREATE2/CREATE3  calls. Use a client provider to recieve a full debug trace of the transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalTransactionDetails'
+        networkTokenDetails:
+          $ref: '#/components/schemas/NetworkTokenDetails'
+        nativeTransaction:
+          $ref: '#/components/schemas/FullNativeTransactionDetails'
+        teleporterMessageInfo:
+          description: Corresponding teleporter message info if available.
+          allOf:
+          - $ref: '#/components/schemas/TeleporterMessageInfo'
+      required:
+      - networkTokenDetails
+      - nativeTransaction
+    NetworkToken:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        logoUri:
+          type: string
+          description: The logo uri for the address.
+          examples:
+          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
+        description:
+          type: string
+      required:
+      - name
+      - symbol
+      - decimals
+    InternalTransactionDetails:
+      type: object
+      properties:
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        internalTxType:
+          $ref: '#/components/schemas/InternalTransactionOpCall'
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        isReverted:
+          type: boolean
+          description: True if the internal transaction was reverted.
+        gasUsed:
+          type: string
+        gasLimit:
+          type: string
+      required:
+      - from
+      - to
+      - internalTxType
+      - value
+      - isReverted
+      - gasUsed
+      - gasLimit
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    ContractDeploymentDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        deployerAddress:
+          type: string
+          description: The address that initiated the transaction which deployed this contract.
+        deployerContractAddress:
+          type: string
+          description: The contract address which deployed this contract via smart contract. This field is only populated when the contract was deployed as part of smart contract execution.
+      required:
+      - txHash
+      - deployerAddress
+    Erc721Token:
+      type: object
+      properties:
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        ercType:
+          type: string
+          enum:
+          - ERC-721
+        tokenId:
+          type: string
+        tokenUri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Erc721TokenMetadata'
+        ownerAddress:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+      required:
+      - address
+      - name
+      - symbol
+      - ercType
+      - tokenId
+      - tokenUri
+      - metadata
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    TransactionMethodType:
+      type: string
+      description: The contract call type. NATIVE_TRANSFER indicates a transfer of the native token without any smart-contract interaction. CONTRACT_CALL indicates a smart-contract interaction. CONTRACT_CREATION indicates a smart-contract creation.
+      enum:
+      - NATIVE_TRANSFER
+      - CONTRACT_CALL
+      - CONTRACT_CREATION
+    Erc1155Token:
+      type: object
+      properties:
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        ercType:
+          type: string
+          enum:
+          - ERC-1155
+        tokenId:
+          type: string
+        tokenUri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Erc1155TokenMetadata'
+      required:
+      - address
+      - ercType
+      - tokenId
+      - tokenUri
+      - metadata
+    Erc20Contract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - ERC-20
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        pricingProviders:
+          $ref: '#/components/schemas/PricingProviders'
+      required:
+      - address
+      - ercType
+      - decimals
+    ListInternalTransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalTransaction'
+      required:
+      - transactions
+    PricingProviders:
+      type: object
+      properties:
+        coingeckoCoinId:
+          type: string
+    TeleporterMessageInfo:
+      type: object
+      properties:
+        teleporterMessageId:
+          type: string
+        direction:
+          $ref: '#/components/schemas/TransactionDirectionType'
+        sourceChainId:
+          type: string
+          description: chain id of the source chain. valid only for destination transactions
+        destinationChainId:
+          type: string
+          description: chain id of the destination chain. valid only for source transactions
+      required:
+      - teleporterMessageId
+      - direction
+    Erc20Transfer:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        logIndex:
+          type: number
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        erc20Token:
+          $ref: '#/components/schemas/Erc20Token'
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - txHash
+      - from
+      - to
+      - logIndex
+      - value
+      - erc20Token
+    UnknownContract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - UNKNOWN
+      required:
+      - address
+      - ercType
+    Erc1155TransferDetails:
+      type: object
+      properties:
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        logIndex:
+          type: number
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        erc1155Token:
+          $ref: '#/components/schemas/Erc1155Token'
+      required:
+      - from
+      - to
+      - logIndex
+      - value
+      - erc1155Token
+    Erc721Contract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - ERC-721
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+      required:
+      - address
+      - ercType
+    ResourceLink:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ResourceLinkType'
+        url:
+          type: string
+      required:
+      - type
+      - url
+    FullNativeTransactionDetails:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        chainId:
+          type: string
+          description: The EVM chain ID on which the transaction occured.
+          examples:
+          - '43114'
+        blockIndex:
+          type: number
+          description: The index at which the transaction occured in the block (0-indexed).
+          examples:
+          - 0
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        txStatus:
+          type: string
+          description: The transaction status, which is either 0 (failed) or 1 (successful).
+          examples:
+          - '1'
+        txType:
+          type: number
+          description: The transaction type.
+          examples:
+          - 1
+        gasLimit:
+          type: string
+          description: The gas limit set for the transaction.
+          examples:
+          - '51373'
+        gasUsed:
+          type: string
+          description: The amount of gas used.
+          examples:
+          - '51373'
+        gasPrice:
+          type: string
+          description: The gas price denominated by the number of decimals of the native token.
+          examples:
+          - '470000000000'
+        nonce:
+          type: string
+          description: The nonce used by the sender of the transaction.
+          examples:
+          - '1'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        method:
+          $ref: '#/components/schemas/Method'
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        input:
+          type: string
+          description: The data sent for the transaction.
+        baseFeePerGas:
+          type: string
+        maxFeePerGas:
+          type: string
+        maxPriorityFeePerGas:
+          type: string
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - chainId
+      - blockIndex
+      - txHash
+      - txStatus
+      - txType
+      - gasLimit
+      - gasUsed
+      - gasPrice
+      - nonce
+      - from
+      - to
+      - value
+      - input
+      - baseFeePerGas
+    ListContractsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        contracts:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/Erc721Contract'
+            - $ref: '#/components/schemas/Erc1155Contract'
+            - $ref: '#/components/schemas/Erc20Contract'
+            - $ref: '#/components/schemas/UnknownContract'
+            discriminator:
+              propertyName: ercType
+              mapping:
+                ERC-721: '#/components/schemas/Erc721Contract'
+                ERC-1155: '#/components/schemas/Erc1155Contract'
+                ERC-20: '#/components/schemas/Erc20Contract'
+                UNKNOWN: '#/components/schemas/UnknownContract'
+      required:
+      - contracts
+    RichAddress:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        logoUri:
+          type: string
+          description: The logo uri for the address.
+          examples:
+          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+      required:
+      - address
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    Erc20TransferDetails:
+      type: object
+      properties:
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        logIndex:
+          type: number
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        erc20Token:
+          $ref: '#/components/schemas/Erc20Token'
+      required:
+      - from
+      - to
+      - logIndex
+      - value
+      - erc20Token
+    ImageAsset:
+      type: object
+      properties:
+        assetId:
+          type: string
+        imageUri:
+          type: string
+          description: OUTPUT ONLY
+    Erc20Token:
+      type: object
+      properties:
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        logoUri:
+          type: string
+          description: The logo uri for the address.
+          examples:
+          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
+        ercType:
+          type: string
+          enum:
+          - ERC-20
+        price:
+          description: The token price, if available.
+          allOf:
+          - $ref: '#/components/schemas/Money'
+      required:
+      - address
+      - name
+      - symbol
+      - decimals
+      - ercType
+    TransactionDetails:
+      type: object
+      properties:
+        nativeTransaction:
+          description: The native (top-level) transaction details.
+          allOf:
+          - $ref: '#/components/schemas/NativeTransaction'
+        erc20Transfers:
+          description: The list of ERC-20 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc20TransferDetails'
+        erc721Transfers:
+          description: The list of ERC-721 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc721TransferDetails'
+        erc1155Transfers:
+          description: The list of ERC-1155 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc1155TransferDetails'
+        internalTransactions:
+          description: The list of internal transactions. Note that this list only includes CALL and CALLCODE internal transactions that had a non-zero value and CREATE/CREATE2/CREATE3  calls. Use a client provider to recieve a full debug trace of the transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalTransactionDetails'
+      required:
+      - nativeTransaction
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    Erc721Transfer:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        logIndex:
+          type: number
+        erc721Token:
+          $ref: '#/components/schemas/Erc721Token'
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - txHash
+      - from
+      - to
+      - logIndex
+      - erc721Token
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    NativeTransaction:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        chainId:
+          type: string
+          description: The EVM chain ID on which the transaction occured.
+          examples:
+          - '43114'
+        blockIndex:
+          type: number
+          description: The index at which the transaction occured in the block (0-indexed).
+          examples:
+          - 0
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        txStatus:
+          type: string
+          description: The transaction status, which is either 0 (failed) or 1 (successful).
+          examples:
+          - '1'
+        txType:
+          type: number
+          description: The transaction type.
+          examples:
+          - 1
+        gasLimit:
+          type: string
+          description: The gas limit set for the transaction.
+          examples:
+          - '51373'
+        gasUsed:
+          type: string
+          description: The amount of gas used.
+          examples:
+          - '51373'
+        gasPrice:
+          type: string
+          description: The gas price denominated by the number of decimals of the native token.
+          examples:
+          - '470000000000'
+        nonce:
+          type: string
+          description: The nonce used by the sender of the transaction.
+          examples:
+          - '1'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        method:
+          $ref: '#/components/schemas/Method'
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - chainId
+      - blockIndex
+      - txHash
+      - txStatus
+      - txType
+      - gasLimit
+      - gasUsed
+      - gasPrice
+      - nonce
+      - from
+      - to
+      - value
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-glacier-api-key
+      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 120000
+    exponent: 1.5
+  statusCodes:
+  - 5XX
+  retryConnectionErrors: true
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
+x-execution-weight-values:
+  free: 1
+  large: 50
+  medium: 20
+  none: 0
+  small: 10
+  xl: 100
+  xxl: 200
+x-rpc-method-execution-weights:
+  eth_accounts: free
+  eth_blockNumber: small
+  eth_call: small
+  eth_coinbase: small
+  eth_chainId: free
+  eth_gasPrice: small
+  eth_getBalance: small
+  eth_getBlockByHash: small
+  eth_getBlockByNumber: small
+  eth_getBlockTransactionCountByNumber: medium
+  eth_getCode: medium
+  eth_getLogs: xxl
+  eth_getStorageAt: medium
+  eth_getTransactionByBlockNumberAndIndex: medium
+  eth_getTransactionByHash: small
+  eth_getTransactionCount: small
+  eth_getTransactionReceipt: small
+  eth_signTransaction: medium
+  eth_sendTransaction: medium
+  eth_sign: medium
+  eth_sendRawTransaction: small
+  eth_syncing: free
+  net_listening: free
+  net_peerCount: medium
+  net_version: free
+  web3_clientVersion: small
+  web3_sha3: small
+  eth_newPendingTransactionFilter: medium
+  eth_maxPriorityFeePerGas: small
+  eth_baseFee: small
+  rpc_modules: free
+  eth_getChainConfig: small
+  eth_feeConfig: small
+  eth_getActivePrecompilesAt: small
+x-speakeasy-webhooks:
+  security:
+    type: signature
+    headerName: x-signature
+    signatureTextEncoding: base64
+    algorithm: hmac-sha256

@@ -1,0 +1,2299 @@
+openapi: 3.1.0
+info:
+  title: Data AVAX Supply Primary Network API
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  version: 1.0.0
+  contact: {}
+servers:
+- url: https://glacier-api.avax.network
+security:
+- apiKey: []
+- {}
+tags:
+- name: Primary Network
+paths:
+  /v1/networks/{network}/blockchains/{blockchainId}/assets/{assetId}:
+    get:
+      operationId: getAssetDetails
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: xl
+      summary: Get asset details
+      description: Gets asset details corresponding to the given asset id on the X-Chain.
+      parameters:
+      - name: blockchainId
+        required: true
+        in: path
+        description: A primary network blockchain id or alias.
+        example: x-chain
+        schema:
+          $ref: '#/components/schemas/XChainId'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: assetId
+        required: true
+        in: path
+        description: Asset ID for any asset on X-Chain
+        example: th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XChainAssetDetails'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.getAssetDetails({\n    blockchainId: \"x-chain\",\n    assetId: \"th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/networks/{network}/addresses:listChainIds:
+    get:
+      operationId: getChainIdsForAddresses
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: xl
+      summary: Get chain interactions for addresses
+      description: Returns Primary Network chains that each address has touched in the form of an address mapped array. If an address has had any on-chain interaction for a chain, that chain's chain id will be returned.
+      parameters:
+      - name: addresses
+        required: true
+        in: query
+        description: A comma separated list of X-Chain or P-Chain wallet addresses, starting with "avax"/"fuji", "P-avax"/"P-fuji" or "X-avax"/"X-fuji".
+        example: avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg
+        schema:
+          type: string
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChainAddressChainIdMapListResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.getChainIdsForAddresses({\n    addresses: \"avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/networks/{network}:
+    get:
+      operationId: getNetworkDetails
+      x-execution-weight: xl
+      x-speakeasy-group: data.primaryNetwork
+      summary: Get network details
+      description: Gets network details such as validator and delegator stats.
+      parameters:
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetNetworkDetailsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.getNetworkDetails({});\n\n  console.log(result);\n}\n\nrun();"
+  /v1/networks/{network}/blockchains:
+    get:
+      operationId: listBlockchains
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: medium
+      summary: List blockchains
+      description: Lists all blockchains registered on the network.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 10000.
+        schema:
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 10000
+        example: '10'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: sortOrder
+        required: false
+        in: query
+        example: asc
+        description: The order by which to sort results. Use "asc" for ascending order, "desc" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided.
+        schema:
+          $ref: '#/components/schemas/SortOrder'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBlockchainsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.listBlockchains({\n    pageSize: 10,\n    sortOrder: \"asc\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/networks/{network}/blockchains/{blockchainId}:
+    get:
+      operationId: getBlockchainById
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: medium
+      summary: Get blockchain details by ID
+      description: Get details of the blockchain registered on the network.
+      parameters:
+      - name: blockchainId
+        required: true
+        in: path
+        description: The blockchain ID of the blockchain to retrieve.
+        example: 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
+        schema:
+          type: string
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Blockchain'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.getBlockchainById({\n    blockchainId: \"2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/networks/{network}/subnets:
+    get:
+      operationId: listSubnets
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: medium
+      summary: List subnets
+      description: Lists all subnets registered on the network.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 10000.
+        schema:
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 10000
+        example: '10'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: sortOrder
+        required: false
+        in: query
+        example: asc
+        description: The order by which to sort results. Use "asc" for ascending order, "desc" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided.
+        schema:
+          $ref: '#/components/schemas/SortOrder'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSubnetsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.listSubnets({\n    pageSize: 10,\n    sortOrder: \"asc\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/networks/{network}/subnets/{subnetId}:
+    get:
+      operationId: getSubnetById
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: medium
+      summary: Get Subnet details by ID
+      description: Get details of the Subnet registered on the network.
+      parameters:
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: subnetId
+        required: true
+        in: path
+        description: Subnet ID to fetch details for
+        example: 11111111111111111111111111111111LpoYY
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subnet'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.getSubnetById({\n    subnetId: \"11111111111111111111111111111111LpoYY\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/networks/{network}/validators:
+    get:
+      operationId: listValidators
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: medium
+      summary: List validators
+      description: Lists details for validators. By default, returns details for all validators.  The nodeIds parameter supports substring matching. Filterable by validation status, delegation capacity, time remaining, fee percentage, uptime performance, and subnet id.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: nodeIds
+        required: false
+        in: query
+        description: A comma separated list of node ids to filter by. Supports substring matching.
+        example: NodeID-111111111111111111116DBWJs,NodeID-222222222222222222227DBWJs
+        schema:
+          type: string
+      - name: sortBy
+        required: false
+        in: query
+        description: 'Which property to sort by, in conjunction with sortOrder.
+
+
+          Note: Delegation fee is only available for mainnet validators. Set `subnetId` to `11111111111111111111111111111111LpoYY`  to use this option.'
+        schema:
+          $ref: '#/components/schemas/SortByOption'
+      - name: sortOrder
+        required: false
+        in: query
+        example: asc
+        description: The order by which to sort results. Use "asc" for ascending order, "desc" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided.
+        schema:
+          $ref: '#/components/schemas/SortOrder'
+      - name: validationStatus
+        required: false
+        in: query
+        description: Validation status of the node.
+        example: completed
+        schema:
+          $ref: '#/components/schemas/ValidationStatusType'
+      - name: minDelegationCapacity
+        required: false
+        in: query
+        description: The minimum delegation capacity, in nAVAX, used to filter the set of nodes being returned. Accepts values between 0 and 720,000,000,000,000,000
+        example: '0'
+        schema:
+          type: string
+      - name: maxDelegationCapacity
+        required: false
+        in: query
+        description: The maximum delegation capacity, in nAVAX, used to filter the set of nodes being returned. Accepts values between 0 and 720,000,000,000,000,000.
+        example: '720000000000000000'
+        schema:
+          type: string
+      - name: minTimeRemaining
+        required: false
+        in: query
+        description: The minimum validation time remaining, in seconds, used to filter the set of nodes being returned.
+        example: 0
+        schema:
+          type: number
+          maximum: 2147483647
+          minimum: 0
+      - name: maxTimeRemaining
+        required: false
+        in: query
+        description: The maximum validation time remaining, in seconds, used to filter the set of nodes being returned.
+        example: 2147483647
+        schema:
+          type: number
+          maximum: 2147483647
+          minimum: 0
+      - name: minFeePercentage
+        required: false
+        in: query
+        description: The minimum fee percentage, used to filter the set of nodes being returned. If this field is populated no subnet validations will be returned, as their fee percentage is null, since subnet delegations are not supported. Default is 2.0, as per the Avalanche spec.
+        example: 2
+        schema:
+          type: number
+          maximum: 100
+          minimum: 2
+      - name: maxFeePercentage
+        required: false
+        in: query
+        description: The maximum fee percentage, used to filter the set of nodes being returned. If this field is populated no subnet validations will be returned, as their fee percentage is null, since subnet delegations are not supported. Default is 100.0.
+        example: 100
+        schema:
+          type: number
+          maximum: 100
+          minimum: 2
+      - name: minUptimePerformance
+        required: false
+        in: query
+        description: The minimum node uptime performance percentage, which represents node health, used to filter the set of nodes being returned Default is 90.
+        example: 90
+        schema:
+          type: number
+          maximum: 100
+          minimum: 0
+      - name: maxUptimePerformance
+        required: false
+        in: query
+        description: The maximum node uptime performance percentage, which represents node health, used to filter the set of nodes being returned. Default is 100.
+        example: 100
+        schema:
+          type: number
+          maximum: 100
+          minimum: 0
+      - name: subnetId
+        required: false
+        in: query
+        description: The subnet ID to filter by. If not provided, then all subnets will be returned.
+        example: 11111111111111111111111111111111LpoYY
+        schema: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListValidatorDetailsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.listValidators({\n    pageSize: 10,\n    nodeIds: \"NodeID-111111111111111111116DBWJs,NodeID-222222222222222222227DBWJs\",\n    sortOrder: \"asc\",\n    validationStatus: \"completed\",\n    minDelegationCapacity: \"0\",\n    maxDelegationCapacity: \"720000000000000000\",\n    minTimeRemaining: 0,\n    maxTimeRemaining: 2147483647,\n    minFeePercentage: 2,\n    maxFeePercentage: 100,\n    minUptimePerformance: 90,\n    maxUptimePerformance: 100,\n    subnetId: \"11111111111111111111111111111111LpoYY\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/networks/{network}/validators/{nodeId}:
+    get:
+      operationId: getSingleValidatorDetails
+      x-speakeasy-name-override: getValidatorDetails
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: medium
+      summary: Get single validator details
+      description: List validator details for a single validator.  Filterable by validation status.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: nodeId
+        required: true
+        in: path
+        description: A primary network (P or X chain) nodeId.
+        example: NodeID-111111111111111111116DBWJs
+        schema:
+          type: string
+      - name: validationStatus
+        required: false
+        in: query
+        description: Validation status of the node.
+        example: completed
+        schema:
+          $ref: '#/components/schemas/ValidationStatusType'
+      - name: sortOrder
+        required: false
+        in: query
+        example: asc
+        description: The order by which to sort results. Use "asc" for ascending order, "desc" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided.
+        schema:
+          $ref: '#/components/schemas/SortOrder'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListValidatorDetailsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.getValidatorDetails({\n    pageSize: 10,\n    nodeId: \"NodeID-111111111111111111116DBWJs\",\n    validationStatus: \"completed\",\n    sortOrder: \"asc\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/networks/{network}/delegators:
+    get:
+      operationId: listDelegators
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: medium
+      summary: List delegators
+      description: Lists details for delegators.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: rewardAddresses
+        required: false
+        in: query
+        description: A comma separated list of reward addresses to filter by.
+        example: P-avax1679zrp3z9mf7z4an42ddq47qzj36zv6ga20vwl,P-avax1s7kd0kfndlz6mh3l0etrrcmkg5y366k8e0s6cc
+        schema:
+          type: string
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: sortOrder
+        required: false
+        in: query
+        example: asc
+        description: The order by which to sort results. Use "asc" for ascending order, "desc" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided.
+        schema:
+          $ref: '#/components/schemas/SortOrder'
+      - name: delegationStatus
+        required: false
+        in: query
+        description: Delegation status of the node.
+        example: completed
+        schema:
+          $ref: '#/components/schemas/DelegationStatusType'
+      - name: nodeIds
+        required: false
+        in: query
+        description: A comma separated list of node ids to filter by.
+        example: NodeID-111111111111111111116DBWJs,NodeID-222222222222222222227DBWJs
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDelegatorDetailsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.listDelegators({\n    pageSize: 10,\n    rewardAddresses: \"P-avax1679zrp3z9mf7z4an42ddq47qzj36zv6ga20vwl,P-avax1s7kd0kfndlz6mh3l0etrrcmkg5y366k8e0s6cc\",\n    sortOrder: \"asc\",\n    delegationStatus: \"completed\",\n    nodeIds: \"NodeID-111111111111111111116DBWJs,NodeID-222222222222222222227DBWJs\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+  /v1/networks/{network}/l1Validators:
+    get:
+      operationId: listL1Validators
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+        - name: pageToken
+          in: parameters
+          type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+      x-speakeasy-group: data.primaryNetwork
+      x-execution-weight: medium
+      summary: List L1 validators
+      description: Lists details for L1 validators. By default, returns details for all active L1 validators. Filterable by validator node ids, subnet id, and validation id.
+      parameters:
+      - name: pageToken
+        required: false
+        in: query
+        description: A page token, received from a previous list call. Provide this to retrieve the subsequent page.
+        schema:
+          type: string
+      - name: pageSize
+        required: false
+        in: query
+        description: The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100.
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        example: '10'
+      - name: l1ValidationId
+        required: false
+        in: query
+        description: The L1 Validator's validation ID to filter by. If not provided, then all L1 Validators will be returned.
+        example: BsSpTd1SDvdhaoYAuKJvRj1WnoRyu8mAuMZeuz9g7brGj6KhX
+        schema:
+          type: string
+      - name: includeInactiveL1Validators
+        required: false
+        in: query
+        schema:
+          type: boolean
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: nodeId
+        required: false
+        in: query
+        description: A valid node ID in format 'NodeID-HASH'.
+        example: NodeID-111111111111111111116DBWJs
+        schema:
+          type: string
+      - name: subnetId
+        required: false
+        in: query
+        description: The subnet ID to filter by. If not provided, then all subnets will be returned.
+        example: 11111111111111111111111111111111LpoYY
+        schema: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListL1ValidatorsResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Primary Network
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.listL1Validators({\n    pageSize: 10,\n    l1ValidationId: \"BsSpTd1SDvdhaoYAuKJvRj1WnoRyu8mAuMZeuz9g7brGj6KhX\",\n    nodeId: \"NodeID-111111111111111111116DBWJs\",\n    subnetId: \"11111111111111111111111111111111LpoYY\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
+components:
+  schemas:
+    CompletedDelegatorDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        nodeId:
+          type: string
+        rewardAddresses:
+          type: array
+          items:
+            type: string
+        amountDelegated:
+          type: string
+        delegationFee:
+          type: string
+        startTimestamp:
+          type: number
+        endTimestamp:
+          type: number
+        grossReward:
+          type: string
+          description: Total rewards distributed for the successful delegation.
+        netReward:
+          type: string
+          description: Net rewards distributed to the delegator after deducting delegation fee from the gross reward for the successful delegation.
+        delegationStatus:
+          type: string
+          enum:
+          - completed
+      required:
+      - txHash
+      - nodeId
+      - rewardAddresses
+      - amountDelegated
+      - delegationFee
+      - startTimestamp
+      - endTimestamp
+      - grossReward
+      - netReward
+      - delegationStatus
+    ValidatorsDetails:
+      type: object
+      properties:
+        validatorCount:
+          type: number
+        totalAmountStaked:
+          type: string
+        estimatedAnnualStakingReward:
+          type: string
+          description: Total potential rewards from currently active validations and delegations.
+        stakingDistributionByVersion:
+          type: array
+          items:
+            $ref: '#/components/schemas/StakingDistribution'
+        stakingRatio:
+          type: string
+          description: Ratio of total active stake amount to the current supply.
+      required:
+      - validatorCount
+      - totalAmountStaked
+      - estimatedAnnualStakingReward
+      - stakingDistributionByVersion
+      - stakingRatio
+    ListValidatorDetailsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        validators:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/CompletedValidatorDetails'
+            - $ref: '#/components/schemas/ActiveValidatorDetails'
+            - $ref: '#/components/schemas/PendingValidatorDetails'
+            - $ref: '#/components/schemas/RemovedValidatorDetails'
+            discriminator:
+              propertyName: validationStatus
+              mapping:
+                active: '#/components/schemas/ActiveValidatorDetails'
+                pending: '#/components/schemas/PendingValidatorDetails'
+                completed: '#/components/schemas/CompletedValidatorDetails'
+                removed: '#/components/schemas/RemovedValidatorDetails'
+          description: The list of validator Details.
+      required:
+      - validators
+    Blockchain:
+      type: object
+      properties:
+        createBlockTimestamp:
+          type: number
+        createBlockNumber:
+          type: string
+        blockchainId:
+          type: string
+        vmId:
+          type: string
+        subnetId:
+          type: string
+        blockchainName:
+          type: string
+        evmChainId:
+          type: number
+          description: EVM Chain ID for the EVM-based chains. This field is extracted from genesis data, and may be present for non-EVM chains as well.
+          example: 43114
+        genesisData:
+          type: object
+          description: The genesis data of the blockchain.
+          example: '{"chainId": 43114}'
+      required:
+      - createBlockTimestamp
+      - createBlockNumber
+      - blockchainId
+      - vmId
+      - subnetId
+      - blockchainName
+      - evmChainId
+    ChainAddressChainIdMapListResponse:
+      type: object
+      properties:
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChainAddressChainIdMap'
+      required:
+      - addresses
+    StakingDistribution:
+      type: object
+      properties:
+        version:
+          type: string
+          description: AvalancheGo version for the validator node.
+        amountStaked:
+          type: string
+          description: The total amount staked by validators using this version.
+        validatorCount:
+          type: number
+          description: The number of validators using this version.
+      required:
+      - version
+      - amountStaked
+      - validatorCount
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    BlsCredentials:
+      type: object
+      properties:
+        publicKey:
+          type: string
+        proofOfPossession:
+          type: string
+      required:
+      - publicKey
+      - proofOfPossession
+    L1ValidatorDetailsFull:
+      type: object
+      properties:
+        validationId:
+          type: string
+          description: Unique L1 validation ID used network-wide to identify L1 validation until its weight is reduced to 0 i.e. removed.
+        validationIdHex:
+          type: string
+          description: Unique L1 validation ID used network-wide to identify L1 validation until its weight is reduced to 0 i.e. removed. In hex format
+        nodeId:
+          type: string
+        subnetId:
+          type: string
+        weight:
+          type: number
+          description: Weight of the L1 validator used while sampling validators within the L1. A zero-weight L1 validator means it has been removed from the L1, and the validationID is no longer valid
+        remainingBalance:
+          type: number
+          description: Remaining L1 validator balance in nAVAX until inactive. It can rejoin L1 sampling by increasing balance with IncreaseL1ValidatorBalanceTx
+        creationTimestamp:
+          type: number
+          description: The timestamp of the transaction which created this L1 validator
+        blsCredentials:
+          type: object
+        remainingBalanceOwner:
+          description: The L1 validator owner's balance, returned after it's disabled or removed
+          allOf:
+          - $ref: '#/components/schemas/BalanceOwner'
+        deactivationOwner:
+          description: Owner ddresses details which can disable or remove the L1 validator
+          allOf:
+          - $ref: '#/components/schemas/BalanceOwner'
+      required:
+      - validationId
+      - validationIdHex
+      - nodeId
+      - subnetId
+      - weight
+      - remainingBalance
+      - creationTimestamp
+      - blsCredentials
+      - remainingBalanceOwner
+      - deactivationOwner
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    DelegatorsDetails:
+      type: object
+      properties:
+        delegatorCount:
+          type: number
+        totalAmountStaked:
+          type: string
+      required:
+      - delegatorCount
+      - totalAmountStaked
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    ChainAddressChainIdMap:
+      type: object
+      properties:
+        address:
+          type: string
+        blockchainIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockchainIds'
+      required:
+      - address
+      - blockchainIds
+    BalanceOwner:
+      type: object
+      properties:
+        addresses:
+          type: array
+          items:
+            type: string
+        threshold:
+          type: number
+      required:
+      - addresses
+      - threshold
+    ListSubnetsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        subnets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subnet'
+      required:
+      - subnets
+    PrimaryNetworkAssetCap:
+      type: string
+      description: Cap represents if an asset is a variable or fixed cap asset.
+      enum:
+      - fixed
+      - variable
+    ValidationStatusType:
+      type: string
+      enum:
+      - completed
+      - active
+      - pending
+      - removed
+    SortByOption:
+      type: string
+      enum:
+      - blockIndex
+      - delegationCapacity
+      - timeRemaining
+      - delegationFee
+      - uptimePerformance
+    CompletedValidatorDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        nodeId:
+          type: string
+        subnetId:
+          type: string
+        amountStaked:
+          type: string
+        delegationFee:
+          type: string
+          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations.
+        startTimestamp:
+          type: number
+        endTimestamp:
+          type: number
+        blsCredentials:
+          description: Present for AddPermissionlessValidatorTx
+          allOf:
+          - $ref: '#/components/schemas/BlsCredentials'
+        delegatorCount:
+          type: number
+        amountDelegated:
+          type: string
+        rewards:
+          $ref: '#/components/schemas/Rewards'
+        validationStatus:
+          type: string
+          enum:
+          - completed
+      required:
+      - txHash
+      - nodeId
+      - subnetId
+      - amountStaked
+      - startTimestamp
+      - endTimestamp
+      - delegatorCount
+      - rewards
+      - validationStatus
+    PendingDelegatorDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        nodeId:
+          type: string
+        rewardAddresses:
+          type: array
+          items:
+            type: string
+        amountDelegated:
+          type: string
+        delegationFee:
+          type: string
+        startTimestamp:
+          type: number
+        endTimestamp:
+          type: number
+        estimatedGrossReward:
+          type: string
+          description: Estimated total rewards that will be distributed for the successful delegation.
+        estimatedNetReward:
+          type: string
+          description: Estimated net rewards that will be distributed to the delegator after deducting delegation fee from the gross reward for the successful delegation.
+        delegationStatus:
+          type: string
+          enum:
+          - pending
+      required:
+      - txHash
+      - nodeId
+      - rewardAddresses
+      - amountDelegated
+      - delegationFee
+      - startTimestamp
+      - endTimestamp
+      - estimatedGrossReward
+      - estimatedNetReward
+      - delegationStatus
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    L1ValidatorManagerDetails:
+      type: object
+      properties:
+        blockchainId:
+          type: string
+        contractAddress:
+          type: string
+      required:
+      - blockchainId
+      - contractAddress
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    ActiveValidatorDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        nodeId:
+          type: string
+        subnetId:
+          type: string
+        amountStaked:
+          type: string
+        delegationFee:
+          type: string
+          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations.
+        startTimestamp:
+          type: number
+        endTimestamp:
+          type: number
+        blsCredentials:
+          description: Present for AddPermissionlessValidatorTx
+          allOf:
+          - $ref: '#/components/schemas/BlsCredentials'
+        stakePercentage:
+          type: number
+          description: The percentage of this validator's stake amount to the total active stake.
+        delegatorCount:
+          type: number
+          description: The number of delegators linked to the validator.
+        amountDelegated:
+          type: string
+          description: The total amount in nAVAX delegated to the validator.
+        uptimePerformance:
+          type: number
+          description: The validator's uptime percentage, as observed by our internal node and measured over time.
+        avalancheGoVersion:
+          type: string
+        delegationCapacity:
+          type: string
+          description: The amount of stake in nAVAX that can be delegated to this validator.
+        potentialRewards:
+          description: Estimated rewards for the validator if the validation is successful.
+          allOf:
+          - $ref: '#/components/schemas/Rewards'
+        validationStatus:
+          type: string
+          enum:
+          - active
+        validatorHealth:
+          $ref: '#/components/schemas/ValidatorHealthDetails'
+        geolocation:
+          nullable: true
+          description: The geographical location of the validator node, if available.
+          allOf:
+          - $ref: '#/components/schemas/Geolocation'
+      required:
+      - txHash
+      - nodeId
+      - subnetId
+      - amountStaked
+      - startTimestamp
+      - endTimestamp
+      - stakePercentage
+      - delegatorCount
+      - uptimePerformance
+      - potentialRewards
+      - validationStatus
+      - validatorHealth
+      - geolocation
+    ListDelegatorDetailsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        delegators:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/CompletedDelegatorDetails'
+            - $ref: '#/components/schemas/ActiveDelegatorDetails'
+            - $ref: '#/components/schemas/PendingDelegatorDetails'
+            discriminator:
+              propertyName: delegationStatus
+              mapping:
+                active: '#/components/schemas/ActiveDelegatorDetails'
+                pending: '#/components/schemas/PendingDelegatorDetails'
+                completed: '#/components/schemas/CompletedDelegatorDetails'
+          description: The list of Delegator Details.
+      required:
+      - delegators
+    ValidatorHealthDetails:
+      type: object
+      properties:
+        reachabilityPercent:
+          type: number
+          description: Percent of requests responded to in last polling.
+        benchedPChainRequestsPercent:
+          type: number
+          description: Percent of requests benched on the P-Chain in last polling.
+        benchedXChainRequestsPercent:
+          type: number
+          description: Percentage of requests benched on the X-Chain in last polling.
+        benchedCChainRequestsPercent:
+          type: number
+          description: Percentage of requests benched on the C-Chain in last polling.
+      required:
+      - reachabilityPercent
+      - benchedPChainRequestsPercent
+      - benchedXChainRequestsPercent
+      - benchedCChainRequestsPercent
+    RemovedValidatorDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        nodeId:
+          type: string
+        subnetId:
+          type: string
+        amountStaked:
+          type: string
+        delegationFee:
+          type: string
+          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations.
+        startTimestamp:
+          type: number
+        endTimestamp:
+          type: number
+        blsCredentials:
+          description: Present for AddPermissionlessValidatorTx
+          allOf:
+          - $ref: '#/components/schemas/BlsCredentials'
+        removeTxHash:
+          type: string
+          description: The transaction hash that removed the permissioned subnet validator.
+        removeTimestamp:
+          type: number
+          description: The timestamp of the transaction that removed the permissioned subnet validator.
+        validationStatus:
+          type: string
+          enum:
+          - removed
+      required:
+      - txHash
+      - nodeId
+      - subnetId
+      - amountStaked
+      - startTimestamp
+      - endTimestamp
+      - removeTxHash
+      - removeTimestamp
+      - validationStatus
+    ListBlockchainsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        blockchains:
+          type: array
+          items:
+            $ref: '#/components/schemas/Blockchain'
+      required:
+      - blockchains
+    PrimaryNetworkAssetType:
+      type: string
+      description: Type of asset like SECP256K1 or NFT.
+      enum:
+      - secp256k1
+      - nft
+    DelegationStatusType:
+      type: string
+      enum:
+      - completed
+      - active
+      - pending
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    Subnet:
+      type: object
+      properties:
+        createBlockTimestamp:
+          type: number
+        createBlockIndex:
+          type: string
+        subnetId:
+          type: string
+        ownerAddresses:
+          deprecated: true
+          description: This field is deprecated. Use subnetOwnershipInfo instead.
+          type: array
+          items:
+            type: string
+        threshold:
+          type: number
+          deprecated: true
+          description: This field is deprecated. Use subnetOwnershipInfo instead.
+        locktime:
+          type: number
+          deprecated: true
+          description: This field is deprecated. Use subnetOwnershipInfo instead.
+        subnetOwnershipInfo:
+          description: Latest subnet owner details for this Subnet.
+          allOf:
+          - $ref: '#/components/schemas/SubnetOwnershipInfo'
+        isL1:
+          type: boolean
+          description: Whether the subnet is an L1 or not.
+        l1ConversionTransactionHash:
+          type: string
+          description: Transaction hash of ConvertSubnetToL1Tx which converted this Subnet to L1.
+        l1ValidatorManagerDetails:
+          description: L1 validator manager details.
+          allOf:
+          - $ref: '#/components/schemas/L1ValidatorManagerDetails'
+        blockchains:
+          type: array
+          items:
+            $ref: '#/components/schemas/Blockchain'
+      required:
+      - createBlockTimestamp
+      - createBlockIndex
+      - subnetId
+      - ownerAddresses
+      - threshold
+      - locktime
+      - subnetOwnershipInfo
+      - isL1
+      - blockchains
+    Geolocation:
+      type: object
+      properties:
+        city:
+          type: string
+          description: The name of the validator node.
+        country:
+          type: string
+          description: The city of the validator node.
+        countryCode:
+          type: string
+          description: The country code of the validator node.
+        latitude:
+          type: number
+          description: The latitude of the validator node.
+        longitude:
+          type: number
+          description: The longitude of the validator node.
+      required:
+      - city
+      - country
+      - countryCode
+      - latitude
+      - longitude
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    PendingValidatorDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        nodeId:
+          type: string
+        subnetId:
+          type: string
+        amountStaked:
+          type: string
+        delegationFee:
+          type: string
+          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations.
+        startTimestamp:
+          type: number
+        endTimestamp:
+          type: number
+        blsCredentials:
+          description: Present for AddPermissionlessValidatorTx
+          allOf:
+          - $ref: '#/components/schemas/BlsCredentials'
+        validationStatus:
+          type: string
+          enum:
+          - pending
+      required:
+      - txHash
+      - nodeId
+      - subnetId
+      - amountStaked
+      - startTimestamp
+      - endTimestamp
+      - validationStatus
+    SubnetOwnershipInfo:
+      type: object
+      properties:
+        locktime:
+          type: number
+          description: Locktime in seconds after which Subnet owners can control this Subnet.
+          examples:
+          - 0
+        threshold:
+          type: number
+          description: Minimum number of signatures required to sign the Subnet update transactions.
+          examples:
+          - 1
+        addresses:
+          description: Addresses that are eligible to sign the Subnet update transactions.
+          examples:
+          - - avax1qm2a25eytsrj235hxg6jc0mwk99tss64eqevsw
+          type: array
+          items:
+            type: string
+      required:
+      - locktime
+      - threshold
+      - addresses
+    XChainId:
+      type: string
+      enum:
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - x-chain
+    GetNetworkDetailsResponse:
+      type: object
+      properties:
+        validatorDetails:
+          $ref: '#/components/schemas/ValidatorsDetails'
+        delegatorDetails:
+          $ref: '#/components/schemas/DelegatorsDetails'
+      required:
+      - validatorDetails
+      - delegatorDetails
+    XChainAssetDetails:
+      type: object
+      properties:
+        assetId:
+          type: string
+          description: Unique ID for an asset.
+          examples:
+          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
+        name:
+          type: string
+          description: Name of this asset.
+          examples:
+          - Avalanche
+        symbol:
+          type: string
+          description: Symbol for this asset (max 4 characters).
+          examples:
+          - AVAX
+        denomination:
+          type: number
+          description: Denomination of this asset to represent fungibility.
+          examples:
+          - 9
+        type:
+          examples:
+          - secp256k1
+          $ref: '#/components/schemas/PrimaryNetworkAssetType'
+        createdAtTimestamp:
+          type: number
+          description: Timestamp in seconds this asset was created on.
+          examples:
+          - 1675444720
+        cap:
+          examples:
+          - fixed
+          $ref: '#/components/schemas/PrimaryNetworkAssetCap'
+      required:
+      - assetId
+      - name
+      - symbol
+      - denomination
+      - type
+      - createdAtTimestamp
+      - cap
+    ActiveDelegatorDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        nodeId:
+          type: string
+        rewardAddresses:
+          type: array
+          items:
+            type: string
+        amountDelegated:
+          type: string
+        delegationFee:
+          type: string
+        startTimestamp:
+          type: number
+        endTimestamp:
+          type: number
+        estimatedGrossReward:
+          type: string
+        estimatedNetReward:
+          type: string
+        delegationStatus:
+          type: string
+          enum:
+          - active
+      required:
+      - txHash
+      - nodeId
+      - rewardAddresses
+      - amountDelegated
+      - delegationFee
+      - startTimestamp
+      - endTimestamp
+      - estimatedGrossReward
+      - estimatedNetReward
+      - delegationStatus
+    Rewards:
+      type: object
+      properties:
+        validationRewardAmount:
+          type: string
+        delegationRewardAmount:
+          type: string
+        rewardAddresses:
+          type: array
+          items:
+            type: string
+        rewardTxHash:
+          type: string
+      required:
+      - validationRewardAmount
+      - delegationRewardAmount
+    ListL1ValidatorsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        validators:
+          description: The list of L1 validations for the given Subnet ID, NodeId or validationId
+          type: array
+          items:
+            $ref: '#/components/schemas/L1ValidatorDetailsFull'
+        blockHeight:
+          type: string
+          description: Block height at which the L1 validator's remaining balance is calculated
+      required:
+      - validators
+      - blockHeight
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    BlockchainIds:
+      type: string
+      enum:
+      - 11111111111111111111111111111111LpoYY
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
+      - yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-glacier-api-key
+      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 120000
+    exponent: 1.5
+  statusCodes:
+  - 5XX
+  retryConnectionErrors: true
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
+x-execution-weight-values:
+  free: 1
+  large: 50
+  medium: 20
+  none: 0
+  small: 10
+  xl: 100
+  xxl: 200
+x-rpc-method-execution-weights:
+  eth_accounts: free
+  eth_blockNumber: small
+  eth_call: small
+  eth_coinbase: small
+  eth_chainId: free
+  eth_gasPrice: small
+  eth_getBalance: small
+  eth_getBlockByHash: small
+  eth_getBlockByNumber: small
+  eth_getBlockTransactionCountByNumber: medium
+  eth_getCode: medium
+  eth_getLogs: xxl
+  eth_getStorageAt: medium
+  eth_getTransactionByBlockNumberAndIndex: medium
+  eth_getTransactionByHash: small
+  eth_getTransactionCount: small
+  eth_getTransactionReceipt: small
+  eth_signTransaction: medium
+  eth_sendTransaction: medium
+  eth_sign: medium
+  eth_sendRawTransaction: small
+  eth_syncing: free
+  net_listening: free
+  net_peerCount: medium
+  net_version: free
+  web3_clientVersion: small
+  web3_sha3: small
+  eth_newPendingTransactionFilter: medium
+  eth_maxPriorityFeePerGas: small
+  eth_baseFee: small
+  rpc_modules: free
+  eth_getChainConfig: small
+  eth_feeConfig: small
+  eth_getActivePrecompilesAt: small
+x-speakeasy-webhooks:
+  security:
+    type: signature
+    headerName: x-signature
+    signatureTextEncoding: base64
+    algorithm: hmac-sha256

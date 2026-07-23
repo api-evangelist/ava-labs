@@ -1,0 +1,23 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/ava-labs-data-api-openapi.yml
+format: custom-json
+envelope:
+  content_type: application/json
+  fields:
+    statusCode: HTTP status code of the response (number)
+    error: Short error type label (e.g. "Bad Request")
+    message: Human-readable reason; string or array of strings
+  required: [message, statusCode, error]
+  note: >-
+    Not RFC 9457 problem+json. Errors use a flat {statusCode,error,message} JSON envelope,
+    consistent across the Data API and Metrics API.
+problems:
+- {status: 400, schema: BadRequest, title: Bad Request, remediation: Client passed invalid or malformed parameters; inspect message.}
+- {status: 401, schema: Unauthorized, title: Unauthorized, remediation: Missing/invalid credentials; supply a valid x-glacier-api-key header.}
+- {status: 403, schema: Forbidden, title: Forbidden, remediation: Valid credentials but insufficient privilege for the action.}
+- {status: 404, schema: NotFound, title: Not Found, remediation: Mistyped URL or the resource was moved/deleted or does not exist.}
+- {status: 429, schema: TooManyRequests, title: Too Many Requests, remediation: Rate limit hit; back off or use an API key for higher limits.}
+- {status: 500, schema: InternalServerError, title: Internal Server Error, remediation: Uncaught server-side error; retry, contact support if persistent.}
+- {status: 502, schema: BadGateway, title: Bad Gateway, remediation: Invalid upstream response at the gateway; retry.}
+- {status: 503, schema: ServiceUnavailable, title: Service Unavailable, remediation: Subnet node problem on certain routes; retry.}

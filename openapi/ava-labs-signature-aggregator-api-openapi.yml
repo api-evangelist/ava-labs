@@ -1,0 +1,493 @@
+openapi: 3.1.0
+info:
+  title: Data AVAX Supply Signature Aggregator API
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  version: 1.0.0
+  contact: {}
+servers:
+- url: https://glacier-api.avax.network
+security:
+- apiKey: []
+- {}
+tags:
+- name: Signature Aggregator
+  description: Request signatures for a Warp message from Subnet validators
+paths:
+  /v1/signatureAggregator/{network}/aggregateSignatures:
+    post:
+      operationId: aggregateSignatures
+      x-speakeasy-name-override: aggregate
+      x-speakeasy-group: data.signatureAggregator
+      x-execution-weight: medium
+      summary: Aggregate Signatures
+      description: Aggregates Signatures for a Warp message from Subnet validators.
+      parameters:
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureAggregatorRequest'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureAggregationResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Signature Aggregator
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.signatureAggregator.aggregate({\n    signatureAggregatorRequest: {\n      message: \"000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000003cc0000000000059f3be606497285d0ffbb5ac9ba24aa60346a9b1812479ed66cb329f394a4b1c7000003a200000000000100000014253b2784c75e510dd0ff1da844684a1ac0aa5fcf00000380000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000001150000000000000000000000008578ae7723751446b196bd5124e1bf57b40eb7bc7fc93d85c6d62c5b2ac0b519c87010ea5294012d1e407030d6acd0021cac10d50000000000000000000000009660ed66aef60dfba5467afe865f612edbfb5c710000000000000000000000000000000000000000000000000000000000014c080000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000011a00000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011a20000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011b50000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011e80000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011e90000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000001c07f66981b45056e5024eb6d51f9f30aa0d28fd00000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000000000000000000000\",\n      justification: \"0001abcdabcfff\",\n      signingSubnetId: \"7WtoAMPhrmh5KosDUsFL9yTcvw7YSxiKHPpdfs4JsgW47oZT5\",\n      quorumPercentage: 50,\n      quorumPercentageBuffer: 50,\n      pChainHeight: 1155,\n    },\n  });\n\n  console.log(result);\n}\n\nrun();"
+  /v1/signatureAggregator/{network}/aggregateSignatures/{txHash}:
+    get:
+      operationId: getAggregatedSignatures
+      x-speakeasy-name-override: get
+      x-speakeasy-group: data.signatureAggregator
+      x-execution-weight: medium
+      summary: Get Aggregated Signatures
+      description: Get Aggregated Signatures for a P-Chain L1 related Warp Message.
+      parameters:
+      - name: network
+        required: true
+        in: path
+        description: Either mainnet or testnet/fuji.
+        example: mainnet
+        schema:
+          $ref: '#/components/schemas/Network'
+      - name: txHash
+        required: true
+        in: path
+        description: A primary network (P or X chain) transaction hash.
+        example: 3P91K6nuDFvDodcRuJTsgdf9SvYe5pMiKk38HppsoeAiEztCP
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureAggregationResponse'
+        '400':
+          description: "Bad requests generally mean the client has passed invalid \n    or malformed parameters. Error messages in the response could help in \n    evaluating the error."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: "When a client attempts to access resources that require \n    authorization credentials but the client lacks proper authentication \n    in the request, the server responds with 401."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: "When a client attempts to access resources with valid\n    credentials but doesn't have the privilege to perform that action, \n    the server responds with 403."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: "The error is mostly returned when the client requests\n    with either mistyped URL, or the passed resource is moved or deleted, \n    or the resource doesn't exist."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '429':
+          description: "This error is returned when the client has sent too many,\n    and has hit the rate limit."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequests'
+        '500':
+          description: "The error is a generic server side error that is \n    returned for any uncaught and unexpected issues on the server side. \n    This should be very rare, and you may reach out to us if the problem \n    persists for a longer duration."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '502':
+          description: "This is an internal error indicating invalid response \n      received by the client-facing proxy or gateway from the upstream server."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadGateway'
+        '503':
+          description: "The error is returned for certain routes on a particular\n    Subnet. This indicates an internal problem with our Subnet node, and may \n    not necessarily mean the Subnet is down or affected."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceUnavailable'
+      tags:
+      - Signature Aggregator
+      x-codeSamples:
+      - lang: javascript
+        label: JavaScript
+        source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.signatureAggregator.get({\n    txHash: \"3P91K6nuDFvDodcRuJTsgdf9SvYe5pMiKk38HppsoeAiEztCP\",\n  });\n\n  console.log(result);\n}\n\nrun();"
+components:
+  schemas:
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    SignatureAggregationResponse:
+      type: object
+      properties:
+        signedMessage:
+          type: string
+          examples:
+          - 0000000000059f3be606497285d0ffbb5ac9ba24aa60346a9b1812479ed66cb329f394a4b1c7000003a200000000000100000014253b2784c75e510dd0ff1da844684a1ac0aa5fcf00000380000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000001150000000000000000000000008578ae7723751446b196bd5124e1bf57b40eb7bc7fc93d85c6d62c5b2ac0b519c87010ea5294012d1e407030d6acd0021cac10d50000000000000000000000009660ed66aef60dfba5467afe865f612edbfb5c710000000000000000000000000000000000000000000000000000000000014c080000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000011a00000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011a20000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011b50000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011e80000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011e90000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000001c07f66981b45056e5024eb6d51f9f30aa0d28fd00000000000000000000000000000000000000000000000000038d7ea4c68000000000000000000103807355b21dd497ecc9f560dfbdefc64aeec72b226c70d3793273db01d1a0c0bfd74d095d6a9e0b4db2dc652245fd28ac032c0f1f6b7f761b912ad58c93cde2e337bef4a4e8175af69f226520cd1baedd2dd7db79bb5752cb50a465531e46e8af
+      required:
+      - signedMessage
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    SignatureAggregatorRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Either Message or Justification must be provided. Hex-encoded message, optionally prefixed with "0x"
+          examples:
+          - 000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000003cc0000000000059f3be606497285d0ffbb5ac9ba24aa60346a9b1812479ed66cb329f394a4b1c7000003a200000000000100000014253b2784c75e510dd0ff1da844684a1ac0aa5fcf00000380000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000001150000000000000000000000008578ae7723751446b196bd5124e1bf57b40eb7bc7fc93d85c6d62c5b2ac0b519c87010ea5294012d1e407030d6acd0021cac10d50000000000000000000000009660ed66aef60dfba5467afe865f612edbfb5c710000000000000000000000000000000000000000000000000000000000014c080000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000011a00000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011a20000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011b50000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011e80000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000011e90000000000000000000000007ec2afb0a06a73666adc24983ebdbf2b6f1d708200000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000001c07f66981b45056e5024eb6d51f9f30aa0d28fd00000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000000000000000000000
+        justification:
+          type: string
+          description: Either Justification or Message must be provided. Hex-encoded justification, optionally prefixed with "0x"
+          examples:
+          - 0001abcdabcfff
+        signingSubnetId:
+          type: string
+          description: Optional hex or cb58 encoded signing subnet ID. If omitted will default to the subnetID of the source blockchain.
+          examples:
+          - 7WtoAMPhrmh5KosDUsFL9yTcvw7YSxiKHPpdfs4JsgW47oZT5
+        quorumPercentage:
+          type: number
+          description: Optional. Integer from 0 to 100 representing the percentage of the weight of the signing Subnet that is required to sign the message. Defaults to 67 if omitted.
+          examples:
+          - 50
+        quorumPercentageBuffer:
+          type: number
+          description: "Optional. Integer from 0 to 100 representing the additional percentage of weight of the signing Subnet that will be attempted to add to the signature. QuorumPercentage+QuorumPercentageBuffer must be less than or equal to 100. Obtaining signatures from more validators can take a longer time, but signatures representing\ta large percentage of the Subnet weight are less prone to become invalid due to validator weight changes. Defaults to 0 if omitted."
+          examples:
+          - 50
+        pChainHeight:
+          type: number
+          description: Optional P-Chain height for validator set selection. If 0 (default), validators at proposed height will be used. If non-zero, validators at the specified P-Chain height will be used for signature aggregation.
+          examples:
+          - 1155
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-glacier-api-key
+      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 120000
+    exponent: 1.5
+  statusCodes:
+  - 5XX
+  retryConnectionErrors: true
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
+x-execution-weight-values:
+  free: 1
+  large: 50
+  medium: 20
+  none: 0
+  small: 10
+  xl: 100
+  xxl: 200
+x-rpc-method-execution-weights:
+  eth_accounts: free
+  eth_blockNumber: small
+  eth_call: small
+  eth_coinbase: small
+  eth_chainId: free
+  eth_gasPrice: small
+  eth_getBalance: small
+  eth_getBlockByHash: small
+  eth_getBlockByNumber: small
+  eth_getBlockTransactionCountByNumber: medium
+  eth_getCode: medium
+  eth_getLogs: xxl
+  eth_getStorageAt: medium
+  eth_getTransactionByBlockNumberAndIndex: medium
+  eth_getTransactionByHash: small
+  eth_getTransactionCount: small
+  eth_getTransactionReceipt: small
+  eth_signTransaction: medium
+  eth_sendTransaction: medium
+  eth_sign: medium
+  eth_sendRawTransaction: small
+  eth_syncing: free
+  net_listening: free
+  net_peerCount: medium
+  net_version: free
+  web3_clientVersion: small
+  web3_sha3: small
+  eth_newPendingTransactionFilter: medium
+  eth_maxPriorityFeePerGas: small
+  eth_baseFee: small
+  rpc_modules: free
+  eth_getChainConfig: small
+  eth_feeConfig: small
+  eth_getActivePrecompilesAt: small
+x-speakeasy-webhooks:
+  security:
+    type: signature
+    headerName: x-signature
+    signatureTextEncoding: base64
+    algorithm: hmac-sha256

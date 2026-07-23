@@ -1,0 +1,37 @@
+generated: '2026-07-18'
+method: searched
+source: https://developers.avacloud.io/changelog
+scheme: date-based
+current_version: v1
+url: https://developers.avacloud.io/changelog
+entries:
+- date: '2025-01-08'
+  title: Signature Aggregator Endpoint Update
+  additions: true
+  breaking: false
+  highlights: Added a network parameter to select between mainnet and testnet (Fuji) for signature aggregation.
+- date: '2025-01-08'
+  title: 'New API Endpoints: Aggregated Transactions & Blocks'
+  additions: true
+  breaking: false
+  highlights: Two endpoints returning aggregated transaction and block data across all supported L1 chains and the Avalanche C-Chain, with query/filter/sort.
+- date: '2024-12-20'
+  title: Token Reputation Analysis
+  additions: true
+  breaking: false
+  highlights: Added tokenReputation field (Benign/Malicious/null) to ERC-20 balance responses for security risk identification.
+- date: '2024-11-25'
+  title: Avalanche9000 (Etna Upgrade)
+  additions: true
+  breaking: false
+  highlights: L1 validator listing endpoint, l1ValidationID support on transaction endpoints, and enhanced P-Chain transaction/block properties.
+- date: '2024-10-25'
+  title: Listing Networks by Address
+  additions: true
+  breaking: false
+  highlights: New endpoint returning all networks on which an EVM address has had activity.
+- date: '2024-09-12'
+  title: List Teleporter Messages by Address
+  additions: true
+  breaking: false
+  highlights: Endpoint to retrieve teleporter messages associated with an address, ordered by timestamp descending.

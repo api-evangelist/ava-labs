@@ -1,0 +1,2869 @@
+openapi: 3.1.0
+info:
+  title: Data AVAX Supply platform API
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  version: 1.0.0
+  contact: {}
+servers:
+- url: https://glacier-api.avax.network
+security:
+- apiKey: []
+- {}
+tags:
+- name: platform
+paths:
+  /P#platform.getHeight:
+    post:
+      summary: platform.getHeight
+      description: GetHeight returns the height of the last accepted block
+      operationId: platform_getHeight
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getHeight
+                  default: platform.getHeight
+                params:
+                  type: object
+                  example: {}
+                  default: {}
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getHeight
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getProposedHeight:
+    post:
+      summary: platform.getProposedHeight
+      description: GetProposedHeight returns the current ProposerVM height
+      operationId: platform_getProposedHeight
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getProposedHeight
+                  default: platform.getProposedHeight
+                params:
+                  type: object
+                  example: {}
+                  default: {}
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getProposedHeight
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getBalance:
+    post:
+      summary: platform.getBalance
+      description: GetBalance gets the balance of an address
+      operationId: platform_getBalance
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getBalance
+                  default: platform.getBalance
+                params:
+                  $ref: '#/components/schemas/GetBalanceRequest'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getBalance
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetBalanceResponse'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getUTXOs:
+    post:
+      summary: platform.getUTXOs
+      description: GetUTXOs returns the UTXOs controlled by the given addresses
+      operationId: platform_getUTXOs
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getUTXOs
+                  default: platform.getUTXOs
+                params:
+                  type: object
+                  properties:
+                    addresses:
+                      type: array
+                      items:
+                        type: string
+                      description: Addresses to get UTXOs for
+                    limit:
+                      type: integer
+                      description: Max number of UTXOs to return
+                    startIndex:
+                      type: object
+                      description: Starting index for pagination
+                    sourceChain:
+                      type: string
+                      description: Chain to get UTXOs from
+                    encoding:
+                      type: string
+                      enum:
+                      - hex
+                      - json
+                      description: Encoding format
+                  required:
+                  - addresses
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getUTXOs
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    properties:
+                      numFetched:
+                        type: integer
+                        description: Number of UTXOs fetched
+                      utxos:
+                        type: array
+                        items:
+                          type: string
+                        description: UTXOs
+                      endIndex:
+                        type: object
+                        description: End index for pagination
+                      encoding:
+                        type: string
+                        description: Encoding format used
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getSubnet:
+    post:
+      summary: platform.getSubnet
+      description: Calls the platform.getSubnet method
+      operationId: platform_getSubnet
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getSubnet
+                  default: platform.getSubnet
+                params:
+                  $ref: '#/components/schemas/GetSubnetArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getSubnet
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetSubnetResponse'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getSubnets:
+    post:
+      summary: platform.getSubnets
+      description: Returns information about the specified Subnets. The response will include the primary network.
+      operationId: platform_getSubnets
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getSubnets
+                  default: platform.getSubnets
+                params:
+                  $ref: '#/components/schemas/GetSubnetsArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getSubnets
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetSubnetsResponse'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getStakingAssetID:
+    post:
+      summary: platform.getStakingAssetID
+      description: GetStakingAssetID returns the assetID of the token used to stake on the provided subnet
+      operationId: platform_getStakingAssetID
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getStakingAssetID
+                  default: platform.getStakingAssetID
+                params:
+                  $ref: '#/components/schemas/GetStakingAssetIDArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getStakingAssetID
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetStakingAssetIDResponse'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getCurrentValidators:
+    post:
+      summary: platform.getCurrentValidators
+      description: GetCurrentValidators returns the current validators. If a single nodeID is provided, full delegators information is also returned. Otherwise only delegators' number and total weight is returned.
+      operationId: platform_getCurrentValidators
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getCurrentValidators
+                  default: platform.getCurrentValidators
+                params:
+                  $ref: '#/components/schemas/GetCurrentValidatorsArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getCurrentValidators
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetCurrentValidatorsReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getL1Validator:
+    post:
+      summary: platform.getL1Validator
+      description: GetL1Validator returns the L1 validator if it exists
+      operationId: platform_getL1Validator
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getL1Validator
+                  default: platform.getL1Validator
+                params:
+                  $ref: '#/components/schemas/GetL1ValidatorArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getL1Validator
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetL1ValidatorReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getCurrentSupply:
+    post:
+      summary: platform.getCurrentSupply
+      description: GetCurrentSupply returns an upper bound on the supply of AVAX in the system
+      operationId: platform_getCurrentSupply
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getCurrentSupply
+                  default: platform.getCurrentSupply
+                params:
+                  $ref: '#/components/schemas/GetCurrentSupplyArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getCurrentSupply
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetCurrentSupplyReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.sampleValidators:
+    post:
+      summary: platform.sampleValidators
+      description: SampleValidators returns a sampling of the list of current validators
+      operationId: platform_sampleValidators
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.sampleValidators
+                  default: platform.sampleValidators
+                params:
+                  $ref: '#/components/schemas/SampleValidatorsArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.sampleValidators
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/SampleValidatorsReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getBlockchainStatus:
+    post:
+      summary: platform.getBlockchainStatus
+      description: Gets the status of a blockchain by its ID.
+      operationId: platform_getBlockchainStatus
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getBlockchainStatus
+                  default: platform.getBlockchainStatus
+                params:
+                  $ref: '#/components/schemas/GetBlockchainStatusArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getBlockchainStatus
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetBlockchainStatusReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.validatedBy:
+    post:
+      summary: platform.validatedBy
+      description: Returns the ID of the Subnet that validates the specified blockchain
+      operationId: platform_validatedBy
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.validatedBy
+                  default: platform.validatedBy
+                params:
+                  $ref: '#/components/schemas/ValidatedByArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.validatedBy
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/ValidatedByResponse'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.validates:
+    post:
+      summary: platform.validates
+      description: Returns the IDs of the blockchains validated by the specified Subnet
+      operationId: platform_validates
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.validates
+                  default: platform.validates
+                params:
+                  $ref: '#/components/schemas/ValidatesArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.validates
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/ValidatesResponse'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getBlockchains:
+    post:
+      summary: platform.getBlockchains
+      description: GetBlockchains returns all of the blockchains that exist
+      operationId: platform_getBlockchains
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getBlockchains
+                  default: platform.getBlockchains
+                params:
+                  type: object
+                  example: {}
+                  default: {}
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getBlockchains
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetBlockchainsResponse'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.issueTx:
+    post:
+      summary: platform.issueTx
+      description: Calls the platform.issueTx method
+      operationId: platform_issueTx
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.issueTx
+                  default: platform.issueTx
+                params:
+                  type: object
+                  properties:
+                    tx:
+                      type: string
+                      description: Serialized transaction
+                    encoding:
+                      type: string
+                      enum:
+                      - hex
+                      - json
+                      description: Encoding format
+                  required:
+                  - tx
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.issueTx
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getTx:
+    post:
+      summary: platform.getTx
+      description: Calls the platform.getTx method
+      operationId: platform_getTx
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getTx
+                  default: platform.getTx
+                params:
+                  type: object
+                  properties:
+                    txID:
+                      type: string
+                      description: Transaction ID
+                    encoding:
+                      type: string
+                      enum:
+                      - hex
+                      - json
+                      description: Encoding format
+                  required:
+                  - txID
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getTx
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getTxStatus:
+    post:
+      summary: platform.getTxStatus
+      description: GetTxStatus gets a tx's status
+      operationId: platform_getTxStatus
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getTxStatus
+                  default: platform.getTxStatus
+                params:
+                  $ref: '#/components/schemas/GetTxStatusArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getTxStatus
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetTxStatusResponse'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getStake:
+    post:
+      summary: platform.getStake
+      description: Returns the amount of nAVAX that the specified addresses have cumulatively staked on the Primary Network. This method assumes that each stake output has only one owner. This method assumes only AVAX can be staked. This method only concerns itself with the Primary Network, not Subnets.
+      operationId: platform_getStake
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getStake
+                  default: platform.getStake
+                params:
+                  $ref: '#/components/schemas/GetStakeArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getStake
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetStakeReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getMinStake:
+    post:
+      summary: platform.getMinStake
+      description: GetMinStake returns the minimum staking amount in nAVAX.
+      operationId: platform_getMinStake
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getMinStake
+                  default: platform.getMinStake
+                params:
+                  $ref: '#/components/schemas/GetMinStakeArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getMinStake
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetMinStakeReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getTotalStake:
+    post:
+      summary: platform.getTotalStake
+      description: GetTotalStake returns the total amount staked on the Primary Network
+      operationId: platform_getTotalStake
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getTotalStake
+                  default: platform.getTotalStake
+                params:
+                  $ref: '#/components/schemas/GetTotalStakeArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getTotalStake
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetTotalStakeReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getRewardUTXOs:
+    post:
+      summary: platform.getRewardUTXOs
+      description: GetRewardUTXOs returns the UTXOs that were rewarded after the provided transaction's staking period ended.
+      operationId: platform_getRewardUTXOs
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getRewardUTXOs
+                  default: platform.getRewardUTXOs
+                params:
+                  type: object
+                  properties:
+                    txID:
+                      type: string
+                      description: Transaction ID
+                    encoding:
+                      type: string
+                      enum:
+                      - hex
+                      - json
+                      description: Encoding format
+                  required:
+                  - txID
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getRewardUTXOs
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetRewardUTXOsReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getTimestamp:
+    post:
+      summary: platform.getTimestamp
+      description: GetTimestamp returns the current timestamp on chain.
+      operationId: platform_getTimestamp
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getTimestamp
+                  default: platform.getTimestamp
+                params:
+                  type: object
+                  example: {}
+                  default: {}
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getTimestamp
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetTimestampReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getValidatorsAt:
+    post:
+      summary: platform.getValidatorsAt
+      description: GetValidatorsAt returns the weights of the validator set of a provided subnet at the specified height.
+      operationId: platform_getValidatorsAt
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getValidatorsAt
+                  default: platform.getValidatorsAt
+                params:
+                  $ref: '#/components/schemas/GetValidatorsAtArgs'
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getValidatorsAt
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetValidatorsAtReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getBlock:
+    post:
+      summary: platform.getBlock
+      description: Calls the platform.getBlock method
+      operationId: platform_getBlock
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getBlock
+                  default: platform.getBlock
+                params:
+                  type: object
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getBlock
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    properties:
+                      block:
+                        type: string
+                        description: Encoded block data
+                      encoding:
+                        type: string
+                        description: Encoding format used
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getBlockByHeight:
+    post:
+      summary: platform.getBlockByHeight
+      description: GetBlockByHeight returns the block at the given height.
+      operationId: platform_getBlockByHeight
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getBlockByHeight
+                  default: platform.getBlockByHeight
+                params:
+                  type: object
+                  properties:
+                    height:
+                      type: integer
+                      description: Block height
+                    encoding:
+                      type: string
+                      enum:
+                      - hex
+                      - json
+                      description: Encoding format
+                  required:
+                  - height
+                  description: Method parameters
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getBlockByHeight
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    properties:
+                      block:
+                        type: string
+                        description: Encoded block data
+                      encoding:
+                        type: string
+                        description: Encoding format used
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getFeeConfig:
+    post:
+      summary: platform.getFeeConfig
+      description: GetFeeConfig returns the dynamic fee config of the chain.
+      operationId: platform_getFeeConfig
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getFeeConfig
+                  default: platform.getFeeConfig
+                params:
+                  type: object
+                  example: {}
+                  default: {}
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getFeeConfig
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    description: Method result
+                    properties:
+                      maxGas:
+                        type: integer
+                        description: Maximum gas limit
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getFeeState:
+    post:
+      summary: platform.getFeeState
+      description: GetFeeState returns the current fee state of the chain.
+      operationId: platform_getFeeState
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getFeeState
+                  default: platform.getFeeState
+                params:
+                  type: object
+                  example: {}
+                  default: {}
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getFeeState
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetFeeStateReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getValidatorFeeConfig:
+    post:
+      summary: platform.getValidatorFeeConfig
+      description: GetValidatorFeeConfig returns the validator fee config of the chain.
+      operationId: platform_getValidatorFeeConfig
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getValidatorFeeConfig
+                  default: platform.getValidatorFeeConfig
+                params:
+                  type: object
+                  example: {}
+                  default: {}
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getValidatorFeeConfig
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    type: object
+                    description: Method result
+                    properties:
+                      minPrice:
+                        type: integer
+                        description: Minimum gas price
+                      maxPrice:
+                        type: integer
+                        description: Maximum gas price
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+  /P#platform.getValidatorFeeState:
+    post:
+      summary: platform.getValidatorFeeState
+      description: GetValidatorFeeState returns the current validator fee state of the chain.
+      operationId: platform_getValidatorFeeState
+      tags:
+      - platform
+      requestBody:
+        required: true
+        description: JSON-RPC request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                  default: '2.0'
+                method:
+                  type: string
+                  example: platform.getValidatorFeeState
+                  default: platform.getValidatorFeeState
+                params:
+                  type: object
+                  example: {}
+                  default: {}
+                id:
+                  type: integer
+                  example: 1
+                  default: 1
+              required:
+              - jsonrpc
+              - method
+              - params
+              - id
+            examples:
+              default:
+                summary: Example request
+                value:
+                  jsonrpc: '2.0'
+                  method: platform.getValidatorFeeState
+                  params: {}
+                  id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                    example: '2.0'
+                  result:
+                    $ref: '#/components/schemas/GetValidatorFeeStateReply'
+                    description: Method result
+                  id:
+                    type: integer
+                    example: 1
+                required:
+                - jsonrpc
+                - result
+                - id
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONRPCError'
+components:
+  schemas:
+    GetBalanceResponse:
+      type: object
+      properties:
+        balance:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        unlocked:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        lockedStakeable:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        lockedNotStakeable:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        balances:
+          type: object
+          additionalProperties: true
+          description: Map of ids.ID to avajson.Uint64
+        unlockeds:
+          type: object
+          additionalProperties: true
+          description: Map of ids.ID to avajson.Uint64
+        lockedStakeables:
+          type: object
+          additionalProperties: true
+          description: Map of ids.ID to avajson.Uint64
+        lockedNotStakeables:
+          type: object
+          additionalProperties: true
+          description: Map of ids.ID to avajson.Uint64
+        utxoIDs:
+          type: array
+          items:
+            type: object
+            description: 'External type: avax.UTXOID'
+      required:
+      - balance
+      - unlocked
+      - lockedStakeable
+      - lockedNotStakeable
+      - balances
+      - unlockeds
+      - lockedStakeables
+      - lockedNotStakeables
+      - utxoIDs
+    GetTimestampReply:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+      required:
+      - timestamp
+    GetCurrentValidatorsArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        nodeIDs:
+          type: array
+          items:
+            type: string
+            description: Avalanche Node ID in cb58 format
+            example: NodeID-111111111111111111116DBWJs
+      required:
+      - subnetID
+      - nodeIDs
+    GetSubnetsArgs:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            description: Avalanche ID in cb58 format
+            example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - ids
+    GetTxStatusResponse:
+      type: object
+      properties:
+        status:
+          type: object
+          description: 'External type: status.Status'
+        reason:
+          type: string
+      required:
+      - status
+    GetStakeArgs:
+      type: object
+      properties:
+        validatorsOnly:
+          type: boolean
+        encoding:
+          type: string
+          enum:
+          - hex
+          - json
+          description: Encoding format
+          example: hex
+      required:
+      - validatorsOnly
+      - encoding
+    GetFeeStateReply:
+      type: object
+      properties:
+        price:
+          type: object
+          description: 'External type: gas.Price'
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+      required:
+      - price
+      - timestamp
+    GetCurrentSupplyArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetSubnetArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetBalanceRequest:
+      type: object
+      properties:
+        addresses:
+          type: array
+          items:
+            type: string
+      required:
+      - addresses
+    GetCurrentValidatorsReply:
+      type: object
+      properties:
+        validators:
+          type: array
+          items:
+            type: object
+            description: Validator information
+      required:
+      - validators
+    GetTotalStakeArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetL1ValidatorReply:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        height:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+      required:
+      - subnetID
+      - height
+    GetSubnetResponse:
+      type: object
+      properties:
+        isPermissioned:
+          type: boolean
+        controlKeys:
+          type: array
+          items:
+            type: string
+        threshold:
+          type: string
+          description: Unsigned 32-bit integer as string
+          example: '100000'
+        locktime:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        subnetTransformationTxID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        conversionID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        managerChainID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        managerAddress:
+          type: object
+          description: 'External type: types.JSONByteSlice'
+      required:
+      - isPermissioned
+      - controlKeys
+      - threshold
+      - locktime
+      - subnetTransformationTxID
+      - conversionID
+      - managerChainID
+      - managerAddress
+    GetStakingAssetIDResponse:
+      type: object
+      properties:
+        assetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - assetID
+    ValidatesResponse:
+      type: object
+      properties:
+        blockchainIDs:
+          type: array
+          items:
+            type: string
+            description: Avalanche ID in cb58 format
+            example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - blockchainIDs
+    JSONRPCError:
+      type: object
+      description: JSON-RPC 2.0 Error Response
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              description: Error code
+            message:
+              type: string
+              description: Error message
+            data:
+              type: object
+              description: Additional error data
+          required:
+          - code
+          - message
+        id:
+          type: integer
+          example: 1
+      required:
+      - jsonrpc
+      - error
+      - id
+    GetValidatorFeeStateReply:
+      type: object
+      properties:
+        excess:
+          type: object
+          description: 'External type: gas.Gas'
+        price:
+          type: object
+          description: 'External type: gas.Price'
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+      required:
+      - excess
+      - price
+      - timestamp
+    SampleValidatorsReply:
+      type: object
+      properties:
+        validators:
+          type: array
+          items:
+            type: string
+            description: Avalanche Node ID in cb58 format
+            example: NodeID-111111111111111111116DBWJs
+      required:
+      - validators
+    GetBlockchainsResponse:
+      type: object
+      properties:
+        blockchains:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIBlockchain'
+      required:
+      - blockchains
+    GetBlockchainStatusArgs:
+      type: object
+      properties:
+        blockchainID:
+          type: string
+      required:
+      - blockchainID
+    APISubnet:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        controlKeys:
+          type: array
+          items:
+            type: string
+        threshold:
+          type: string
+          description: Unsigned 32-bit integer as string
+          example: '100000'
+      required:
+      - id
+      - controlKeys
+      - threshold
+    GetBlockchainStatusReply:
+      type: object
+      properties:
+        status:
+          type: object
+          description: 'External type: status.BlockchainStatus'
+      required:
+      - status
+    GetMinStakeArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    SampleValidatorsArgs:
+      type: object
+      properties:
+        size:
+          type: object
+          description: 'External type: avajson.Uint16'
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - size
+      - subnetID
+    GetStakingAssetIDArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    ValidatedByArgs:
+      type: object
+      properties:
+        blockchainID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - blockchainID
+    GetValidatorsAtReply:
+      type: object
+      properties:
+        Validators:
+          type: object
+          additionalProperties: true
+          description: Map of ids.NodeID to *validators.GetValidatorOutput
+      required:
+      - Validators
+    GetTotalStakeReply:
+      type: object
+      properties:
+        stake:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        weight:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+      required:
+      - stake
+      - weight
+    GetMinStakeReply:
+      type: object
+      properties:
+        minValidatorStake:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        minDelegatorStake:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+      required:
+      - minValidatorStake
+      - minDelegatorStake
+    GetStakeReply:
+      type: object
+      properties:
+        staked:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        stakeds:
+          type: object
+          additionalProperties: true
+          description: Map of ids.ID to avajson.Uint64
+        stakedOutputs:
+          type: array
+          items:
+            type: string
+        encoding:
+          type: string
+          enum:
+          - hex
+          - json
+          description: Encoding format
+          example: hex
+      required:
+      - staked
+      - stakeds
+      - stakedOutputs
+      - encoding
+    GetTxStatusArgs:
+      type: object
+      properties:
+        txID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - txID
+    GetRewardUTXOsReply:
+      type: object
+      properties:
+        numFetched:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        utxos:
+          type: array
+          items:
+            type: string
+        encoding:
+          type: string
+          enum:
+          - hex
+          - json
+          description: Encoding format
+          example: hex
+      required:
+      - numFetched
+      - utxos
+      - encoding
+    APIBlockchain:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        name:
+          type: string
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        vmID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - id
+      - name
+      - subnetID
+      - vmID
+    GetL1ValidatorArgs:
+      type: object
+      properties:
+        validationID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - validationID
+    GetSubnetsResponse:
+      type: object
+      properties:
+        subnets:
+          type: array
+          items:
+            $ref: '#/components/schemas/APISubnet'
+      required:
+      - subnets
+    GetValidatorsAtArgs:
+      type: object
+      properties:
+        height:
+          type: object
+          description: 'External type: platformapi.Height'
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - height
+      - subnetID
+    ValidatedByResponse:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    ValidatesArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetCurrentSupplyReply:
+      type: object
+      properties:
+        supply:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        height:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+      required:
+      - supply
+      - height
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-glacier-api-key
+      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 120000
+    exponent: 1.5
+  statusCodes:
+  - 5XX
+  retryConnectionErrors: true
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
+x-execution-weight-values:
+  free: 1
+  large: 50
+  medium: 20
+  none: 0
+  small: 10
+  xl: 100
+  xxl: 200
+x-rpc-method-execution-weights:
+  eth_accounts: free
+  eth_blockNumber: small
+  eth_call: small
+  eth_coinbase: small
+  eth_chainId: free
+  eth_gasPrice: small
+  eth_getBalance: small
+  eth_getBlockByHash: small
+  eth_getBlockByNumber: small
+  eth_getBlockTransactionCountByNumber: medium
+  eth_getCode: medium
+  eth_getLogs: xxl
+  eth_getStorageAt: medium
+  eth_getTransactionByBlockNumberAndIndex: medium
+  eth_getTransactionByHash: small
+  eth_getTransactionCount: small
+  eth_getTransactionReceipt: small
+  eth_signTransaction: medium
+  eth_sendTransaction: medium
+  eth_sign: medium
+  eth_sendRawTransaction: small
+  eth_syncing: free
+  net_listening: free
+  net_peerCount: medium
+  net_version: free
+  web3_clientVersion: small
+  web3_sha3: small
+  eth_newPendingTransactionFilter: medium
+  eth_maxPriorityFeePerGas: small
+  eth_baseFee: small
+  rpc_modules: free
+  eth_getChainConfig: small
+  eth_feeConfig: small
+  eth_getActivePrecompilesAt: small
+x-speakeasy-webhooks:
+  security:
+    type: signature
+    headerName: x-signature
+    signatureTextEncoding: base64
+    algorithm: hmac-sha256

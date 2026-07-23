@@ -1,0 +1,49 @@
+generated: '2026-07-18'
+method: searched
+source: https://developers.avacloud.io/webhooks-api/overview, openapi/ava-labs-data-api-openapi.yml
+spec_type: Webhooks
+note: >-
+  Ava Labs / AvaCloud documents a Webhooks API but publishes no AsyncAPI document.
+  This captures the webhook event surface. Managed via the Data API host
+  (https://glacier-api.avax.network) under /v1/webhooks; requires x-glacier-api-key.
+delivery:
+  transport: HTTPS POST to a registered endpoint
+  payload_fields: [webhookId, eventType, messageId, event]
+  enrichment_params: [includeLogs, includeInternalTxs]
+security:
+  verification: shared secret + signature-based verification
+  note: Managed via generateOrRotateSharedSecret / getSharedSecret operations; secret used to verify payloads originate from AvaCloud.
+events:
+- type: address_activity
+  description: Triggered whenever specified addresses participate in a token or AVAX transaction (ERC-20/ERC-721/ERC-1155 transfers and internal transactions).
+management_operations:
+- operationId: createWebhook
+  method: POST
+  path: /v1/webhooks
+- operationId: listWebhooks
+  method: GET
+  path: /v1/webhooks
+- operationId: getWebhook
+  method: GET
+  path: /v1/webhooks/{id}
+- operationId: updateWebhook
+  method: PATCH
+  path: /v1/webhooks/{id}
+- operationId: deactivateWebhook
+  method: DELETE
+  path: /v1/webhooks/{id}
+- operationId: generateOrRotateSharedSecret
+  method: POST
+  path: '/v1/webhooks:generateOrRotateSharedSecret'
+- operationId: getSharedSecret
+  method: GET
+  path: '/v1/webhooks:getSharedSecret'
+- operationId: addAddressesToWebhook
+  method: PATCH
+  path: /v1/webhooks/{id}/addresses
+- operationId: removeAddressesFromWebhook
+  method: DELETE
+  path: /v1/webhooks/{id}/addresses
+- operationId: getAddressesFromWebhook
+  method: GET
+  path: /v1/webhooks/{id}/addresses
