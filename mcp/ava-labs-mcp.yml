@@ -2,18 +2,37 @@ generated: '2026-07-18'
 method: derived
 status: candidate
 source: openapi/ava-labs-data-api-openapi.yml
-note: >-
-  No official hosted Ava Labs / AvaCloud MCP server was found (no ava-labs/avalanche-mcp
-  repo, no @avalabs MCP package, not in the MCP registry as of this pass). Candidate tool
-  list derived from marquee Data API operations; not published by the provider.
+note: No official hosted Ava Labs / AvaCloud MCP server was found (no ava-labs/avalanche-mcp repo, no
+  @avalabs MCP package, not in the MCP registry as of this pass). Candidate tool list derived from marquee
+  Data API operations; not published by the provider.
 server:
   name: ava-labs-data-api
   transport: http
 tools:
-- {name: list_address_chains, description: List networks on which an address has had activity, source_operation: 'openapi/ava-labs-data-api-openapi.yml#listAddressChains'}
-- {name: get_tx_by_hash, description: Get a transaction by hash, source_operation: 'openapi/ava-labs-data-api-openapi.yml#getTxByHash'}
-- {name: list_tokens, description: List tokens on a chain, source_operation: 'openapi/ava-labs-data-api-openapi.yml#listTokens'}
-- {name: get_token_details, description: Get details for a token, source_operation: 'openapi/ava-labs-data-api-openapi.yml#getTokenDetails'}
-- {name: list_latest_transactions_all_chains, description: List latest transactions across all supported chains, source_operation: 'openapi/ava-labs-data-api-openapi.yml#listLatestTransactionsAllChains'}
-- {name: list_latest_blocks_all_chains, description: List latest blocks across all supported chains, source_operation: 'openapi/ava-labs-data-api-openapi.yml#listLatestBlocksAllChains'}
-- {name: create_webhook, description: Create a webhook subscription for address activity, source_operation: 'openapi/ava-labs-data-api-openapi.yml#createWebhook'}
+- name: list_address_chains
+  description: List networks on which an address has had activity
+  source_operation: openapi/ava-labs-data-api-openapi.yml#listAddressChains
+- name: get_tx_by_hash
+  description: Get a transaction by hash
+  source_operation: openapi/ava-labs-data-api-openapi.yml#getTxByHash
+- name: list_tokens
+  description: List tokens on a chain
+  source_operation: openapi/ava-labs-data-api-openapi.yml#listTokens
+- name: get_token_details
+  description: Get details for a token
+  source_operation: openapi/ava-labs-data-api-openapi.yml#getTokenDetails
+- name: list_latest_transactions_all_chains
+  description: List latest transactions across all supported chains
+  source_operation: openapi/ava-labs-data-api-openapi.yml#listLatestTransactionsAllChains
+- name: list_latest_blocks_all_chains
+  description: List latest blocks across all supported chains
+  source_operation: openapi/ava-labs-data-api-openapi.yml#listLatestBlocksAllChains
+- name: create_webhook
+  description: Create a webhook subscription for address activity
+  source_operation: openapi/ava-labs-data-api-openapi.yml#createWebhook
+deployment:
+  mode: none
+  verified: derived
+  tools: 7
+  checked: '2026-08-12'
+  source: catalog MCP census

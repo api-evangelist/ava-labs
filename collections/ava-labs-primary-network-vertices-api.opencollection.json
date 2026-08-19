@@ -1,0 +1,143 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Primary Network Vertices API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Primary Network Vertices",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List vertices",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/vertices",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "blockchainId",
+                "value": "x-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Lists latest vertices on the X-Chain."
+        },
+        {
+          "info": {
+            "name": "Get vertex",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/vertices/:vertexHash",
+            "params": [
+              {
+                "name": "vertexHash",
+                "value": "haP1CW56cspZY7aEuqHNrtpvhqCaMTxQaYe6j5u2Mbn4L2Gqr",
+                "type": "path",
+                "description": "A vertex hash string."
+              },
+              {
+                "name": "blockchainId",
+                "value": "x-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Gets a single vertex on the X-Chain."
+        },
+        {
+          "info": {
+            "name": "List vertices by height",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/vertices:listByHeight",
+            "params": [
+              {
+                "name": "vertexHeight",
+                "value": "123",
+                "type": "query",
+                "description": "The height of a vertex."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "blockchainId",
+                "value": "x-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "Lists vertices at the given vertex height on the X-Chain."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

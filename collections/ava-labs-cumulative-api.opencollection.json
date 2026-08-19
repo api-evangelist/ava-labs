@@ -1,0 +1,150 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Cumulative API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Cumulative",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "getCumulativeAddresses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/cumulative/addresses/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the cumulative number of addresses."
+        },
+        {
+          "info": {
+            "name": "getCumulativeContracts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/cumulative/contracts/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the cumulative number of contracts."
+        },
+        {
+          "info": {
+            "name": "getCumulativeTxCount",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/cumulative/tx_count/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the cumulative number of transactions."
+        },
+        {
+          "info": {
+            "name": "getCumulativeDeployers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/cumulative/deployers/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the cumulative number of deployers."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

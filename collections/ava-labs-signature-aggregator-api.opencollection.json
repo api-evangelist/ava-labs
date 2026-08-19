@@ -1,0 +1,74 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Signature Aggregator API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Signature Aggregator",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Aggregate Signatures",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/v1/signatureAggregator/:network/aggregateSignatures",
+            "params": [
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Aggregates Signatures for a Warp message from Subnet validators."
+        },
+        {
+          "info": {
+            "name": "Get Aggregated Signatures",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/signatureAggregator/:network/aggregateSignatures/:txHash",
+            "params": [
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "txHash",
+                "value": "3P91K6nuDFvDodcRuJTsgdf9SvYe5pMiKk38HppsoeAiEztCP",
+                "type": "path",
+                "description": "A primary network (P or X chain) transaction hash."
+              }
+            ]
+          },
+          "docs": "Get Aggregated Signatures for a P-Chain L1 related Warp Message."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

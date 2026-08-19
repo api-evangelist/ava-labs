@@ -1,0 +1,158 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Primary Network UTXOs API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Primary Network UTXOs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List UTXOs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/utxos",
+            "params": [
+              {
+                "name": "addresses",
+                "value": "avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg",
+                "type": "query",
+                "description": "A comma separated list of X-Chain or P-Chain wallet addresses, starting with \"avax\"/\"fuji\", \"P-avax\"/\"P-fuji\" or \"X-avax\"/\"X-fuji\"."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "assetId",
+                "value": "",
+                "type": "query",
+                "description": "Asset ID for any asset (only applicable X-Chain)"
+              },
+              {
+                "name": "includeSpent",
+                "value": "",
+                "type": "query",
+                "description": "Boolean filter to include spent UTXOs."
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Which property to sort by, in conjunction with sortOrder."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "Lists UTXOs on one of the Primary Network chains for the supplied addresses."
+        },
+        {
+          "info": {
+            "name": "List UTXOs v2 - Supports querying for more addresses",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/utxos",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 1024."
+              },
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "assetId",
+                "value": "",
+                "type": "query",
+                "description": "Asset ID for any asset (only applicable X-Chain)"
+              },
+              {
+                "name": "includeSpent",
+                "value": "",
+                "type": "query",
+                "description": "Boolean filter to include spent UTXOs."
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Which property to sort by, in conjunction with sortOrder."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Lists UTXOs on one of the Primary Network chains for the supplied addresses. This v2 route supports increased page size and address limit."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

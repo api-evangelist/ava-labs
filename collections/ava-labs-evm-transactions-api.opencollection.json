@@ -1,0 +1,579 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply EVM Transactions API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "EVM Transactions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List the latest transactions across all supported EVM chains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/transactions",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "query",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "A status filter for listed transactions."
+              }
+            ]
+          },
+          "docs": "Lists the most recent transactions from all supported EVM-compatible  chains. The results can be filtered based on transaction status."
+        },
+        {
+          "info": {
+            "name": "Get deployment transaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/contracts/:address/transactions:getDeployment",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+                "type": "path",
+                "description": "Contract address on the relevant chain."
+              },
+              {
+                "name": "currency",
+                "value": "usd",
+                "type": "query",
+                "description": "The currency that return values should use. Defaults to USD."
+              }
+            ]
+          },
+          "docs": "If the address is a smart contract, returns the transaction in which it was deployed."
+        },
+        {
+          "info": {
+            "name": "List deployed contracts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/contracts/:address/deployments",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                "type": "path",
+                "description": "A wallet address."
+              }
+            ]
+          },
+          "docs": "Lists all contracts deployed by the given address."
+        },
+        {
+          "info": {
+            "name": "List ERC transfers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/tokens/:address/transfers",
+            "params": [
+              {
+                "name": "startBlock",
+                "value": "6479329",
+                "type": "query",
+                "description": "The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block."
+              },
+              {
+                "name": "endBlock",
+                "value": "6479330",
+                "type": "query",
+                "description": "The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                "type": "path",
+                "description": "A wallet address."
+              }
+            ]
+          },
+          "docs": "Lists ERC transfers for an ERC-20, ERC-721, or ERC-1155 contract address."
+        },
+        {
+          "info": {
+            "name": "List transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/addresses/:address/transactions",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "startBlock",
+                "value": "6479329",
+                "type": "query",
+                "description": "The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block."
+              },
+              {
+                "name": "endBlock",
+                "value": "6479330",
+                "type": "query",
+                "description": "The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                "type": "path",
+                "description": "A wallet address."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "Returns a list of transactions where the given wallet address had an on-chain interaction for the given chain. The ERC-20 transfers, ERC-721 transfers, ERC-1155, and internal transactions returned are only those where the input address had an interaction. Specifically, those lists only inlcude entries where the input address was the sender (`from` field) or the receiver (`to` field) for the sub-transaction. Therefore the transactions returned from this list may not be complete representations of"
+        },
+        {
+          "info": {
+            "name": "List native transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/addresses/:address/transactions:listNative",
+            "params": [
+              {
+                "name": "startBlock",
+                "value": "6479329",
+                "type": "query",
+                "description": "The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block."
+              },
+              {
+                "name": "endBlock",
+                "value": "6479330",
+                "type": "query",
+                "description": "The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                "type": "path",
+                "description": "A wallet address."
+              }
+            ]
+          },
+          "docs": "Lists native transactions for an address. Filterable by block range."
+        },
+        {
+          "info": {
+            "name": "List ERC-20 transfers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/addresses/:address/transactions:listErc20",
+            "params": [
+              {
+                "name": "startBlock",
+                "value": "6479329",
+                "type": "query",
+                "description": "The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block."
+              },
+              {
+                "name": "endBlock",
+                "value": "6479330",
+                "type": "query",
+                "description": "The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                "type": "path",
+                "description": "A wallet address."
+              }
+            ]
+          },
+          "docs": "Lists ERC-20 transfers for an address. Filterable by block range."
+        },
+        {
+          "info": {
+            "name": "List ERC-721 transfers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/addresses/:address/transactions:listErc721",
+            "params": [
+              {
+                "name": "startBlock",
+                "value": "6479329",
+                "type": "query",
+                "description": "The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block."
+              },
+              {
+                "name": "endBlock",
+                "value": "6479330",
+                "type": "query",
+                "description": "The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                "type": "path",
+                "description": "A wallet address."
+              }
+            ]
+          },
+          "docs": "Lists ERC-721 transfers for an address. Filterable by block range."
+        },
+        {
+          "info": {
+            "name": "List ERC-1155 transfers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/addresses/:address/transactions:listErc1155",
+            "params": [
+              {
+                "name": "startBlock",
+                "value": "6479329",
+                "type": "query",
+                "description": "The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block."
+              },
+              {
+                "name": "endBlock",
+                "value": "6479330",
+                "type": "query",
+                "description": "The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                "type": "path",
+                "description": "A wallet address."
+              }
+            ]
+          },
+          "docs": "Lists ERC-1155 transfers for an address. Filterable by block range."
+        },
+        {
+          "info": {
+            "name": "List internal transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/addresses/:address/transactions:listInternals",
+            "params": [
+              {
+                "name": "startBlock",
+                "value": "6479329",
+                "type": "query",
+                "description": "The block range start number, inclusive. If endBlock is not defined when startBlock is defined, the end of the range will be the most recent block."
+              },
+              {
+                "name": "endBlock",
+                "value": "6479330",
+                "type": "query",
+                "description": "The block range end number, exclusive. If startBlock is not defined when endBlock is defined, the start of the range will be the genesis block."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                "type": "path",
+                "description": "A wallet address."
+              }
+            ]
+          },
+          "docs": "Returns a list of internal transactions for an address and chain. Filterable by block range.\n\nNote that the internal transactions list only contains `CALL` or `CALLCODE` transactions with a non-zero value and `CREATE`/`CREATE2`/`CREATE3` transactions. To get a complete list of internal transactions use the `debug_` prefixed RPC methods on an archive node."
+        },
+        {
+          "info": {
+            "name": "Get transaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/transactions/:txHash",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "txHash",
+                "value": "0x8bf584d7b14b92a32a339872a66b134a70ba3ba7c305823f348db6f860253f45",
+                "type": "path",
+                "description": "A transaction hash."
+              }
+            ]
+          },
+          "docs": "Gets the details of a single transaction."
+        },
+        {
+          "info": {
+            "name": "List transactions for a block",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/blocks/:blockId/transactions",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 0. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "blockId",
+                "value": "0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c",
+                "type": "path",
+                "description": "A block identifier which is either a block number or the block hash."
+              }
+            ]
+          },
+          "docs": "Lists the transactions that occured in a given block."
+        },
+        {
+          "info": {
+            "name": "List latest transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/transactions",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "A status filter for listed transactions."
+              }
+            ]
+          },
+          "docs": "Lists the latest transactions. Filterable by status."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

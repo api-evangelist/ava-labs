@@ -1,0 +1,113 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply EVM Blocks API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "EVM Blocks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List latest blocks across all supported EVM chains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/blocks",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "query",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Lists the most recent blocks from all supported  EVM-compatible chains. The results can be filtered by network."
+        },
+        {
+          "info": {
+            "name": "List latest blocks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/blocks",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Lists the latest indexed blocks on the EVM-compatible chain sorted in descending order by block timestamp."
+        },
+        {
+          "info": {
+            "name": "Get block",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/blocks/:blockId",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "blockId",
+                "value": "0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c",
+                "type": "path",
+                "description": "A block identifier which is either a block number or the block hash."
+              }
+            ]
+          },
+          "docs": "Gets the details of an individual block on the EVM-compatible chain."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

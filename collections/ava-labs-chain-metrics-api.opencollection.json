@@ -1,0 +1,290 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Chain Metrics API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Chain Metrics",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get metrics for EVM chains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/chains/:chainId/metrics/:metric",
+            "params": [
+              {
+                "name": "metric",
+                "value": "activeAddresses",
+                "type": "path",
+                "description": "Which chain level metric to fetch."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "timeInterval",
+                "value": "day",
+                "type": "query",
+                "description": "Time interval granularity for data aggregation. Metrics\n    prefixed with \"cumulative\", \"max\", or \"avg\" only support timeInterval equal\n    to \"day\"."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 2160."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported EVM chain ID or one of \"total\", \"mainnet\", or \"testnet\". Use the `/chains` endpoint to get a list of supported chain IDs."
+              }
+            ]
+          },
+          "docs": "EVM chain metrics are available for all Avalanche L1s on _Mainnet_ and _Fuji_ (testnet). You can request metrics by EVM chain ID. See the `/chains` endpoint for all supported chains.\n\nAll metrics are updated several times every hour. Each metric data point has a `value` and `timestamp` (Unix timestamp in seconds). All metric values include data within the duration of the associated timestamp plus the requested `timeInterval`. All timestamps are fixed to the hour. When requesting a timeInterval o"
+        },
+        {
+          "info": {
+            "name": "Get rolling window metrics for EVM chains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/chains/:chainId/rollingWindowMetrics/:metric",
+            "params": [
+              {
+                "name": "metric",
+                "value": "txCount",
+                "type": "path",
+                "description": "Which chain level metric to fetch for the rolling window."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported EVM chain ID or one of \"total\", \"mainnet\", or \"testnet\". Use the `/chains` endpoint to get a list of supported chain IDs."
+              }
+            ]
+          },
+          "docs": "Gets the rolling window metrics for an EVM chain for the last hour, day, week, month, 90 days, year, and all time. Active addresses/active senders only support last hour, day, and week."
+        },
+        {
+          "info": {
+            "name": "getTeleporterMetricsByChain",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/chains/:chainId/teleporterMetrics/:metric",
+            "params": [
+              {
+                "name": "metric",
+                "value": "teleporterSourceTxnCount",
+                "type": "path",
+                "description": "Which chain level teleporter metric to fetch."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported EVM chain ID or one of \"total\", \"mainnet\", or \"testnet\". Use the `/chains` endpoint to get a list of supported chain IDs."
+              }
+            ]
+          },
+          "docs": "Gets teleporter metrics for an EVM chain."
+        },
+        {
+          "info": {
+            "name": "Get ICM timeseries metrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/icm/timeseries",
+            "params": [
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "srcBlockchainId",
+                "value": "",
+                "type": "query",
+                "description": "Query param for retrieving items for a specific source (initiating) blockchain id."
+              },
+              {
+                "name": "destBlockchainId",
+                "value": "",
+                "type": "query",
+                "description": "Query param for retrieving items for a specific destination (receiving) blockchain id."
+              },
+              {
+                "name": "timeInterval",
+                "value": "day",
+                "type": "query",
+                "description": "Time interval granularity for data aggregation. Metrics\n    prefixed with \"cumulative\", \"max\", or \"avg\" only support timeInterval equal\n    to \"day\"."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 2160."
+              },
+              {
+                "name": "groupBy",
+                "value": "destBlockchainId",
+                "type": "query",
+                "description": "Group results by srcBlockchainId, destBlockchainId, or both (comma-separated)"
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "query",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Get historical ICM message counts with flexible grouping.\n\nUse filters (`srcBlockchainId`, `destBlockchainId`, `network`)  to select data, and the `groupBy` parameter for aggregation level.\n\n### Examples:\n\n  - **Specific pair**:   `?srcBlockchainId=...&destBlockchainId=...`\n\n  - **From one source (aggregated)**: `?srcBlockchainId=...`\n\n  - **From one source (by destination)**:   `?srcBlockchainId=...&groupBy=destBlockchainId`\n\n  - **To one destination (aggregated)**: `?destBlockchainId=...`\n\n  -"
+        },
+        {
+          "info": {
+            "name": "Get ICM summary metrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/icm/summary",
+            "params": [
+              {
+                "name": "srcBlockchainId",
+                "value": "",
+                "type": "query",
+                "description": "Query param for retrieving items for a specific source (initiating) blockchain id."
+              },
+              {
+                "name": "destBlockchainId",
+                "value": "",
+                "type": "query",
+                "description": "Query param for retrieving items for a specific destination (receiving) blockchain id."
+              },
+              {
+                "name": "groupBy",
+                "value": "destBlockchainId",
+                "type": "query",
+                "description": "Group results by srcBlockchainId, destBlockchainId, or both (comma-separated)"
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "query",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Get rolling window ICM message counts (last hour, day, month, 90 days, year, all time).\n\nUse filters (`srcBlockchainId`, `destBlockchainId`, `network`)  to select data, and the `groupBy` parameter for aggregation level.\n\n### Examples:\n\n  - **Specific pair**:   `?srcBlockchainId=...&destBlockchainId=...`\n\n  - **From one source (aggregated)**: `?srcBlockchainId=...`\n\n  - **From one source (by destination)**:   `?srcBlockchainId=...&groupBy=destBlockchainId`\n\n  - **To one destination (aggregated)**"
+        },
+        {
+          "info": {
+            "name": "Get staking metrics for a given subnet",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/networks/:network/metrics/:metric",
+            "params": [
+              {
+                "name": "metric",
+                "value": "validatorCount",
+                "type": "path",
+                "description": "Which network level metric to fetch."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 2160."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "subnetId",
+                "value": "11111111111111111111111111111111LpoYY",
+                "type": "query",
+                "description": "The subnet ID to filter by. If not provided, then all subnets will be returned."
+              }
+            ]
+          },
+          "docs": "Gets staking metrics for a given subnet."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

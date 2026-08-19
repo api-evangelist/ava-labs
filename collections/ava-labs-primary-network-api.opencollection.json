@@ -1,0 +1,492 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Primary Network API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Primary Network",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get asset details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/assets/:assetId",
+            "params": [
+              {
+                "name": "blockchainId",
+                "value": "x-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "assetId",
+                "value": "th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof",
+                "type": "path",
+                "description": "Asset ID for any asset on X-Chain"
+              }
+            ]
+          },
+          "docs": "Gets asset details corresponding to the given asset id on the X-Chain."
+        },
+        {
+          "info": {
+            "name": "Get chain interactions for addresses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/addresses:listChainIds",
+            "params": [
+              {
+                "name": "addresses",
+                "value": "avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg",
+                "type": "query",
+                "description": "A comma separated list of X-Chain or P-Chain wallet addresses, starting with \"avax\"/\"fuji\", \"P-avax\"/\"P-fuji\" or \"X-avax\"/\"X-fuji\"."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Returns Primary Network chains that each address has touched in the form of an address mapped array. If an address has had any on-chain interaction for a chain, that chain's chain id will be returned."
+        },
+        {
+          "info": {
+            "name": "Get network details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network",
+            "params": [
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Gets network details such as validator and delegator stats."
+        },
+        {
+          "info": {
+            "name": "List blockchains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 10000."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "Lists all blockchains registered on the network."
+        },
+        {
+          "info": {
+            "name": "Get blockchain details by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId",
+            "params": [
+              {
+                "name": "blockchainId",
+                "value": "2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5",
+                "type": "path",
+                "description": "The blockchain ID of the blockchain to retrieve."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Get details of the blockchain registered on the network."
+        },
+        {
+          "info": {
+            "name": "List subnets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/subnets",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 10000."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "Lists all subnets registered on the network."
+        },
+        {
+          "info": {
+            "name": "Get Subnet details by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/subnets/:subnetId",
+            "params": [
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "subnetId",
+                "value": "11111111111111111111111111111111LpoYY",
+                "type": "path",
+                "description": "Subnet ID to fetch details for"
+              }
+            ]
+          },
+          "docs": "Get details of the Subnet registered on the network."
+        },
+        {
+          "info": {
+            "name": "List validators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/validators",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "nodeIds",
+                "value": "NodeID-111111111111111111116DBWJs,NodeID-222222222222222222227DBWJs",
+                "type": "query",
+                "description": "A comma separated list of node ids to filter by. Supports substring matching."
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Which property to sort by, in conjunction with sortOrder.\n\nNote: Delegation fee is only available for mainnet validators. Set `subnetId` to `11111111111111111111111111111111LpoYY`  to use this option."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              },
+              {
+                "name": "validationStatus",
+                "value": "completed",
+                "type": "query",
+                "description": "Validation status of the node."
+              },
+              {
+                "name": "minDelegationCapacity",
+                "value": "0",
+                "type": "query",
+                "description": "The minimum delegation capacity, in nAVAX, used to filter the set of nodes being returned. Accepts values between 0 and 720,000,000,000,000,000"
+              },
+              {
+                "name": "maxDelegationCapacity",
+                "value": "720000000000000000",
+                "type": "query",
+                "description": "The maximum delegation capacity, in nAVAX, used to filter the set of nodes being returned. Accepts values between 0 and 720,000,000,000,000,000."
+              },
+              {
+                "name": "minTimeRemaining",
+                "value": "0",
+                "type": "query",
+                "description": "The minimum validation time remaining, in seconds, used to filter the set of nodes being returned."
+              },
+              {
+                "name": "maxTimeRemaining",
+                "value": "2147483647",
+                "type": "query",
+                "description": "The maximum validation time remaining, in seconds, used to filter the set of nodes being returned."
+              },
+              {
+                "name": "minFeePercentage",
+                "value": "2",
+                "type": "query",
+                "description": "The minimum fee percentage, used to filter the set of nodes being returned. If this field is populated no subnet validations will be returned, as their fee percentage is null, since subnet delegations are not supported. Default is 2.0, as per the Avalanche spec."
+              },
+              {
+                "name": "maxFeePercentage",
+                "value": "100",
+                "type": "query",
+                "description": "The maximum fee percentage, used to filter the set of nodes being returned. If this field is populated no subnet validations will be returned, as their fee percentage is null, since subnet delegations are not supported. Default is 100.0."
+              },
+              {
+                "name": "minUptimePerformance",
+                "value": "90",
+                "type": "query",
+                "description": "The minimum node uptime performance percentage, which represents node health, used to filter the set of nodes being returned Default is 90."
+              },
+              {
+                "name": "maxUptimePerformance",
+                "value": "100",
+                "type": "query",
+                "description": "The maximum node uptime performance percentage, which represents node health, used to filter the set of nodes being returned. Default is 100."
+              },
+              {
+                "name": "subnetId",
+                "value": "11111111111111111111111111111111LpoYY",
+                "type": "query",
+                "description": "The subnet ID to filter by. If not provided, then all subnets will be returned."
+              }
+            ]
+          },
+          "docs": "Lists details for validators. By default, returns details for all validators.  The nodeIds parameter supports substring matching. Filterable by validation status, delegation capacity, time remaining, fee percentage, uptime performance, and subnet id."
+        },
+        {
+          "info": {
+            "name": "Get single validator details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/validators/:nodeId",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "nodeId",
+                "value": "NodeID-111111111111111111116DBWJs",
+                "type": "path",
+                "description": "A primary network (P or X chain) nodeId."
+              },
+              {
+                "name": "validationStatus",
+                "value": "completed",
+                "type": "query",
+                "description": "Validation status of the node."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "List validator details for a single validator.  Filterable by validation status."
+        },
+        {
+          "info": {
+            "name": "List delegators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/delegators",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "rewardAddresses",
+                "value": "P-avax1679zrp3z9mf7z4an42ddq47qzj36zv6ga20vwl,P-avax1s7kd0kfndlz6mh3l0etrrcmkg5y366k8e0s6cc",
+                "type": "query",
+                "description": "A comma separated list of reward addresses to filter by."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              },
+              {
+                "name": "delegationStatus",
+                "value": "completed",
+                "type": "query",
+                "description": "Delegation status of the node."
+              },
+              {
+                "name": "nodeIds",
+                "value": "NodeID-111111111111111111116DBWJs,NodeID-222222222222222222227DBWJs",
+                "type": "query",
+                "description": "A comma separated list of node ids to filter by."
+              }
+            ]
+          },
+          "docs": "Lists details for delegators."
+        },
+        {
+          "info": {
+            "name": "List L1 validators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/l1Validators",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "l1ValidationId",
+                "value": "BsSpTd1SDvdhaoYAuKJvRj1WnoRyu8mAuMZeuz9g7brGj6KhX",
+                "type": "query",
+                "description": "The L1 Validator's validation ID to filter by. If not provided, then all L1 Validators will be returned."
+              },
+              {
+                "name": "includeInactiveL1Validators",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "nodeId",
+                "value": "NodeID-111111111111111111116DBWJs",
+                "type": "query",
+                "description": "A valid node ID in format 'NodeID-HASH'."
+              },
+              {
+                "name": "subnetId",
+                "value": "11111111111111111111111111111111LpoYY",
+                "type": "query",
+                "description": "The subnet ID to filter by. If not provided, then all subnets will be returned."
+              }
+            ]
+          },
+          "docs": "Lists details for L1 validators. By default, returns details for all active L1 validators. Filterable by validator node ids, subnet id, and validation id."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

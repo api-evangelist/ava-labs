@@ -1,0 +1,125 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply NFTs API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "NFTs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Reindex NFT metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/nfts/collections/:address/tokens/:tokenId:reindex",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+                "type": "path",
+                "description": "Contract address on the relevant chain."
+              },
+              {
+                "name": "tokenId",
+                "value": "145",
+                "type": "path",
+                "description": "TokenId on the contract"
+              }
+            ]
+          },
+          "docs": "Triggers reindexing of token metadata for an NFT token. Reindexing can only be called once per hour for each NFT token."
+        },
+        {
+          "info": {
+            "name": "List tokens",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/nfts/collections/:address/tokens",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+                "type": "path",
+                "description": "Contract address on the relevant chain."
+              }
+            ]
+          },
+          "docs": "Lists tokens for an NFT contract."
+        },
+        {
+          "info": {
+            "name": "Get token details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/nfts/collections/:address/tokens/:tokenId",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+                "type": "path",
+                "description": "Contract address on the relevant chain."
+              },
+              {
+                "name": "tokenId",
+                "value": "145",
+                "type": "path",
+                "description": "TokenId on the contract"
+              }
+            ]
+          },
+          "docs": "Gets token details for a specific token of an NFT contract."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

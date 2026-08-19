@@ -1,0 +1,60 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Operations API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Operations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get operation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/operations/:operationId",
+            "params": [
+              {
+                "name": "operationId",
+                "value": "aa22054a-cb7c-4a4e-9b83-59f2ede74138",
+                "type": "path",
+                "description": "UUID of given operation"
+              }
+            ]
+          },
+          "docs": "Gets operation details for the given operation id."
+        },
+        {
+          "info": {
+            "name": "Create transaction export operation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/v1/operations/transactions:export",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Trigger a transaction export operation with given parameters.\n\nThe transaction export operation runs asynchronously in the background. The status of the job can be retrieved from the `/v1/operations/:operationId` endpoint using the `operationId` returned from this endpoint."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,373 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Data API Usage Metrics API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Data API Usage Metrics",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get usage metrics for the Data API",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/apiUsageMetrics",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "query",
+                "description": "Organization ID to fetch usage metrics for"
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1739507200",
+                "type": "query",
+                "description": "The start time of the range as a UNIX timestamp. The requested start time  will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1739664000",
+                "type": "query",
+                "description": "The end time of the range as a UNIX timestamp. The requested end time will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "timeInterval",
+                "value": "daily",
+                "type": "query",
+                "description": "Time interval granularity for data aggregation"
+              },
+              {
+                "name": "groupBy",
+                "value": "requestPath",
+                "type": "query",
+                "description": "Query param for the criterion used for grouping metrics"
+              },
+              {
+                "name": "chainId",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by chain ID."
+              },
+              {
+                "name": "responseCode",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by response status code."
+              },
+              {
+                "name": "requestType",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by request type."
+              },
+              {
+                "name": "apiKeyId",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by API key ID."
+              },
+              {
+                "name": "requestPath",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by request path."
+              }
+            ]
+          },
+          "docs": "Gets metrics for Data API usage over a specified time interval aggregated at the specified time-duration granularity."
+        },
+        {
+          "info": {
+            "name": "Get logs for requests made by client",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/apiLogs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "query",
+                "description": "Organization ID to fetch usage metrics for"
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1739507200",
+                "type": "query",
+                "description": "The start time of the range as a UNIX timestamp. The requested start time  will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1739664000",
+                "type": "query",
+                "description": "The end time of the range as a UNIX timestamp. The requested end time will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "chainId",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by chain ID."
+              },
+              {
+                "name": "responseCode",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by response status code."
+              },
+              {
+                "name": "requestType",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by request type."
+              },
+              {
+                "name": "apiKeyId",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by API key ID."
+              },
+              {
+                "name": "requestPath",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by request path."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Gets logs for requests made by client over a specified time interval for a specific organization."
+        },
+        {
+          "info": {
+            "name": "Get usage metrics for the Subnet RPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/subnetRpcUsageMetrics",
+            "params": [
+              {
+                "name": "timeInterval",
+                "value": "daily",
+                "type": "query",
+                "description": "Time interval granularity for data aggregation for subnet\n     rpc metrics"
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1739507200",
+                "type": "query",
+                "description": "The start time of the range as a UNIX timestamp. The requested start time  will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1739664000",
+                "type": "query",
+                "description": "The end time of the range as a UNIX timestamp. The requested end time will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "groupBy",
+                "value": "rpcMethod",
+                "type": "query",
+                "description": "Query param for the criterion used for grouping metrics"
+              },
+              {
+                "name": "chainId",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by chain ID."
+              },
+              {
+                "name": "responseCode",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by response status code."
+              },
+              {
+                "name": "rpcMethod",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by RPC method."
+              },
+              {
+                "name": "rlBypassApiToken",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by Rl Bypass API Token."
+              }
+            ]
+          },
+          "docs": "Gets metrics for public Subnet RPC usage over a specified time interval aggregated at the specified time-duration granularity."
+        },
+        {
+          "info": {
+            "name": "getRpcUsageMetrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/rpcUsageMetrics",
+            "params": [
+              {
+                "name": "timeInterval",
+                "value": "daily",
+                "type": "query",
+                "description": "Time interval granularity for data aggregation for subnet\n     rpc metrics"
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1739507200",
+                "type": "query",
+                "description": "The start time of the range as a UNIX timestamp. The requested start time  will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1739664000",
+                "type": "query",
+                "description": "The end time of the range as a UNIX timestamp. The requested end time will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "groupBy",
+                "value": "rpcMethod",
+                "type": "query",
+                "description": "Query param for the criterion used for grouping metrics"
+              },
+              {
+                "name": "chainId",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by chain ID."
+              },
+              {
+                "name": "responseCode",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by response status code."
+              },
+              {
+                "name": "rpcMethod",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by RPC method."
+              },
+              {
+                "name": "rlBypassApiToken",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by Rl Bypass API Token."
+              }
+            ]
+          },
+          "docs": "**[Deprecated]**  Gets metrics for public Subnet RPC usage over a specified time interval aggregated at the specified time-duration granularity.\n\n⚠️ **This operation will be removed in a future release.  Please use /v1/subnetRpcUsageMetrics endpoint instead**."
+        },
+        {
+          "info": {
+            "name": "Get usage metrics for the Primary Network RPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/primaryNetworkRpcUsageMetrics",
+            "params": [
+              {
+                "name": "timeInterval",
+                "value": "daily",
+                "type": "query",
+                "description": "Time interval granularity for data aggregation for subnet\n     rpc metrics"
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1739507200",
+                "type": "query",
+                "description": "The start time of the range as a UNIX timestamp. The requested start time  will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1739664000",
+                "type": "query",
+                "description": "The end time of the range as a UNIX timestamp. The requested end time will be rounded down to 0:00 UTC of the day."
+              },
+              {
+                "name": "groupBy",
+                "value": "rpcMethod",
+                "type": "query",
+                "description": "Query param for the criterion used for grouping metrics"
+              },
+              {
+                "name": "responseCode",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by response status code."
+              },
+              {
+                "name": "requestPath",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by request path."
+              },
+              {
+                "name": "country",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by Country. Input must be a valid ISO 3166-1 alpha-2 country code. \"XX\" - Represents clients without country code data. \"T1\" - Represents clients using the Tor network."
+              },
+              {
+                "name": "continent",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by Continent. Input must be a valid ISO 3166-1 alpha-2 continent code."
+              },
+              {
+                "name": "userAgent",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by User Agent."
+              },
+              {
+                "name": "rpcMethod",
+                "value": "",
+                "type": "query",
+                "description": "Filter data by RPC method."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "query",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Gets metrics for public Primary Network RPC usage over  a specified time interval aggregated at the specified  time-duration granularity."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,232 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Webhooks API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Webhooks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List webhooks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/webhooks",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "status",
+                "value": "active",
+                "type": "query",
+                "description": "Status of the webhook. Use \"active\" to return only active webhooks, \"inactive\" to return only inactive webhooks. Else if no status is provided, all configured webhooks will be returned."
+              }
+            ]
+          },
+          "docs": "Lists webhooks for the user."
+        },
+        {
+          "info": {
+            "name": "Create a webhook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/v1/webhooks",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new webhook."
+        },
+        {
+          "info": {
+            "name": "Get a webhook by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/webhooks/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "f33de69c-d13b-4691-908f-870d6e2e6b04",
+                "type": "path",
+                "description": "The webhook identifier."
+              }
+            ]
+          },
+          "docs": "Retrieves a webhook by ID."
+        },
+        {
+          "info": {
+            "name": "Update a webhook",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://glacier-api.avax.network/v1/webhooks/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "f33de69c-d13b-4691-908f-870d6e2e6b04",
+                "type": "path",
+                "description": "The webhook identifier."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates an existing webhook."
+        },
+        {
+          "info": {
+            "name": "Deactivate a webhook",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://glacier-api.avax.network/v1/webhooks/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "f33de69c-d13b-4691-908f-870d6e2e6b04",
+                "type": "path",
+                "description": "The webhook identifier."
+              }
+            ]
+          },
+          "docs": "Deactivates a webhook by ID."
+        },
+        {
+          "info": {
+            "name": "Generate or rotate a shared secret",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/v1/webhooks:generateOrRotateSharedSecret"
+          },
+          "docs": "Generates a new shared secret or rotate an existing one."
+        },
+        {
+          "info": {
+            "name": "Get a shared secret",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/webhooks:getSharedSecret"
+          },
+          "docs": "Get a previously generated shared secret."
+        },
+        {
+          "info": {
+            "name": "List adresses by EVM activity webhooks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/webhooks/:id/addresses",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "id",
+                "value": "f33de69c-d13b-4691-908f-870d6e2e6b04",
+                "type": "path",
+                "description": "The webhook identifier."
+              }
+            ]
+          },
+          "docs": "List adresses by webhook. Only valid for EVM activity webhooks."
+        },
+        {
+          "info": {
+            "name": "Add addresses to EVM activity webhook",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://glacier-api.avax.network/v1/webhooks/:id/addresses",
+            "params": [
+              {
+                "name": "id",
+                "value": "f33de69c-d13b-4691-908f-870d6e2e6b04",
+                "type": "path",
+                "description": "The webhook identifier."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add addresses to webhook. Only valid for EVM activity webhooks."
+        },
+        {
+          "info": {
+            "name": "Remove addresses from EVM activity  webhook",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://glacier-api.avax.network/v1/webhooks/:id/addresses",
+            "params": [
+              {
+                "name": "id",
+                "value": "f33de69c-d13b-4691-908f-870d6e2e6b04",
+                "type": "path",
+                "description": "The webhook identifier."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Remove addresses from webhook. Only valid for EVM activity webhooks."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,51 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply EVM Contracts API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "EVM Contracts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get contract metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/chains/:chainId/addresses/:address",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id or blockchain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+                "type": "path",
+                "description": "Contract address on the relevant chain."
+              }
+            ]
+          },
+          "docs": "Gets metadata about the contract at the given address."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

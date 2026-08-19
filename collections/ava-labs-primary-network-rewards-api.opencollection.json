@@ -1,0 +1,130 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Primary Network Rewards API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Primary Network Rewards",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List pending rewards",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/rewards:listPending",
+            "params": [
+              {
+                "name": "addresses",
+                "value": "avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg",
+                "type": "query",
+                "description": "A comma separated list of X-Chain or P-Chain wallet addresses, starting with \"avax\"/\"fuji\", \"P-avax\"/\"P-fuji\" or \"X-avax\"/\"X-fuji\". One of addresses or nodeIds is required."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "nodeIds",
+                "value": "NodeID-111111111111111111116DBWJs,NodeID-222222222222222222227DBWJs",
+                "type": "query",
+                "description": "A comma separated list of node ids to filter by. One of addresses or nodeIds is required."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "Lists pending rewards on the Primary Network for the supplied addresses."
+        },
+        {
+          "info": {
+            "name": "List historical rewards",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/rewards",
+            "params": [
+              {
+                "name": "addresses",
+                "value": "avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg",
+                "type": "query",
+                "description": "A comma separated list of X-Chain or P-Chain wallet addresses, starting with \"avax\"/\"fuji\", \"P-avax\"/\"P-fuji\" or \"X-avax\"/\"X-fuji\". Optional, but at least one of addresses or nodeIds is required."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "nodeIds",
+                "value": "NodeID-111111111111111111116DBWJs,NodeID-222222222222222222227DBWJs",
+                "type": "query",
+                "description": "A comma separated list of node ids to filter by. Optional, but at least one of addresses or nodeIds is required."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              },
+              {
+                "name": "currency",
+                "value": "usd",
+                "type": "query",
+                "description": "The currency that return values should use. Defaults to USD."
+              }
+            ]
+          },
+          "docs": "Lists historical rewards on the Primary Network for the supplied addresses."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

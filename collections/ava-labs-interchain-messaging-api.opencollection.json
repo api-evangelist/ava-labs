@@ -1,0 +1,143 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Interchain Messaging API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Interchain Messaging",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get an ICM message",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/icm/messages/:messageId",
+            "params": [
+              {
+                "name": "messageId",
+                "value": "acf1c8b06f9aec48e9fcbefbbe576ae8a7ca3b327fcae111396e7cc99956674d",
+                "type": "path",
+                "description": "The teleporter message ID of the ICM message."
+              }
+            ]
+          },
+          "docs": "Gets an ICM message by teleporter message ID."
+        },
+        {
+          "info": {
+            "name": "List ICM messages",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/icm/messages",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "sourceBlockchainId",
+                "value": "2D8RG4UpSXbPbvPCAWppNJyqTG2i2CAXSkTgmTBBvs7GKNZjsY",
+                "type": "query",
+                "description": "The base58 encoded blockchain ID or evm chain ID of the source chain that the ICM message was sent from."
+              },
+              {
+                "name": "destinationBlockchainId",
+                "value": "yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp",
+                "type": "query",
+                "description": "The base58 encoded blockchain ID or evm chain ID of the destination chain that the ICM message was sent to."
+              },
+              {
+                "name": "blockchainId",
+                "value": "",
+                "type": "query",
+                "description": "The base58 encoded blockchain ID of either source or destination chain that one ICM message interacts with."
+              },
+              {
+                "name": "to",
+                "value": "0x664A4Be5Af2cFc824F9C0914CbAc4703396Da2DC",
+                "type": "query",
+                "description": "The address of the recipient of the ICM message."
+              },
+              {
+                "name": "from",
+                "value": "0x321eDA69247566D662178feE695C7026c604Cd94",
+                "type": "query",
+                "description": "The address of the sender of the ICM message."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "query",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Lists ICM messages. Ordered by timestamp in descending order."
+        },
+        {
+          "info": {
+            "name": "List ICM messages by address",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/icm/addresses/:address/messages",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "address",
+                "value": "0x8578AE7723751446B196bD5124e1bF57B40EB7Bc",
+                "type": "path",
+                "description": "An EVM address."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "query",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Lists ICM messages by address. Ordered by timestamp in descending order."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

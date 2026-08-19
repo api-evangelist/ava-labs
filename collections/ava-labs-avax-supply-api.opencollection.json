@@ -1,0 +1,37 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "AVAX Supply",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get AVAX supply information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/avax/supply"
+          },
+          "docs": "Get AVAX supply information that includes  total supply, circulating supply, total p burned, total c burned,  total x burned, total staked, total locked, total rewards,  and last updated."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

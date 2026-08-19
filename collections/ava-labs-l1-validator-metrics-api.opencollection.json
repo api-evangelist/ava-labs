@@ -1,0 +1,168 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply L1 Validator Metrics API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "L1 Validator Metrics",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get given metric for all validators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/validators/metrics/:metric",
+            "params": [
+              {
+                "name": "metric",
+                "value": "totalValidatorFeesDaily",
+                "type": "path",
+                "description": "Which network level metric to fetch for L1 validator."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              }
+            ]
+          },
+          "docs": "Get given metric's value for all validators."
+        },
+        {
+          "info": {
+            "name": "Get metric values with given validationId and timestamp range",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/validation/:l1ValidationId/metrics/:metric",
+            "params": [
+              {
+                "name": "l1ValidationId",
+                "value": "2YYCZGHjqnbw1MzQ5fGrTp3SjqUu8y1J1xeW4yuhdXe4LoUVVG",
+                "type": "path",
+                "description": "The L1 Validator's validation ID to filter by"
+              },
+              {
+                "name": "metric",
+                "value": "validationFeesDaily",
+                "type": "path",
+                "description": "Which metric to fetch for given L1 validation ID."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              }
+            ]
+          },
+          "docs": "Get given metric values for a given validationId with or without a timestamp range."
+        },
+        {
+          "info": {
+            "name": "Get metric values with given nodeId and timestamp range",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/validator/:nodeId/metrics/:metric",
+            "params": [
+              {
+                "name": "metric",
+                "value": "perNodeDailyFeesPaid",
+                "type": "path",
+                "description": "Which metric to fetch for given L1 validator(node) ID."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "nodeId",
+                "value": "NodeID-JQPadXEMWtRtJyXrisyDNWuXKSjSf9D36",
+                "type": "path",
+                "description": "A primary network (P or X chain) nodeId."
+              }
+            ]
+          },
+          "docs": "Get given metric values for a given nodeId with or without a timestamp range."
+        },
+        {
+          "info": {
+            "name": "Get metric values with given subnetId and timestamp range",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/subnet/:subnetId/metrics/:metric",
+            "params": [
+              {
+                "name": "metric",
+                "value": "perSubnetDailyFeesPaid",
+                "type": "path",
+                "description": "Which metric to fetch for given subnet ID."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "subnetId",
+                "value": "eYwmVU67LmSfZb1RwqCMhBYkFyG8ftxn6jAwqzFmxC9STBWLC",
+                "type": "path",
+                "description": "The subnet ID to filter by."
+              }
+            ]
+          },
+          "docs": "Get given metric values for a given subnetId with or without a timestamp range."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

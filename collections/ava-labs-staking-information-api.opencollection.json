@@ -1,0 +1,492 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Staking Information API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Staking Information",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "getValidatorCount",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/validators/network/:network/subnetId/:subnetID/count",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Network type"
+              },
+              {
+                "name": "subnetID",
+                "value": "",
+                "type": "path",
+                "description": "alpha-numeric subnetID"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the validation count for a subnet."
+        },
+        {
+          "info": {
+            "name": "getValidatorWeight",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/validators/network/:network/subnetId/:subnetID/weight",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Network type"
+              },
+              {
+                "name": "subnetID",
+                "value": "",
+                "type": "path",
+                "description": "alpha-numeric subnetID"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the validation weight for a subnet."
+        },
+        {
+          "info": {
+            "name": "getDelegatorCount",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/delegators/network/:network/subnetId/:subnetID/count",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Network type"
+              },
+              {
+                "name": "subnetID",
+                "value": "11111111111111111111111111111111LpoYY",
+                "type": "path",
+                "description": "The subnet ID for Avalanche primary network."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the delegation count for a subnet."
+        },
+        {
+          "info": {
+            "name": "getDelegatorWeight",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/delegators/network/:network/subnetId/:subnetID/weight",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Network type"
+              },
+              {
+                "name": "subnetID",
+                "value": "11111111111111111111111111111111LpoYY",
+                "type": "path",
+                "description": "The subnet ID for Avalanche primary network."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the delegation for a subnet."
+        },
+        {
+          "info": {
+            "name": "getSubnetValidationPeriod",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/validators/network/:network/subnetId/:subnetID",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Network type"
+              },
+              {
+                "name": "subnetID",
+                "value": "",
+                "type": "path",
+                "description": "alpha-numeric subnetID"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the validation period for a subnet."
+        },
+        {
+          "info": {
+            "name": "getNodeValidationPeriod",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/validators/network/:network/node/:nodeID",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Network type"
+              },
+              {
+                "name": "nodeID",
+                "value": "",
+                "type": "path",
+                "description": "alpha-numeric nodeID"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the validation period for a node."
+        },
+        {
+          "info": {
+            "name": "getValidatorCountBySubnetId",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/validators/count/:subnetID",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "subnetID",
+                "value": "",
+                "type": "path",
+                "description": "alpha-numeric subnetID"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the validation count for a subnet."
+        },
+        {
+          "info": {
+            "name": "getValidatorWeightBySubnetId",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/validators/weight/:subnetID",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "subnetID",
+                "value": "",
+                "type": "path",
+                "description": "alpha-numeric subnetID"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the validation weight for a subnet."
+        },
+        {
+          "info": {
+            "name": "getDelegatorCountBySubnetId",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/delegators/count/:subnetID",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "subnetID",
+                "value": "",
+                "type": "path",
+                "description": "alpha-numeric subnetID"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the delegation count for a subnet."
+        },
+        {
+          "info": {
+            "name": "getDelegatorWeightBySubnetId",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/delegators/weight/:subnetID",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "subnetID",
+                "value": "",
+                "type": "path",
+                "description": "alpha-numeric subnetID"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort order for the results"
+              }
+            ]
+          },
+          "docs": "Get the delegation for a subnet."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

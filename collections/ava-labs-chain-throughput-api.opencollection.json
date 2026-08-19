@@ -1,0 +1,560 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Chain Throughput API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Chain Throughput",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "getActiveSenders",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/active_senders/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "interval",
+                "value": "hour",
+                "type": "query",
+                "description": "Time interval granularity."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the number of addresses that sent a transaction."
+        },
+        {
+          "info": {
+            "name": "getActiveAddresses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/active_addresses/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "interval",
+                "value": "hour",
+                "type": "query",
+                "description": "Time interval granularity."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the number of active addresses."
+        },
+        {
+          "info": {
+            "name": "getGasUsed",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/gas_used/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "interval",
+                "value": "hour",
+                "type": "query",
+                "description": "Time interval granularity. **If [from] and [to] are over 60 days apart, 'hour' granularity is unavailable.**"
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the total gas consumed."
+        },
+        {
+          "info": {
+            "name": "getTxCount",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/tx_count/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "interval",
+                "value": "hour",
+                "type": "query",
+                "description": "Time interval granularity."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the number of transactions."
+        },
+        {
+          "info": {
+            "name": "getAvgGps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/avg_gps/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the average gas consumed per second."
+        },
+        {
+          "info": {
+            "name": "getMaxGps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/max_gps/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the maximum gas consumed per second."
+        },
+        {
+          "info": {
+            "name": "getAvgTps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/avg_tps/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the average number of transactions per second."
+        },
+        {
+          "info": {
+            "name": "getMaxTps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/max_tps/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the maximum number of transactions per second."
+        },
+        {
+          "info": {
+            "name": "getAvgGasPrice",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/avg_gas_price/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the average gas price."
+        },
+        {
+          "info": {
+            "name": "getMaxGasPrice",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/max_gas_price/:chain",
+            "params": [
+              {
+                "name": "from",
+                "value": "1654819200",
+                "type": "query",
+                "description": "From date in UNIX Timestamp."
+              },
+              {
+                "name": "to",
+                "value": "1655424000",
+                "type": "query",
+                "description": "To date in UNIX Timestamp."
+              },
+              {
+                "name": "startKey",
+                "value": "",
+                "type": "query",
+                "description": "For paginated responses. Value will be provided in the [nextPageStartKey] field in the response if the query has more than one page."
+              },
+              {
+                "name": "chain",
+                "value": "43114",
+                "type": "path",
+                "description": "numeric chainID, 'testnet', 'mainnet', or 'total'."
+              }
+            ]
+          },
+          "docs": "Get the maximum gas price."
+        },
+        {
+          "info": {
+            "name": "getRollingWindowGasUsed",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/gas_used/:chainId/rollingWindow",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Get rolling window of gas used."
+        },
+        {
+          "info": {
+            "name": "getRollingWindowTxCount",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/tx_count/:chainId/rollingWindow",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Get rolling window of tx count."
+        },
+        {
+          "info": {
+            "name": "getRollingWindowAvgGps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/avg_gps/:chainId/rollingWindow",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Get rolling window of average gas per second consumed."
+        },
+        {
+          "info": {
+            "name": "getRollingWindowMaxGps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/max_gps/:chainId/rollingWindow",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Get rolling window of max gas per second."
+        },
+        {
+          "info": {
+            "name": "getRollingWindowAvgTps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/avg_tps/:chainId/rollingWindow",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Get rolling window of average transactions per second."
+        },
+        {
+          "info": {
+            "name": "getRollingWindowMaxTps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/max_tps/:chainId/rollingWindow",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Get rolling window of max transactions per second."
+        },
+        {
+          "info": {
+            "name": "getRollingWindowAvgGasPrice",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/avg_gas_price/:chainId/rollingWindow",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Get rolling window of average gas price."
+        },
+        {
+          "info": {
+            "name": "getRollingWindowMaxGasPrice",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/max_gas_price/:chainId/rollingWindow",
+            "params": [
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              }
+            ]
+          },
+          "docs": "Get rolling window of max gas price."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

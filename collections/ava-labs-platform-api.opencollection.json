@@ -1,0 +1,476 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply platform API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "platform",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "platform.getHeight",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getHeight",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetHeight returns the height of the last accepted block"
+        },
+        {
+          "info": {
+            "name": "platform.getProposedHeight",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getProposedHeight",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetProposedHeight returns the current ProposerVM height"
+        },
+        {
+          "info": {
+            "name": "platform.getBalance",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getBalance",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetBalance gets the balance of an address"
+        },
+        {
+          "info": {
+            "name": "platform.getUTXOs",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getUTXOs",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetUTXOs returns the UTXOs controlled by the given addresses"
+        },
+        {
+          "info": {
+            "name": "platform.getSubnet",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getSubnet",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Calls the platform.getSubnet method"
+        },
+        {
+          "info": {
+            "name": "platform.getSubnets",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getSubnets",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns information about the specified Subnets. The response will include the primary network."
+        },
+        {
+          "info": {
+            "name": "platform.getStakingAssetID",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getStakingAssetID",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetStakingAssetID returns the assetID of the token used to stake on the provided subnet"
+        },
+        {
+          "info": {
+            "name": "platform.getCurrentValidators",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getCurrentValidators",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetCurrentValidators returns the current validators. If a single nodeID is provided, full delegators information is also returned. Otherwise only delegators' number and total weight is returned."
+        },
+        {
+          "info": {
+            "name": "platform.getL1Validator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getL1Validator",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetL1Validator returns the L1 validator if it exists"
+        },
+        {
+          "info": {
+            "name": "platform.getCurrentSupply",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getCurrentSupply",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetCurrentSupply returns an upper bound on the supply of AVAX in the system"
+        },
+        {
+          "info": {
+            "name": "platform.sampleValidators",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.sampleValidators",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "SampleValidators returns a sampling of the list of current validators"
+        },
+        {
+          "info": {
+            "name": "platform.getBlockchainStatus",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getBlockchainStatus",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Gets the status of a blockchain by its ID."
+        },
+        {
+          "info": {
+            "name": "platform.validatedBy",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.validatedBy",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns the ID of the Subnet that validates the specified blockchain"
+        },
+        {
+          "info": {
+            "name": "platform.validates",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.validates",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns the IDs of the blockchains validated by the specified Subnet"
+        },
+        {
+          "info": {
+            "name": "platform.getBlockchains",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getBlockchains",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetBlockchains returns all of the blockchains that exist"
+        },
+        {
+          "info": {
+            "name": "platform.issueTx",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.issueTx",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Calls the platform.issueTx method"
+        },
+        {
+          "info": {
+            "name": "platform.getTx",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getTx",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Calls the platform.getTx method"
+        },
+        {
+          "info": {
+            "name": "platform.getTxStatus",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getTxStatus",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetTxStatus gets a tx's status"
+        },
+        {
+          "info": {
+            "name": "platform.getStake",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getStake",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns the amount of nAVAX that the specified addresses have cumulatively staked on the Primary Network. This method assumes that each stake output has only one owner. This method assumes only AVAX can be staked. This method only concerns itself with the Primary Network, not Subnets."
+        },
+        {
+          "info": {
+            "name": "platform.getMinStake",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getMinStake",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetMinStake returns the minimum staking amount in nAVAX."
+        },
+        {
+          "info": {
+            "name": "platform.getTotalStake",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getTotalStake",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetTotalStake returns the total amount staked on the Primary Network"
+        },
+        {
+          "info": {
+            "name": "platform.getRewardUTXOs",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getRewardUTXOs",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetRewardUTXOs returns the UTXOs that were rewarded after the provided transaction's staking period ended."
+        },
+        {
+          "info": {
+            "name": "platform.getTimestamp",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getTimestamp",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetTimestamp returns the current timestamp on chain."
+        },
+        {
+          "info": {
+            "name": "platform.getValidatorsAt",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getValidatorsAt",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetValidatorsAt returns the weights of the validator set of a provided subnet at the specified height."
+        },
+        {
+          "info": {
+            "name": "platform.getBlock",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getBlock",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Calls the platform.getBlock method"
+        },
+        {
+          "info": {
+            "name": "platform.getBlockByHeight",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getBlockByHeight",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetBlockByHeight returns the block at the given height."
+        },
+        {
+          "info": {
+            "name": "platform.getFeeConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getFeeConfig",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetFeeConfig returns the dynamic fee config of the chain."
+        },
+        {
+          "info": {
+            "name": "platform.getFeeState",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getFeeState",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetFeeState returns the current fee state of the chain."
+        },
+        {
+          "info": {
+            "name": "platform.getValidatorFeeConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getValidatorFeeConfig",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetValidatorFeeConfig returns the validator fee config of the chain."
+        },
+        {
+          "info": {
+            "name": "platform.getValidatorFeeState",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/P#platform.getValidatorFeeState",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "GetValidatorFeeState returns the current validator fee state of the chain."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

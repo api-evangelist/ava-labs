@@ -1,0 +1,257 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Primary Network Transactions API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Primary Network Transactions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get transaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/transactions/:txHash",
+            "params": [
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "txHash",
+                "value": "3P91K6nuDFvDodcRuJTsgdf9SvYe5pMiKk38HppsoeAiEztCP",
+                "type": "path",
+                "description": "A primary network (P or X chain) transaction hash."
+              }
+            ]
+          },
+          "docs": "Gets the details of a single transaction on one of the Primary Network chains."
+        },
+        {
+          "info": {
+            "name": "List latest transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/transactions",
+            "params": [
+              {
+                "name": "addresses",
+                "value": "avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg",
+                "type": "query",
+                "description": "A comma separated list of X-Chain or P-Chain wallet addresses, starting with \"avax\"/\"fuji\", \"P-avax\"/\"P-fuji\" or \"X-avax\"/\"X-fuji\". Also accepts EVM formatted addresses starting with \"0x\" for C-Chain-related atomic transaction lookups."
+              },
+              {
+                "name": "l1ValidationId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "txTypes",
+                "value": "AddValidatorTx",
+                "type": "query",
+                "description": "Query param for filtering items based on transaction types."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "Lists the latest transactions on one of the Primary Network chains.\n\nTransactions are filterable by addresses, txTypes, and timestamps. When querying for latest transactions without an address parameter, filtering by txTypes and timestamps is not supported. An address filter must be provided to utilize txTypes and timestamp filters.\n\nFor P-Chain, you can fetch all L1 validators related transactions like ConvertSubnetToL1Tx, IncreaseL1ValidatorBalanceTx etc. using the unique L1 validation ID. The"
+        },
+        {
+          "info": {
+            "name": "List staking transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/transactions:listStaking",
+            "params": [
+              {
+                "name": "addresses",
+                "value": "avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg",
+                "type": "query",
+                "description": "A comma separated list of X-Chain or P-Chain wallet addresses, starting with \"avax\"/\"fuji\", \"P-avax\"/\"P-fuji\" or \"X-avax\"/\"X-fuji\"."
+              },
+              {
+                "name": "txTypes",
+                "value": "AddValidatorTx",
+                "type": "query",
+                "description": "Query param for filtering items based on transaction types."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "description": "The order by which to sort results. Use \"asc\" for ascending order, \"desc\" for descending order. Sorted by timestamp or the `sortBy` query parameter, if provided."
+              }
+            ]
+          },
+          "docs": "Lists active staking transactions on the P-Chain for the supplied addresses."
+        },
+        {
+          "info": {
+            "name": "List asset transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/assets/:assetId/transactions",
+            "params": [
+              {
+                "name": "txTypes",
+                "value": "AddValidatorTx",
+                "type": "query",
+                "description": "Query param for filtering items based on transaction types."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "blockchainId",
+                "value": "x-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "assetId",
+                "value": "th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof",
+                "type": "path",
+                "description": "Asset ID for any asset on X-Chain"
+              }
+            ]
+          },
+          "docs": "Lists asset transactions corresponding to the given asset id on the X-Chain."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

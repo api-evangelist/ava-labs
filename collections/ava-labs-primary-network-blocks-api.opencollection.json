@@ -1,0 +1,161 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Primary Network Blocks API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Primary Network Blocks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get block",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/blocks/:blockId",
+            "params": [
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "blockId",
+                "value": "5615di9ytxujackzaXNrVuWQy5y8Yrt8chPCscMr5Ku9YxJ1S",
+                "type": "path",
+                "description": "A block identifier which is either a block number or the block hash."
+              }
+            ]
+          },
+          "docs": "Gets a block by block height or block hash on one of the Primary Network chains."
+        },
+        {
+          "info": {
+            "name": "List blocks proposed by node",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/nodes/:nodeId/blocks",
+            "params": [
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              },
+              {
+                "name": "nodeId",
+                "value": "NodeID-111111111111111111116DBWJs",
+                "type": "path",
+                "description": "A primary network (P or X chain) nodeId."
+              }
+            ]
+          },
+          "docs": "Lists the latest blocks proposed by a given NodeID on one of the Primary Network chains."
+        },
+        {
+          "info": {
+            "name": "List latest blocks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/blocks",
+            "params": [
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 100."
+              },
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Lists latest blocks on one of the Primary Network chains."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

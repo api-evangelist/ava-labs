@@ -1,0 +1,63 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Primary Network Balances API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Primary Network Balances",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get balances",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v1/networks/:network/blockchains/:blockchainId/balances",
+            "params": [
+              {
+                "name": "blockTimestamp",
+                "value": "1599696000",
+                "type": "query",
+                "description": "An epoch timestamp in seconds. Balance will be calculated at this timestamp."
+              },
+              {
+                "name": "addresses",
+                "value": "avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg",
+                "type": "query",
+                "description": "A comma separated list of X-Chain or P-Chain wallet addresses, starting with \"avax\"/\"fuji\", \"P-avax\"/\"P-fuji\" or \"X-avax\"/\"X-fuji\"."
+              },
+              {
+                "name": "blockchainId",
+                "value": "p-chain",
+                "type": "path",
+                "description": "A primary network blockchain id or alias."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "path",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Gets primary network balances for one of the Primary Network chains for the supplied addresses.\n\nC-Chain balances returned are only the shared atomic memory balance. For EVM balance, use the `/v1/chains/:chainId/addresses/:addressId/balances:getNative` endpoint."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

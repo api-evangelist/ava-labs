@@ -1,0 +1,228 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Data AVAX Supply Looking Glass API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-glacier-api-key",
+      "value": "{{x-glacier-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Looking Glass",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get NFT holders by contract address",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/chains/:chainId/contracts/:address/nfts:listHolders",
+            "params": [
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 5000."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0x7a420AEFF902AAa2c85a190D7B91Ce8BEFffFE14",
+                "type": "path",
+                "description": "Contract address on the relevant chain."
+              }
+            ]
+          },
+          "docs": "Get list of NFT holders and number of NFTs held by contract address."
+        },
+        {
+          "info": {
+            "name": "Get addresses by balance over time",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/chains/:chainId/contracts/:address/balances",
+            "params": [
+              {
+                "name": "threshold",
+                "value": "1000000",
+                "type": "query",
+                "description": "The minimum balance for which addresses should be considered."
+              },
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 5000."
+              },
+              {
+                "name": "chainId",
+                "value": "43114",
+                "type": "path",
+                "description": "A supported evm chain id. Use the `/chains` endpoint to get a list of supported chain ids."
+              },
+              {
+                "name": "address",
+                "value": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+                "type": "path",
+                "description": "Contract address on the relevant chain."
+              }
+            ]
+          },
+          "docs": "Get list of addresses and their latest balances that have held more than a certain threshold of a given token during the specified time frame."
+        },
+        {
+          "info": {
+            "name": "Get addresses by BTCb bridged balance",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/chains/43114/btcb/bridged:getAddresses",
+            "params": [
+              {
+                "name": "threshold",
+                "value": "1000000",
+                "type": "query",
+                "description": "The minimum balance for which addresses should be considered."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 5000."
+              }
+            ]
+          },
+          "docs": "Get list of addresses and their net bridged amounts that have bridged more than a certain threshold."
+        },
+        {
+          "info": {
+            "name": "Get addresses running validators during a given time frame",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://glacier-api.avax.network/v2/subnets/:subnetId/validators:getAddresses",
+            "params": [
+              {
+                "name": "startTimestamp",
+                "value": "1689541049",
+                "type": "query",
+                "description": "Query param for retrieving items after a specific timestamp."
+              },
+              {
+                "name": "endTimestamp",
+                "value": "1689800249",
+                "type": "query",
+                "description": "Query param for retrieving items before a specific timestamp."
+              },
+              {
+                "name": "pageToken",
+                "value": "",
+                "type": "query",
+                "description": "A page token, received from a previous list call. Provide this to retrieve the subsequent page."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of items to return. The minimum page size is 1. The maximum pageSize is 5000."
+              },
+              {
+                "name": "subnetId",
+                "value": "11111111111111111111111111111111LpoYY",
+                "type": "path",
+                "description": "The subnet ID to filter by."
+              },
+              {
+                "name": "network",
+                "value": "mainnet",
+                "type": "query",
+                "description": "Either mainnet or testnet/fuji."
+              }
+            ]
+          },
+          "docs": "Get list of addresses and AddValidatorTx timestamps set to receive awards for validation periods during the specified time frame."
+        },
+        {
+          "info": {
+            "name": "Composite query",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/v1/lookingGlass/compositeQuery",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Composite query to get list of addresses from multiple subqueries."
+        },
+        {
+          "info": {
+            "name": "Composite query",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://glacier-api.avax.network/v2/lookingGlass/compositeQuery",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Composite query to get list of addresses from multiple subqueries."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
