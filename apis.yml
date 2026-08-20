@@ -239,6 +239,8 @@ apis:
   humanURL: https://developers.avacloud.io/data-api/overview
   baseURL: https://glacier-api.avax.network
   tags:
+  - NFT
+  tags_raw:
   - NFTs
   properties:
   - type: OpenAPI
@@ -250,7 +252,8 @@ apis:
   description: The Operations API from Ava Labs — 2 operation(s) for operations.
   humanURL: https://developers.avacloud.io/data-api/overview
   baseURL: https://glacier-api.avax.network
-  tags:
+  tags: []
+  tags_raw:
   - Operations
   properties:
   - type: OpenAPI
@@ -391,6 +394,8 @@ apis:
   humanURL: https://developers.avacloud.io/data-api/overview
   baseURL: https://glacier-api.avax.network
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
