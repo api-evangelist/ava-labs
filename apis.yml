@@ -60,21 +60,6 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 apis:
-- name: Avalanche Platform Chain API
-  description: >-
-    JSON-RPC access to the Avalanche Primary Network Platform Chain (P-Chain) — balances, UTXOs, subnets,
-    validators, staking, supply and blockchain status.
-  humanURL: https://build.avax.network/docs/rpcs/p-chain
-  baseURL: https://api.avax.network/ext/bc
-  tags:
-  - RPC
-  - JSON-RPC
-  - Avalanche
-  properties:
-  - type: OpenAPI
-    url: openapi/ava-labs-platform-api-openapi.yml
-  - type: Overlay
-    url: overlays/ava-labs-platform-api-overlay.yaml
 - aid: ava-labs:ava-labs-avax-supply-api
   name: Ava Labs AVAX Supply API
   description: Find information about AVAX supply.
@@ -414,7 +399,19 @@ apis:
     url: openapi/ava-labs-webhooks-api-openapi.yml
   - type: Webhooks
     url: asyncapi/ava-labs-webhooks.yml
+- aid: ava-labs:ava-labs-data-api-api
+  name: Ava Labs Data API
+  description: The Data API API from Ava Labs — 0 operation(s) for data api.
+  humanURL: https://build.avax.network/docs/rpcs/p-chain
+  baseURL: https://api.avax.network/ext/bc
+  tags:
+  - Data API
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-data-api-api-openapi.yml
 common:
+- type: Overlay
+  url: overlays/ava-labs-platform-api-overlay.yaml
 - type: Website
   url: https://avalabs.org/
 - type: DeveloperPortal

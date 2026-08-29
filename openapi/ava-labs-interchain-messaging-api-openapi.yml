@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Data AVAX Supply Interchain Messaging API
+  title: Data Interchain Messaging API
   description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
   version: 1.0.0
   contact: {}
@@ -336,74 +336,6 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.data.icm.listByAddress({\n    pageSize: 10,\n    address: \"0x8578AE7723751446B196bD5124e1bF57B40EB7Bc\",\n    network: \"mainnet\",\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
-    IcmDestinationTransaction:
-      type: object
-      properties:
-        txHash:
-          type: string
-        timestamp:
-          type: number
-        gasSpent:
-          type: string
-        rewardRedeemer:
-          type: string
-        delivererAddress:
-          type: string
-      required:
-      - txHash
-      - timestamp
-      - gasSpent
-      - rewardRedeemer
-      - delivererAddress
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    Money:
-      type: object
-      properties:
-        currencyCode:
-          examples:
-          - usd
-          $ref: '#/components/schemas/CurrencyCode'
-        value:
-          type: number
-          description: Monetary value in base 10 decimals.
-          examples:
-          - '42.42'
-      required:
-      - currencyCode
-      - value
-    IcmReceipt:
-      type: object
-      properties:
-        receivedMessageNonce:
-          type: string
-        relayerRewardAddress:
-          type: string
-      required:
-      - receivedMessageNonce
-      - relayerRewardAddress
     BadGateway:
       type: object
       properties:
@@ -428,30 +360,106 @@ components:
       - message
       - statusCode
       - error
-    Unauthorized:
+    IcmRewardDetails:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
+        address:
           type: string
-          description: The type of error
+          description: A wallet or contract address in mixed-case checksum encoding.
           examples:
-          - Unauthorized
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        logoUri:
+          type: string
+          description: The logo uri for the address.
+          examples:
+          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
+        ercType:
+          type: string
+          enum:
+          - ERC-20
+        price:
+          description: The token price, if available.
+          allOf:
+          - $ref: '#/components/schemas/Money'
+        value:
+          type: string
       required:
-      - message
-      - statusCode
-      - error
+      - address
+      - name
+      - symbol
+      - decimals
+      - ercType
+      - value
+    DeliveredSourceNotIndexedIcmMessage:
+      type: object
+      properties:
+        messageId:
+          type: string
+        icmContractAddress:
+          type: string
+        sourceBlockchainId:
+          type: string
+        destinationBlockchainId:
+          type: string
+        sourceEvmChainId:
+          type: string
+        destinationEvmChainId:
+          type: string
+        messageNonce:
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        data:
+          type: string
+        messageExecuted:
+          type: boolean
+        receipts:
+          type: array
+          items:
+            $ref: '#/components/schemas/IcmReceipt'
+        receiptDelivered:
+          type: boolean
+        rewardDetails:
+          $ref: '#/components/schemas/IcmRewardDetails'
+        destinationTransaction:
+          $ref: '#/components/schemas/IcmDestinationTransaction'
+        status:
+          type: string
+          enum:
+          - delivered_source_not_indexed
+      required:
+      - messageId
+      - icmContractAddress
+      - sourceBlockchainId
+      - destinationBlockchainId
+      - sourceEvmChainId
+      - destinationEvmChainId
+      - messageNonce
+      - from
+      - to
+      - messageExecuted
+      - receipts
+      - receiptDelivered
+      - rewardDetails
+      - destinationTransaction
+      - status
     PendingIcmMessage:
       type: object
       properties:
@@ -507,6 +515,54 @@ components:
       - rewardDetails
       - sourceTransaction
       - status
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
     CurrencyCode:
       type: string
       description: ISO 4217 currency code.
@@ -525,7 +581,7 @@ components:
       - huf
       - jpy
       - nzd
-    Forbidden:
+    NotFound:
       type: object
       properties:
         message:
@@ -539,12 +595,49 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 403
+          - 404
         error:
           type: string
           description: The type of error
           examples:
-          - Forbidden
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    IcmSourceTransaction:
+      type: object
+      properties:
+        txHash:
+          type: string
+        timestamp:
+          type: number
+        gasSpent:
+          type: string
+      required:
+      - txHash
+      - timestamp
+      - gasSpent
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
       required:
       - message
       - statusCode
@@ -570,6 +663,64 @@ components:
                 delivered_source_not_indexed: '#/components/schemas/DeliveredSourceNotIndexedIcmMessage'
       required:
       - messages
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    IcmReceipt:
+      type: object
+      properties:
+        receivedMessageNonce:
+          type: string
+        relayerRewardAddress:
+          type: string
+      required:
+      - receivedMessageNonce
+      - relayerRewardAddress
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
     DeliveredIcmMessage:
       type: object
       properties:
@@ -628,88 +779,27 @@ components:
       - sourceTransaction
       - destinationTransaction
       - status
-    TooManyRequests:
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    Money:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
+        currencyCode:
           examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    IcmRewardDetails:
-      type: object
-      properties:
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        decimals:
-          type: number
-          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
-          examples:
-          - 18
-        logoUri:
-          type: string
-          description: The logo uri for the address.
-          examples:
-          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
-        ercType:
-          type: string
-          enum:
-          - ERC-20
-        price:
-          description: The token price, if available.
-          allOf:
-          - $ref: '#/components/schemas/Money'
+          - usd
+          $ref: '#/components/schemas/CurrencyCode'
         value:
-          type: string
-      required:
-      - address
-      - name
-      - symbol
-      - decimals
-      - ercType
-      - value
-    IcmSourceTransaction:
-      type: object
-      properties:
-        txHash:
-          type: string
-        timestamp:
           type: number
-        gasSpent:
-          type: string
+          description: Monetary value in base 10 decimals.
+          examples:
+          - '42.42'
       required:
-      - txHash
-      - timestamp
-      - gasSpent
+      - currencyCode
+      - value
     InternalServerError:
       type: object
       properties:
@@ -734,115 +824,25 @@ components:
       - message
       - statusCode
       - error
-    ServiceUnavailable:
+    IcmDestinationTransaction:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+        txHash:
+          type: string
+        timestamp:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
+        gasSpent:
           type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
+        rewardRedeemer:
+          type: string
+        delivererAddress:
+          type: string
       required:
-      - message
-      - statusCode
-      - error
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
-    DeliveredSourceNotIndexedIcmMessage:
-      type: object
-      properties:
-        messageId:
-          type: string
-        icmContractAddress:
-          type: string
-        sourceBlockchainId:
-          type: string
-        destinationBlockchainId:
-          type: string
-        sourceEvmChainId:
-          type: string
-        destinationEvmChainId:
-          type: string
-        messageNonce:
-          type: string
-        from:
-          type: string
-        to:
-          type: string
-        data:
-          type: string
-        messageExecuted:
-          type: boolean
-        receipts:
-          type: array
-          items:
-            $ref: '#/components/schemas/IcmReceipt'
-        receiptDelivered:
-          type: boolean
-        rewardDetails:
-          $ref: '#/components/schemas/IcmRewardDetails'
-        destinationTransaction:
-          $ref: '#/components/schemas/IcmDestinationTransaction'
-        status:
-          type: string
-          enum:
-          - delivered_source_not_indexed
-      required:
-      - messageId
-      - icmContractAddress
-      - sourceBlockchainId
-      - destinationBlockchainId
-      - sourceEvmChainId
-      - destinationEvmChainId
-      - messageNonce
-      - from
-      - to
-      - messageExecuted
-      - receipts
-      - receiptDelivered
-      - rewardDetails
-      - destinationTransaction
-      - status
+      - txHash
+      - timestamp
+      - gasSpent
+      - rewardRedeemer
+      - delivererAddress
   securitySchemes:
     apiKey:
       type: apiKey

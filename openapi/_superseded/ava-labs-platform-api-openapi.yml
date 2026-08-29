@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Data AVAX Supply platform API
+  title: Data AVAX Supply Platform API
   description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
   version: 1.0.0
   contact: {}
@@ -2233,6 +2233,153 @@ paths:
                 $ref: '#/components/schemas/JSONRPCError'
 components:
   schemas:
+    ValidatedByResponse:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    ValidatesArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetBalanceRequest:
+      type: object
+      properties:
+        addresses:
+          type: array
+          items:
+            type: string
+      required:
+      - addresses
+    GetFeeStateReply:
+      type: object
+      properties:
+        price:
+          type: object
+          description: 'External type: gas.Price'
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+      required:
+      - price
+      - timestamp
+    GetMinStakeReply:
+      type: object
+      properties:
+        minValidatorStake:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        minDelegatorStake:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+      required:
+      - minValidatorStake
+      - minDelegatorStake
+    GetSubnetArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetTotalStakeArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetL1ValidatorReply:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        height:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+      required:
+      - subnetID
+      - height
+    GetTotalStakeReply:
+      type: object
+      properties:
+        stake:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        weight:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+      required:
+      - stake
+      - weight
+    GetBlockchainStatusArgs:
+      type: object
+      properties:
+        blockchainID:
+          type: string
+      required:
+      - blockchainID
+    GetValidatorFeeStateReply:
+      type: object
+      properties:
+        excess:
+          type: object
+          description: 'External type: gas.Gas'
+        price:
+          type: object
+          description: 'External type: gas.Price'
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+      required:
+      - excess
+      - price
+      - timestamp
+    GetTimestampReply:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+      required:
+      - timestamp
+    GetCurrentSupplyReply:
+      type: object
+      properties:
+        supply:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        height:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+      required:
+      - supply
+      - height
     GetBalanceResponse:
       type: object
       properties:
@@ -2283,15 +2430,116 @@ components:
       - lockedStakeables
       - lockedNotStakeables
       - utxoIDs
-    GetTimestampReply:
+    GetBlockchainStatusReply:
       type: object
       properties:
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
+        status:
+          type: object
+          description: 'External type: status.BlockchainStatus'
       required:
-      - timestamp
+      - status
+    GetMinStakeArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    JSONRPCError:
+      type: object
+      description: JSON-RPC 2.0 Error Response
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              description: Error code
+            message:
+              type: string
+              description: Error message
+            data:
+              type: object
+              description: Additional error data
+          required:
+          - code
+          - message
+        id:
+          type: integer
+          example: 1
+      required:
+      - jsonrpc
+      - error
+      - id
+    GetStakeArgs:
+      type: object
+      properties:
+        validatorsOnly:
+          type: boolean
+        encoding:
+          type: string
+          enum:
+          - hex
+          - json
+          description: Encoding format
+          example: hex
+      required:
+      - validatorsOnly
+      - encoding
+    GetStakeReply:
+      type: object
+      properties:
+        staked:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        stakeds:
+          type: object
+          additionalProperties: true
+          description: Map of ids.ID to avajson.Uint64
+        stakedOutputs:
+          type: array
+          items:
+            type: string
+        encoding:
+          type: string
+          enum:
+          - hex
+          - json
+          description: Encoding format
+          example: hex
+      required:
+      - staked
+      - stakeds
+      - stakedOutputs
+      - encoding
+    GetRewardUTXOsReply:
+      type: object
+      properties:
+        numFetched:
+          type: string
+          description: Unsigned 64-bit integer as string
+          example: '1000000000'
+        utxos:
+          type: array
+          items:
+            type: string
+        encoding:
+          type: string
+          enum:
+          - hex
+          - json
+          description: Encoding format
+          example: hex
+      required:
+      - numFetched
+      - utxos
+      - encoding
     GetCurrentValidatorsArgs:
       type: object
       properties:
@@ -2308,115 +2556,37 @@ components:
       required:
       - subnetID
       - nodeIDs
-    GetSubnetsArgs:
+    GetBlockchainsResponse:
       type: object
       properties:
-        ids:
+        blockchains:
           type: array
           items:
-            type: string
-            description: Avalanche ID in cb58 format
-            example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+            $ref: '#/components/schemas/APIBlockchain'
       required:
-      - ids
-    GetTxStatusResponse:
+      - blockchains
+    APIBlockchain:
       type: object
       properties:
-        status:
-          type: object
-          description: 'External type: status.Status'
-        reason:
+        id:
           type: string
-      required:
-      - status
-    GetStakeArgs:
-      type: object
-      properties:
-        validatorsOnly:
-          type: boolean
-        encoding:
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        name:
           type: string
-          enum:
-          - hex
-          - json
-          description: Encoding format
-          example: hex
-      required:
-      - validatorsOnly
-      - encoding
-    GetFeeStateReply:
-      type: object
-      properties:
-        price:
-          type: object
-          description: 'External type: gas.Price'
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-      required:
-      - price
-      - timestamp
-    GetCurrentSupplyArgs:
-      type: object
-      properties:
         subnetID:
           type: string
           description: Avalanche ID in cb58 format
           example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - subnetID
-    GetSubnetArgs:
-      type: object
-      properties:
-        subnetID:
+        vmID:
           type: string
           description: Avalanche ID in cb58 format
           example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
       required:
+      - id
+      - name
       - subnetID
-    GetBalanceRequest:
-      type: object
-      properties:
-        addresses:
-          type: array
-          items:
-            type: string
-      required:
-      - addresses
-    GetCurrentValidatorsReply:
-      type: object
-      properties:
-        validators:
-          type: array
-          items:
-            type: object
-            description: Validator information
-      required:
-      - validators
-    GetTotalStakeArgs:
-      type: object
-      properties:
-        subnetID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - subnetID
-    GetL1ValidatorReply:
-      type: object
-      properties:
-        subnetID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-        height:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-      required:
-      - subnetID
-      - height
+      - vmID
     GetSubnetResponse:
       type: object
       properties:
@@ -2458,72 +2628,19 @@ components:
       - conversionID
       - managerChainID
       - managerAddress
-    GetStakingAssetIDResponse:
+    GetValidatorsAtArgs:
       type: object
       properties:
-        assetID:
+        height:
+          type: object
+          description: 'External type: platformapi.Height'
+        subnetID:
           type: string
           description: Avalanche ID in cb58 format
           example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
       required:
-      - assetID
-    ValidatesResponse:
-      type: object
-      properties:
-        blockchainIDs:
-          type: array
-          items:
-            type: string
-            description: Avalanche ID in cb58 format
-            example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - blockchainIDs
-    JSONRPCError:
-      type: object
-      description: JSON-RPC 2.0 Error Response
-      properties:
-        jsonrpc:
-          type: string
-          example: '2.0'
-        error:
-          type: object
-          properties:
-            code:
-              type: integer
-              description: Error code
-            message:
-              type: string
-              description: Error message
-            data:
-              type: object
-              description: Additional error data
-          required:
-          - code
-          - message
-        id:
-          type: integer
-          example: 1
-      required:
-      - jsonrpc
-      - error
-      - id
-    GetValidatorFeeStateReply:
-      type: object
-      properties:
-        excess:
-          type: object
-          description: 'External type: gas.Gas'
-        price:
-          type: object
-          description: 'External type: gas.Price'
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-      required:
-      - excess
-      - price
-      - timestamp
+      - height
+      - subnetID
     SampleValidatorsReply:
       type: object
       properties:
@@ -2535,22 +2652,24 @@ components:
             example: NodeID-111111111111111111116DBWJs
       required:
       - validators
-    GetBlockchainsResponse:
+    GetCurrentSupplyArgs:
       type: object
       properties:
-        blockchains:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetSubnetsResponse:
+      type: object
+      properties:
+        subnets:
           type: array
           items:
-            $ref: '#/components/schemas/APIBlockchain'
+            $ref: '#/components/schemas/APISubnet'
       required:
-      - blockchains
-    GetBlockchainStatusArgs:
-      type: object
-      properties:
-        blockchainID:
-          type: string
-      required:
-      - blockchainID
+      - subnets
     APISubnet:
       type: object
       properties:
@@ -2570,23 +2689,17 @@ components:
       - id
       - controlKeys
       - threshold
-    GetBlockchainStatusReply:
+    ValidatesResponse:
       type: object
       properties:
-        status:
-          type: object
-          description: 'External type: status.BlockchainStatus'
+        blockchainIDs:
+          type: array
+          items:
+            type: string
+            description: Avalanche ID in cb58 format
+            example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
       required:
-      - status
-    GetMinStakeArgs:
-      type: object
-      properties:
-        subnetID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - subnetID
+      - blockchainIDs
     SampleValidatorsArgs:
       type: object
       properties:
@@ -2600,141 +2713,6 @@ components:
       required:
       - size
       - subnetID
-    GetStakingAssetIDArgs:
-      type: object
-      properties:
-        subnetID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - subnetID
-    ValidatedByArgs:
-      type: object
-      properties:
-        blockchainID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - blockchainID
-    GetValidatorsAtReply:
-      type: object
-      properties:
-        Validators:
-          type: object
-          additionalProperties: true
-          description: Map of ids.NodeID to *validators.GetValidatorOutput
-      required:
-      - Validators
-    GetTotalStakeReply:
-      type: object
-      properties:
-        stake:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-        weight:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-      required:
-      - stake
-      - weight
-    GetMinStakeReply:
-      type: object
-      properties:
-        minValidatorStake:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-        minDelegatorStake:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-      required:
-      - minValidatorStake
-      - minDelegatorStake
-    GetStakeReply:
-      type: object
-      properties:
-        staked:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-        stakeds:
-          type: object
-          additionalProperties: true
-          description: Map of ids.ID to avajson.Uint64
-        stakedOutputs:
-          type: array
-          items:
-            type: string
-        encoding:
-          type: string
-          enum:
-          - hex
-          - json
-          description: Encoding format
-          example: hex
-      required:
-      - staked
-      - stakeds
-      - stakedOutputs
-      - encoding
-    GetTxStatusArgs:
-      type: object
-      properties:
-        txID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - txID
-    GetRewardUTXOsReply:
-      type: object
-      properties:
-        numFetched:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-        utxos:
-          type: array
-          items:
-            type: string
-        encoding:
-          type: string
-          enum:
-          - hex
-          - json
-          description: Encoding format
-          example: hex
-      required:
-      - numFetched
-      - utxos
-      - encoding
-    APIBlockchain:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-        name:
-          type: string
-        subnetID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-        vmID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - id
-      - name
-      - subnetID
-      - vmID
     GetL1ValidatorArgs:
       type: object
       properties:
@@ -2744,60 +2722,82 @@ components:
           example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
       required:
       - validationID
-    GetSubnetsResponse:
+    GetStakingAssetIDResponse:
       type: object
       properties:
-        subnets:
+        assetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - assetID
+    GetCurrentValidatorsReply:
+      type: object
+      properties:
+        validators:
           type: array
           items:
-            $ref: '#/components/schemas/APISubnet'
+            type: object
+            description: Validator information
       required:
-      - subnets
-    GetValidatorsAtArgs:
+      - validators
+    GetSubnetsArgs:
       type: object
       properties:
-        height:
+        ids:
+          type: array
+          items:
+            type: string
+            description: Avalanche ID in cb58 format
+            example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - ids
+    GetStakingAssetIDArgs:
+      type: object
+      properties:
+        subnetID:
+          type: string
+          description: Avalanche ID in cb58 format
+          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      required:
+      - subnetID
+    GetValidatorsAtReply:
+      type: object
+      properties:
+        Validators:
           type: object
-          description: 'External type: platformapi.Height'
-        subnetID:
+          additionalProperties: true
+          description: Map of ids.NodeID to *validators.GetValidatorOutput
+      required:
+      - Validators
+    ValidatedByArgs:
+      type: object
+      properties:
+        blockchainID:
           type: string
           description: Avalanche ID in cb58 format
           example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
       required:
-      - height
-      - subnetID
-    ValidatedByResponse:
+      - blockchainID
+    GetTxStatusResponse:
       type: object
       properties:
-        subnetID:
+        status:
+          type: object
+          description: 'External type: status.Status'
+        reason:
+          type: string
+      required:
+      - status
+    GetTxStatusArgs:
+      type: object
+      properties:
+        txID:
           type: string
           description: Avalanche ID in cb58 format
           example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
       required:
-      - subnetID
-    ValidatesArgs:
-      type: object
-      properties:
-        subnetID:
-          type: string
-          description: Avalanche ID in cb58 format
-          example: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      required:
-      - subnetID
-    GetCurrentSupplyReply:
-      type: object
-      properties:
-        supply:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-        height:
-          type: string
-          description: Unsigned 64-bit integer as string
-          example: '1000000000'
-      required:
-      - supply
-      - height
+      - txID
   securitySchemes:
     apiKey:
       type: apiKey

@@ -1,14 +1,11 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Data AVAX Supply Looking Glass API
-  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  title: Metrics Looking Glass API
+  description: The Metrics API provides metrics and analytics of on-chain activity. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://hackenproof.com/avalanche">here</a>.
   version: 1.0.0
   contact: {}
 servers:
-- url: https://glacier-api.avax.network
-security:
-- apiKey: []
-- {}
+- url: https://metrics.avax.network
 tags:
 - name: Looking Glass
   description: Looking Glass is a tool that allows users to look up information for future airdrops.
@@ -627,160 +624,6 @@ paths:
       - Looking Glass
 components:
   schemas:
-    LatestBalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - LatestBalance
-        params:
-          $ref: '#/components/schemas/LatestBalanceParams'
-      required:
-      - id
-      - type
-      - params
-    DateRangeErc20MinBalanceParam:
-      type: object
-      properties:
-        firstDate:
-          type: string
-        lastDate:
-          type: string
-        minBalance:
-          type: string
-        evmChainId:
-          type: string
-        contractAddress:
-          type: string
-      required:
-      - firstDate
-      - lastDate
-      - minBalance
-      - evmChainId
-      - contractAddress
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    Operator:
-      type: string
-      enum:
-      - AND
-      - OR
-    LatestBalanceParams:
-      type: object
-      properties:
-        minBalance:
-          type: string
-        evmChainId:
-          type: string
-        tokenType:
-          $ref: '#/components/schemas/TokenType'
-        contractAddress:
-          type: string
-      required:
-      - minBalance
-      - evmChainId
-      - tokenType
-    TokenType:
-      type: string
-      enum:
-      - ERC20
-      - NATIVE
-    CompositeQueryResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        subQueryCounts:
-          type: object
-          additionalProperties:
-            type: number
-          examples:
-          - '1': 1
-            '2': 2
-            '3': 2
-          description: The number of results for each subquery by query id.
-        totalCount:
-          type: number
-          examples:
-          - 2
-          description: The total number of addresses returned by the composite query.
-        addresses:
-          type: array
-          items:
-            type: string
-            examples:
-            - '0x1234567890abcdef1234567890abcdef123456789'
-      required:
-      - subQueryCounts
-      - totalCount
-      - addresses
-    PChainLookingGlassResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        addresses:
-          description: List of addresses that match provided criteria.
-          type: array
-          items:
-            $ref: '#/components/schemas/PChainAddressDetails'
-      required:
-      - addresses
-    LookingGlassResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        addresses:
-          description: List of addresses that match provided criteria.
-          type: array
-          items:
-            $ref: '#/components/schemas/AddressDetails'
-      required:
-      - addresses
-    AllTimeStarsArenaBalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AllTimeStarsArenaBalance
-        params:
-          $ref: '#/components/schemas/DateRangeStarsArenaMinBalanceParam'
-      required:
-      - id
-      - type
-      - params
     BadGateway:
       type: object
       properties:
@@ -805,6 +648,22 @@ components:
       - message
       - statusCode
       - error
+    DateRangeStarsArenaMinBalanceParam:
+      type: object
+      properties:
+        firstDate:
+          type: string
+        lastDate:
+          type: string
+        minBalance:
+          type: string
+        subjectAddress:
+          type: string
+      required:
+      - firstDate
+      - lastDate
+      - minBalance
+      - subjectAddress
     DateRangeNftHoldersParam:
       type: object
       properties:
@@ -821,6 +680,53 @@ components:
       - lastDate
       - evmChainId
       - contractAddress
+    DateRangeMinBalanceParam:
+      type: object
+      properties:
+        firstDate:
+          type: string
+        lastDate:
+          type: string
+        minBalance:
+          type: string
+        evmChainId:
+          type: string
+      required:
+      - firstDate
+      - lastDate
+      - minBalance
+      - evmChainId
+    TimestampRangeNftHoldersParam:
+      type: object
+      properties:
+        evmChainId:
+          type: string
+        contractAddress:
+          type: string
+        startTs:
+          type: number
+        endTs:
+          type: number
+      required:
+      - evmChainId
+      - contractAddress
+      - startTs
+      - endTs
+    AllTimeNativeBalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AllTimeNativeBalance
+        params:
+          $ref: '#/components/schemas/DateRangeMinBalanceParam'
+      required:
+      - id
+      - type
+      - params
     Unauthorized:
       type: object
       properties:
@@ -845,37 +751,67 @@ components:
       - message
       - statusCode
       - error
-    AddressDetails:
+    LookingGlassResponse:
       type: object
       properties:
-        address:
+        nextPageToken:
           type: string
-          examples:
-          - '0x1234567890abcdef1234567890abcdef123456789'
-          description: An EVM address.
-        sortKey:
-          type: string
-          examples:
-          - 123
-          description: Route dependent value associated with an address at a given point in time.
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        addresses:
+          description: List of addresses that match provided criteria.
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressDetails'
       required:
-      - address
-      - sortKey
-    LatestStarsArenaBalanceQueryDto:
+      - addresses
+    ServiceUnavailable:
       type: object
       properties:
-        id:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
           type: string
-        type:
-          type: string
-          enum:
-          - LatestBalanceStarsArena
-        params:
-          $ref: '#/components/schemas/LatestStarsArenaBalanceParams'
+          description: The type of error
+          examples:
+          - Service Unavailable
       required:
-      - id
-      - type
-      - params
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
     AllTimeNftHoldersQueryDto:
       type: object
       properties:
@@ -893,7 +829,7 @@ components:
       - id
       - type
       - params
-    DateRangeStarsArenaMinBalanceParam:
+    DateRangeErc20MinBalanceParam:
       type: object
       properties:
         firstDate:
@@ -902,14 +838,17 @@ components:
           type: string
         minBalance:
           type: string
-        subjectAddress:
+        evmChainId:
+          type: string
+        contractAddress:
           type: string
       required:
       - firstDate
       - lastDate
       - minBalance
-      - subjectAddress
-    AnyTimeNativeBalanceQueryDto:
+      - evmChainId
+      - contractAddress
+    AnyTimeNftHoldersQueryDto:
       type: object
       properties:
         id:
@@ -917,63 +856,11 @@ components:
         type:
           type: string
           enum:
-          - AnyTimeNativeBalance
+          - AnyTimeNftHolders
         params:
-          $ref: '#/components/schemas/DateRangeMinBalanceParam'
-      required:
-      - id
-      - type
-      - params
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
           oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    AnyTimeErc20BalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AnyTimeErc20Balance
-        params:
-          $ref: '#/components/schemas/DateRangeErc20MinBalanceParam'
-      required:
-      - id
-      - type
-      - params
-    AllTimeErc20BalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AllTimeErc20Balance
-        params:
-          $ref: '#/components/schemas/DateRangeErc20MinBalanceParam'
+          - $ref: '#/components/schemas/TimestampRangeNftHoldersParam'
+          - $ref: '#/components/schemas/DateRangeNftHoldersParam'
       required:
       - id
       - type
@@ -1002,63 +889,57 @@ components:
       - message
       - statusCode
       - error
-    PChainAddressDetails:
+    AddressDetails:
       type: object
       properties:
-        addresses:
+        address:
+          type: string
           examples:
-          - - avax1abcdef1234567890abcdef1234567890abcdef
-          description: A list of P-Chain addresses.
-          type: array
-          items:
-            type: string
+          - '0x1234567890abcdef1234567890abcdef123456789'
+          description: An EVM address.
         sortKey:
           type: string
           examples:
           - 123
           description: Route dependent value associated with an address at a given point in time.
       required:
-      - addresses
+      - address
       - sortKey
-    NftHoldersResponse:
+    TokenType:
+      type: string
+      enum:
+      - ERC20
+      - NATIVE
+    AnyTimeNativeBalanceQueryDto:
       type: object
       properties:
-        nextPageToken:
+        id:
           type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        addresses:
-          description: List of addresses that match provided criteria.
-          type: array
-          items:
-            $ref: '#/components/schemas/AddressDetails'
-        nftCollectionName:
-          examples:
-          - NFT Project
-          description: NFT project name.
-          type: array
-          items:
-            type: string
-        nftSymbol:
-          examples:
-          - NFTPROJ
-          description: NFT symbol.
-          type: array
-          items:
-            type: string
-        totalHolders:
-          type: number
-          examples:
-          - 10
-          description: Total number of holders of a given NFT project.
-        totalTokens:
-          type: number
-          examples:
-          - 10
-          description: Total number of tokens of a given NFT project.
+        type:
+          type: string
+          enum:
+          - AnyTimeNativeBalance
+        params:
+          $ref: '#/components/schemas/DateRangeMinBalanceParam'
       required:
-      - addresses
-      - totalHolders
-      - totalTokens
+      - id
+      - type
+      - params
+    LatestBalanceParams:
+      type: object
+      properties:
+        minBalance:
+          type: string
+        evmChainId:
+          type: string
+        tokenType:
+          $ref: '#/components/schemas/TokenType'
+        contractAddress:
+          type: string
+      required:
+      - minBalance
+      - evmChainId
+      - tokenType
     CompositeQueryRequestDto:
       type: object
       properties:
@@ -1103,17 +984,68 @@ components:
       required:
       - queries
       - operator
-    LatestStarsArenaBalanceParams:
+    BadRequest:
       type: object
       properties:
-        minBalance:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
           type: string
-        subjectAddress:
-          type: string
+          description: The type of error
+          examples:
+          - Bad Request
       required:
-      - minBalance
-      - subjectAddress
-    AllTimeNativeBalanceQueryDto:
+      - message
+      - statusCode
+      - error
+    PChainLookingGlassResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        addresses:
+          description: List of addresses that match provided criteria.
+          type: array
+          items:
+            $ref: '#/components/schemas/PChainAddressDetails'
+      required:
+      - addresses
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    LatestBalanceQueryDto:
       type: object
       properties:
         id:
@@ -1121,9 +1053,143 @@ components:
         type:
           type: string
           enum:
-          - AllTimeNativeBalance
+          - LatestBalance
         params:
-          $ref: '#/components/schemas/DateRangeMinBalanceParam'
+          $ref: '#/components/schemas/LatestBalanceParams'
+      required:
+      - id
+      - type
+      - params
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    LatestStarsArenaBalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - LatestBalanceStarsArena
+        params:
+          $ref: '#/components/schemas/LatestStarsArenaBalanceParams'
+      required:
+      - id
+      - type
+      - params
+    AnyTimeErc20BalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AnyTimeErc20Balance
+        params:
+          $ref: '#/components/schemas/DateRangeErc20MinBalanceParam'
+      required:
+      - id
+      - type
+      - params
+    CompositeQueryResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        subQueryCounts:
+          type: object
+          additionalProperties:
+            type: number
+          examples:
+          - '1': 1
+            '2': 2
+            '3': 2
+          description: The number of results for each subquery by query id.
+        totalCount:
+          type: number
+          examples:
+          - 2
+          description: The total number of addresses returned by the composite query.
+        addresses:
+          type: array
+          items:
+            type: string
+            examples:
+            - '0x1234567890abcdef1234567890abcdef123456789'
+      required:
+      - subQueryCounts
+      - totalCount
+      - addresses
+    Operator:
+      type: string
+      enum:
+      - AND
+      - OR
+    AllTimeStarsArenaBalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AllTimeStarsArenaBalance
+        params:
+          $ref: '#/components/schemas/DateRangeStarsArenaMinBalanceParam'
+      required:
+      - id
+      - type
+      - params
+    PChainAddressDetails:
+      type: object
+      properties:
+        addresses:
+          examples:
+          - - avax1abcdef1234567890abcdef1234567890abcdef
+          description: A list of P-Chain addresses.
+          type: array
+          items:
+            type: string
+        sortKey:
+          type: string
+          examples:
+          - 123
+          description: Route dependent value associated with an address at a given point in time.
+      required:
+      - addresses
+      - sortKey
+    AllTimeErc20BalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AllTimeErc20Balance
+        params:
+          $ref: '#/components/schemas/DateRangeErc20MinBalanceParam'
+      required:
+      - id
+      - type
+      - params
+    AnyTimeStarsArenaBalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AnyTimeStarsArenaBalance
+        params:
+          $ref: '#/components/schemas/DateRangeStarsArenaMinBalanceParam'
       required:
       - id
       - type
@@ -1152,130 +1218,59 @@ components:
       - message
       - statusCode
       - error
-    AnyTimeStarsArenaBalanceQueryDto:
+    NftHoldersResponse:
       type: object
       properties:
-        id:
+        nextPageToken:
           type: string
-        type:
-          type: string
-          enum:
-          - AnyTimeStarsArenaBalance
-        params:
-          $ref: '#/components/schemas/DateRangeStarsArenaMinBalanceParam'
-      required:
-      - id
-      - type
-      - params
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        addresses:
+          description: List of addresses that match provided criteria.
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressDetails'
+        nftCollectionName:
+          examples:
+          - NFT Project
+          description: NFT project name.
+          type: array
+          items:
+            type: string
+        nftSymbol:
+          examples:
+          - NFTPROJ
+          description: NFT symbol.
+          type: array
+          items:
+            type: string
+        totalHolders:
           type: number
-          description: The HTTP status code of the response
           examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
-    AnyTimeNftHoldersQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AnyTimeNftHolders
-        params:
-          oneOf:
-          - $ref: '#/components/schemas/TimestampRangeNftHoldersParam'
-          - $ref: '#/components/schemas/DateRangeNftHoldersParam'
-      required:
-      - id
-      - type
-      - params
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+          - 10
+          description: Total number of holders of a given NFT project.
+        totalTokens:
           type: number
-          description: The HTTP status code of the response
           examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
+          - 10
+          description: Total number of tokens of a given NFT project.
       required:
-      - message
-      - statusCode
-      - error
-    DateRangeMinBalanceParam:
+      - addresses
+      - totalHolders
+      - totalTokens
+    LatestStarsArenaBalanceParams:
       type: object
       properties:
-        firstDate:
-          type: string
-        lastDate:
-          type: string
         minBalance:
           type: string
-        evmChainId:
+        subjectAddress:
           type: string
       required:
-      - firstDate
-      - lastDate
       - minBalance
-      - evmChainId
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
-    TimestampRangeNftHoldersParam:
-      type: object
-      properties:
-        evmChainId:
-          type: string
-        contractAddress:
-          type: string
-        startTs:
-          type: number
-        endTs:
-          type: number
-      required:
-      - evmChainId
-      - contractAddress
-      - startTs
-      - endTs
-  securitySchemes:
-    apiKey:
-      type: apiKey
-      in: header
-      name: x-glacier-api-key
-      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+      - subjectAddress
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
 x-speakeasy-retries:
   strategy: backoff
   backoff:
@@ -1286,10 +1281,6 @@ x-speakeasy-retries:
   statusCodes:
   - 5XX
   retryConnectionErrors: true
-x-speakeasy-globals:
-  parameters:
-  - $ref: '#/components/parameters/GlobalParamChainId'
-  - $ref: '#/components/parameters/GlobalParamNetwork'
 x-execution-weight-values:
   free: 1
   large: 50
@@ -1298,44 +1289,3 @@ x-execution-weight-values:
   small: 10
   xl: 100
   xxl: 200
-x-rpc-method-execution-weights:
-  eth_accounts: free
-  eth_blockNumber: small
-  eth_call: small
-  eth_coinbase: small
-  eth_chainId: free
-  eth_gasPrice: small
-  eth_getBalance: small
-  eth_getBlockByHash: small
-  eth_getBlockByNumber: small
-  eth_getBlockTransactionCountByNumber: medium
-  eth_getCode: medium
-  eth_getLogs: xxl
-  eth_getStorageAt: medium
-  eth_getTransactionByBlockNumberAndIndex: medium
-  eth_getTransactionByHash: small
-  eth_getTransactionCount: small
-  eth_getTransactionReceipt: small
-  eth_signTransaction: medium
-  eth_sendTransaction: medium
-  eth_sign: medium
-  eth_sendRawTransaction: small
-  eth_syncing: free
-  net_listening: free
-  net_peerCount: medium
-  net_version: free
-  web3_clientVersion: small
-  web3_sha3: small
-  eth_newPendingTransactionFilter: medium
-  eth_maxPriorityFeePerGas: small
-  eth_baseFee: small
-  rpc_modules: free
-  eth_getChainConfig: small
-  eth_feeConfig: small
-  eth_getActivePrecompilesAt: small
-x-speakeasy-webhooks:
-  security:
-    type: signature
-    headerName: x-signature
-    signatureTextEncoding: base64
-    algorithm: hmac-sha256

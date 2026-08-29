@@ -1,0 +1,548 @@
+openapi: 3.2.0
+info:
+  title: Data API
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  version: 1.0.0
+  contact: {}
+servers:
+- url: https://glacier-api.avax.network
+security:
+- apiKey: []
+- {}
+tags:
+- name: Data API
+paths: {}
+webhooks:
+  address_activity:
+    post:
+      description: Schema representing the webhook payload for address activity, sent to the callback URL.
+      operationId: sendAddressActivityWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookAddressActivityResponse'
+      responses:
+        '200':
+          description: Return a 200 status to indicate that the data was received successfully
+      tags:
+      - Data API
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        blockHash:
+          type: string
+          description: Block hash of the transaction
+          examples:
+          - '0x2a47bebed93db4a21cc8339980f004cc67f17d0dff4a368001e450e7be2edaa0'
+        blockNumber:
+          type: string
+          description: Block number of the transaction
+          examples:
+          - '45396106'
+        from:
+          type: string
+          description: Sender address
+          examples:
+          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
+        gas:
+          type: string
+          description: Gas limit for the transaction
+          examples:
+          - '80000'
+        gasPrice:
+          type: string
+          description: Gas price used
+          examples:
+          - '52000000000'
+        maxFeePerGas:
+          type: string
+          description: Maximum fee per gas
+          examples:
+          - '52000000000'
+        maxPriorityFeePerGas:
+          type: string
+          description: Maximum priority fee per gas
+          examples:
+          - '2000000000'
+        txHash:
+          type: string
+          description: Transaction hash
+          examples:
+          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
+        txStatus:
+          type: string
+          description: Transaction status
+          examples:
+          - '1'
+        input:
+          type: string
+          description: Input data
+          examples:
+          - '0xa9059cbb00000000000000000000000040e832c3df9562dfae5a86a4849f27f687a9b46b00000000000000000000000000000000000000000000000000000000c68b2a69'
+        nonce:
+          type: string
+          description: Nonce value
+          examples:
+          - '0'
+        to:
+          type: string
+          description: Recipient address
+          examples:
+          - '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7'
+        transactionIndex:
+          type: number
+          description: Transaction index
+          examples:
+          - 1
+        value:
+          type: string
+          description: Value transferred in the transaction
+          examples:
+          - '0'
+        type:
+          type: number
+          description: Transaction type
+          examples:
+          - 2
+        chainId:
+          type: string
+          description: Chain ID of the network
+          examples:
+          - '43114'
+        receiptCumulativeGasUsed:
+          type: string
+          description: Cumulative gas used
+          examples:
+          - '668508'
+        receiptGasUsed:
+          type: string
+          description: Gas used
+          examples:
+          - '44038'
+        receiptEffectiveGasPrice:
+          type: string
+          description: Effective gas price
+          examples:
+          - '27000000000'
+        receiptRoot:
+          type: string
+          description: Receipt root
+          examples:
+          - '0xe5b018c29a77c8a92c4ea2f2d7e58820283041a52e14a0620d90d13b881e1ee3'
+        blockTimestamp:
+          type: number
+          description: Block timestamp
+          examples:
+          - 1715621840
+        contractAddress:
+          type: string
+          description: Contract address (optional)
+          examples:
+          - '0x0000000000000000000000000000000000000000'
+        erc20Transfers:
+          description: ERC20 transfers
+          type: array
+          items:
+            $ref: '#/components/schemas/ERCTransfer'
+        erc721Transfers:
+          description: ERC721 transfers
+          type: array
+          items:
+            $ref: '#/components/schemas/ERCTransfer'
+        erc1155Transfers:
+          description: ERC1155 transfers
+          type: array
+          items:
+            $ref: '#/components/schemas/ERCTransfer'
+        internalTransactions:
+          description: Internal transactions (optional)
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookInternalTransaction'
+        accessList:
+          description: Access list (optional)
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessListData'
+        networkToken:
+          description: Network token info (optional)
+          allOf:
+          - $ref: '#/components/schemas/NetworkTokenInfo'
+      required:
+      - blockHash
+      - blockNumber
+      - from
+      - gas
+      - gasPrice
+      - maxFeePerGas
+      - maxPriorityFeePerGas
+      - txHash
+      - txStatus
+      - input
+      - nonce
+      - to
+      - transactionIndex
+      - value
+      - type
+      - chainId
+      - receiptCumulativeGasUsed
+      - receiptGasUsed
+      - receiptEffectiveGasPrice
+      - receiptRoot
+      - blockTimestamp
+      - erc20Transfers
+      - erc721Transfers
+      - erc1155Transfers
+    WebhookAddressActivityResponse:
+      type: object
+      properties:
+        webhookId:
+          type: string
+          description: Webhook ID
+          examples:
+          - 401da7d9-d6d7-46c8-b431-72ff1e1543f4
+        eventType:
+          type: string
+          description: Event type
+          enum:
+          - address_activity
+          examples:
+          - address_activity
+        messageId:
+          type: string
+          description: Message ID
+          examples:
+          - bc9732db-2430-4296-afc3-c51267beb14a
+        event:
+          description: Event details
+          allOf:
+          - $ref: '#/components/schemas/TransactionEvent'
+      required:
+      - webhookId
+      - eventType
+      - messageId
+      - event
+    TransactionEvent:
+      type: object
+      properties:
+        transaction:
+          description: Transaction details
+          allOf:
+          - $ref: '#/components/schemas/Transaction'
+        logs:
+          description: Array of log events
+          type: array
+          items:
+            $ref: '#/components/schemas/Log'
+      required:
+      - transaction
+    ERCTransfer:
+      type: object
+      properties:
+        transactionHash:
+          type: string
+          description: Transaction hash
+          examples:
+          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
+        type:
+          type: string
+          description: Transfer type
+          examples:
+          - ERC20
+        from:
+          type: string
+          description: Sender address
+          examples:
+          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
+        to:
+          type: string
+          description: Recipient address
+          examples:
+          - '0x40E832C3Df9562DfaE5A86A4849F27F687A9B46B'
+        value:
+          type: string
+          description: Amount transferred
+          examples:
+          - '3331009129'
+        tokenId:
+          type: string
+          description: Token Id
+          examples:
+          - '2'
+        blockTimestamp:
+          type: number
+          description: Block timestamp
+          examples:
+          - 1640995200
+        logIndex:
+          type: number
+          description: Log index
+          examples:
+          - 5
+        erc20Token:
+          description: erc20 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+        erc721Token:
+          description: erc721 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+        erc1155Token:
+          description: erc1155 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+      required:
+      - transactionHash
+      - type
+      - from
+      - to
+      - value
+      - blockTimestamp
+      - logIndex
+    ERCToken:
+      type: object
+      properties:
+        address:
+          type: string
+          description: Token contract address
+          examples:
+          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
+        name:
+          type: string
+          description: Token name
+          examples:
+          - TetherToken
+        symbol:
+          type: string
+          description: Token symbol
+          examples:
+          - USDt
+        decimals:
+          type: number
+          description: Token decimals
+          examples:
+          - 6
+        valueWithDecimals:
+          type: string
+          description: Value including decimals
+          examples:
+          - '3331.009129'
+      required:
+      - address
+      - name
+      - symbol
+      - decimals
+      - valueWithDecimals
+    NetworkTokenInfo:
+      type: object
+      properties:
+        tokenName:
+          type: string
+          description: Token name
+          examples:
+          - TetherToken
+        tokenSymbol:
+          type: string
+          description: Token symbol
+          examples:
+          - USDt
+        tokenDecimals:
+          type: number
+          description: Token decimals
+          examples:
+          - 6
+        valueWithDecimals:
+          type: string
+          description: Value including decimals
+          examples:
+          - '3331.009129'
+    WebhookInternalTransaction:
+      type: object
+      properties:
+        from:
+          type: string
+          description: Sender address
+          examples:
+          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
+        to:
+          type: string
+          description: Recipient address
+          examples:
+          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
+        internalTxType:
+          type: string
+          description: Internal transaction type
+          examples:
+          - call
+        value:
+          type: string
+          description: Value transferred
+          examples:
+          - '50000000000000000'
+        gasUsed:
+          type: string
+          description: Gas used
+          examples:
+          - '44038'
+        gasLimit:
+          type: string
+          description: Gas limit
+          examples:
+          - '50000'
+        transactionHash:
+          type: string
+          description: Transaction hash
+          examples:
+          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
+      required:
+      - from
+      - to
+      - internalTxType
+      - value
+      - gasUsed
+      - gasLimit
+      - transactionHash
+    Log:
+      type: object
+      properties:
+        address:
+          type: string
+          description: Contract address
+          examples:
+          - '0x54C800d2331E10467143911aabCa092d68bF4166'
+        topic0:
+          type: string
+          description: First topic
+          examples:
+          - '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925'
+        topic1:
+          type: string
+          description: Second topic (optional)
+          examples:
+          - '0x0000000000000000000000000000333883f313ad709f583d0a3d2e18a44ef29b'
+        topic2:
+          type: string
+          description: Third topic (optional)
+          examples:
+          - '0x0000000000000000000000000000000000000000000000000000000000000000'
+        topic3:
+          type: string
+          description: Fourth topic (optional)
+          examples:
+          - '0x0000000000000000000000000000000000000000000000000000000000001350'
+        data:
+          type: string
+          description: Event data
+          examples:
+          - 0x
+        transactionIndex:
+          type: number
+          description: Transaction index
+          examples:
+          - 2
+        logIndex:
+          type: number
+          description: Log index
+          examples:
+          - 10
+        removed:
+          type: boolean
+          description: Indicates if the log was removed
+          examples:
+          - false
+      required:
+      - address
+      - topic0
+      - data
+      - transactionIndex
+      - logIndex
+      - removed
+    AccessListData:
+      type: object
+      properties:
+        accessAddresses:
+          type: string
+          description: Access Address
+          examples:
+          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
+        storageKeys:
+          description: Storage keys
+          type: array
+          items:
+            type: string
+      required:
+      - accessAddresses
+      - storageKeys
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-glacier-api-key
+      description: Api keys provide higher access to rate limits. To obtain an api key, sign up for an account at https://avacloud.io/.
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 120000
+    exponent: 1.5
+  statusCodes:
+  - 5XX
+  retryConnectionErrors: true
+x-speakeasy-globals:
+  parameters:
+  - $ref: '#/components/parameters/GlobalParamChainId'
+  - $ref: '#/components/parameters/GlobalParamNetwork'
+x-execution-weight-values:
+  free: 1
+  large: 50
+  medium: 20
+  none: 0
+  small: 10
+  xl: 100
+  xxl: 200
+x-rpc-method-execution-weights:
+  eth_accounts: free
+  eth_blockNumber: small
+  eth_call: small
+  eth_coinbase: small
+  eth_chainId: free
+  eth_gasPrice: small
+  eth_getBalance: small
+  eth_getBlockByHash: small
+  eth_getBlockByNumber: small
+  eth_getBlockTransactionCountByNumber: medium
+  eth_getCode: medium
+  eth_getLogs: xxl
+  eth_getStorageAt: medium
+  eth_getTransactionByBlockNumberAndIndex: medium
+  eth_getTransactionByHash: small
+  eth_getTransactionCount: small
+  eth_getTransactionReceipt: small
+  eth_signTransaction: medium
+  eth_sendTransaction: medium
+  eth_sign: medium
+  eth_sendRawTransaction: small
+  eth_syncing: free
+  net_listening: free
+  net_peerCount: medium
+  net_version: free
+  web3_clientVersion: small
+  web3_sha3: small
+  eth_newPendingTransactionFilter: medium
+  eth_maxPriorityFeePerGas: small
+  eth_baseFee: small
+  rpc_modules: free
+  eth_getChainConfig: small
+  eth_feeConfig: small
+  eth_getActivePrecompilesAt: small
+x-speakeasy-webhooks:
+  security:
+    type: signature
+    headerName: x-signature
+    signatureTextEncoding: base64
+    algorithm: hmac-sha256
