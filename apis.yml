@@ -31,15 +31,17 @@ deliveryModel:
   method: derived
 accessModel:
   pricing: unknown
-  onboarding: self-serve
+  onboarding: unknown
   trial: false
   try_now: false
   public: false
-  label: Self-serve signup
-  confidence: medium
+  label: Unknown
+  confidence: low
   source:
   - authentication
-  generated: '2026-07-22'
+  - security
+  - sandbox
+  generated: '2026-09-03'
   method: derived
 specificationVersion: '0.23'
 created: '2026-07-17'
@@ -410,6 +412,9 @@ apis:
   - type: OpenAPI
     url: openapi/ava-labs-data-api-api-openapi.yml
 common:
+- type: CapabilityMap
+  url: capabilities/ava-labs-capability-edges.yml
+  name: Ava Labs Business Capability Map
 - type: Overlay
   url: overlays/ava-labs-platform-api-overlay.yaml
 - type: Website
@@ -446,8 +451,9 @@ common:
   url: cli/ava-labs-cli.yml
 - type: Sandbox
   url: sandbox/ava-labs-sandbox.yml
-- type: MCPServer
+- type: X-MCPServerCandidate
   url: mcp/ava-labs-mcp.yml
+  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
 - type: AgentSkill
   url: skills/_index.yml
 - type: WellKnown
