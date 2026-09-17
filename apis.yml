@@ -232,20 +232,6 @@ apis:
     url: openapi/ava-labs-looking-glass-api-openapi.yml
   - type: Webhooks
     url: asyncapi/ava-labs-webhooks.yml
-- aid: ava-labs:ava-labs-nfts-api
-  name: Ava Labs NFTs API
-  description: The NFTs API from Ava Labs — 3 operation(s) for nfts.
-  humanURL: https://developers.avacloud.io/data-api/overview
-  baseURL: https://glacier-api.avax.network
-  tags:
-  - NFT
-  tags_raw:
-  - NFTs
-  properties:
-  - type: OpenAPI
-    url: openapi/ava-labs-nfts-api-openapi.yml
-  - type: Webhooks
-    url: asyncapi/ava-labs-webhooks.yml
 - aid: ava-labs:ava-labs-operations-api
   name: Ava Labs Operations API
   description: The Operations API from Ava Labs — 2 operation(s) for operations.
@@ -411,6 +397,18 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/ava-labs-data-api-api-openapi.yml
+- aid: ava-labs:ava-labs-nfts-api
+  name: Ava Labs NF Ts API
+  description: The NFTs API from Ava Labs — 3 operation(s) for nfts.
+  humanURL: https://developers.avacloud.io/data-api/overview
+  baseURL: https://glacier-api.avax.network
+  tags:
+  - NFTs
+  properties:
+  - type: OpenAPI
+    url: openapi/ava-labs-nfts-api-openapi.yml
+  - type: Webhooks
+    url: asyncapi/ava-labs-webhooks.yml
 common:
 - type: CapabilityMap
   url: capabilities/ava-labs-capability-edges.yml
