@@ -403,6 +403,8 @@ apis:
   humanURL: https://developers.avacloud.io/data-api/overview
   baseURL: https://glacier-api.avax.network
   tags:
+  - NFT
+  tags_raw:
   - NFTs
   properties:
   - type: OpenAPI
