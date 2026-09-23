@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Data Primary Network Blocks API
-  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum.
   version: 1.0.0
   contact: {}
 servers:
@@ -361,54 +361,16 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.blocks.listLatest({\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    pageSize: 10,\n    blockchainId: \"p-chain\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
 components:
   schemas:
-    Unauthorized:
+    PrimaryNetworkChainInfo:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
+        chainName:
+          $ref: '#/components/schemas/PrimaryNetworkChainName'
+        network:
+          $ref: '#/components/schemas/Network'
       required:
-      - message
-      - statusCode
-      - error
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
+      - chainName
+      - network
     BadGateway:
       type: object
       properties:
@@ -444,7 +406,7 @@ components:
       - p-chain
       - x-chain
       - c-chain
-    BadRequest:
+    TooManyRequests:
       type: object
       properties:
         message:
@@ -458,23 +420,17 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 400
+          - 429
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Request
+          - Too Many Requests
       required:
       - message
       - statusCode
       - error
-    PrimaryNetworkChainName:
-      type: string
-      enum:
-      - p-chain
-      - x-chain
-      - c-chain
-    NotFound:
+    Forbidden:
       type: object
       properties:
         message:
@@ -488,12 +444,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 404
+          - 403
         error:
           type: string
           description: The type of error
           examples:
-          - Not Found
+          - Forbidden
       required:
       - message
       - statusCode
@@ -536,30 +492,19 @@ components:
       - txCount
       - transactions
       - blockSizeBytes
-    PrimaryNetworkChainInfo:
-      type: object
-      properties:
-        chainName:
-          $ref: '#/components/schemas/PrimaryNetworkChainName'
-        network:
-          $ref: '#/components/schemas/Network'
-      required:
-      - chainName
-      - network
-    ProposerDetails:
-      type: object
-      properties:
-        proposerId:
-          type: string
-        proposerParentId:
-          type: string
-        proposerNodeId:
-          type: string
-        proposerPChainHeight:
-          type: number
-        proposerTimestamp:
-          type: number
-    Forbidden:
+    PrimaryNetworkChainName:
+      type: string
+      enum:
+      - p-chain
+      - x-chain
+      - c-chain
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    InternalServerError:
       type: object
       properties:
         message:
@@ -573,22 +518,116 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 403
+          - 500
         error:
           type: string
           description: The type of error
           examples:
-          - Forbidden
+          - Internal Server Error
       required:
       - message
       - statusCode
       - error
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    ProposerDetails:
+      type: object
+      properties:
+        proposerId:
+          type: string
+        proposerParentId:
+          type: string
+        proposerNodeId:
+          type: string
+        proposerPChainHeight:
+          type: number
+        proposerTimestamp:
+          type: number
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    ListPrimaryNetworkBlocksResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrimaryNetworkBlock'
+        chainInfo:
+          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
+      required:
+      - blocks
+      - chainInfo
     GetPrimaryNetworkBlockResponse:
       type: object
       properties:
@@ -627,7 +666,7 @@ components:
       - txCount
       - transactions
       - blockSizeBytes
-    InternalServerError:
+    NotFound:
       type: object
       properties:
         message:
@@ -641,51 +680,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 500
+          - 404
         error:
           type: string
           description: The type of error
           examples:
-          - Internal Server Error
-      required:
-      - message
-      - statusCode
-      - error
-    ListPrimaryNetworkBlocksResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        blocks:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrimaryNetworkBlock'
-        chainInfo:
-          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
-      required:
-      - blocks
-      - chainInfo
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
+          - Not Found
       required:
       - message
       - statusCode

@@ -1,7 +1,10 @@
 openapi: 3.2.0
 info:
   title: Metrics Chain Throughput API
-  description: The Metrics API provides metrics and analytics of on-chain activity. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://hackenproof.com/avalanche">here</a>.
+  description: 'The Metrics API provides metrics and analytics of on-chain activity. The API is in Beta and may be subject to change.
+
+
+    If you have feedback or feature requests for the API, please submit them here. Bug reports can be submitted here, and any potential security issues can be reported here.'
   version: 1.0.0
   contact: {}
 servers:
@@ -110,6 +113,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get active senders
+      x-summary-source: derived
   /v1/active_addresses/{chain}:
     get:
       operationId: getActiveAddresses
@@ -210,6 +215,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get active addresses
+      x-summary-source: derived
   /v1/gas_used/{chain}:
     get:
       operationId: getGasUsed
@@ -304,6 +311,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get gas used
+      x-summary-source: derived
   /v1/tx_count/{chain}:
     get:
       operationId: getTxCount
@@ -398,6 +407,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get tx count
+      x-summary-source: derived
   /v1/avg_gps/{chain}:
     get:
       operationId: getAvgGps
@@ -491,6 +502,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get avg gps
+      x-summary-source: derived
   /v1/max_gps/{chain}:
     get:
       operationId: getMaxGps
@@ -584,6 +597,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get max gps
+      x-summary-source: derived
   /v1/avg_tps/{chain}:
     get:
       operationId: getAvgTps
@@ -677,6 +692,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get avg tps
+      x-summary-source: derived
   /v1/max_tps/{chain}:
     get:
       operationId: getMaxTps
@@ -770,6 +787,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get max tps
+      x-summary-source: derived
   /v1/avg_gas_price/{chain}:
     get:
       operationId: getAvgGasPrice
@@ -863,6 +882,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get avg gas price
+      x-summary-source: derived
   /v1/max_gas_price/{chain}:
     get:
       operationId: getMaxGasPrice
@@ -956,6 +977,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get max gas price
+      x-summary-source: derived
   /v1/gas_used/{chainId}/rollingWindow:
     get:
       operationId: getRollingWindowGasUsed
@@ -1029,6 +1052,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get rolling window gas used
+      x-summary-source: derived
   /v1/tx_count/{chainId}/rollingWindow:
     get:
       operationId: getRollingWindowTxCount
@@ -1102,6 +1127,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get rolling window tx count
+      x-summary-source: derived
   /v1/avg_gps/{chainId}/rollingWindow:
     get:
       operationId: getRollingWindowAvgGps
@@ -1175,6 +1202,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get rolling window avg gps
+      x-summary-source: derived
   /v1/max_gps/{chainId}/rollingWindow:
     get:
       operationId: getRollingWindowMaxGps
@@ -1248,6 +1277,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get rolling window max gps
+      x-summary-source: derived
   /v1/avg_tps/{chainId}/rollingWindow:
     get:
       operationId: getRollingWindowAvgTps
@@ -1321,6 +1352,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get rolling window avg tps
+      x-summary-source: derived
   /v1/max_tps/{chainId}/rollingWindow:
     get:
       operationId: getRollingWindowMaxTps
@@ -1394,6 +1427,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get rolling window max tps
+      x-summary-source: derived
   /v1/avg_gas_price/{chainId}/rollingWindow:
     get:
       operationId: getRollingWindowAvgGasPrice
@@ -1467,6 +1502,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get rolling window avg gas price
+      x-summary-source: derived
   /v1/max_gas_price/{chainId}/rollingWindow:
     get:
       operationId: getRollingWindowMaxGasPrice
@@ -1540,56 +1577,10 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Throughput
+      summary: Get rolling window max gas price
+      x-summary-source: derived
 components:
   schemas:
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
     BadGateway:
       type: object
       properties:
@@ -1624,6 +1615,129 @@ components:
       required:
       - timestamp
       - value
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    LegacyEvmMetricsResponse:
+      type: object
+      properties:
+        nextPageStartKey:
+          type: string
+        lastRun:
+          type: number
+          examples:
+          - 1717757617
+        status:
+          type: number
+          examples:
+          - 200
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LegacyEvmMetric'
+      required:
+      - status
+      - results
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    LegacyInterval:
+      type: string
+      enum:
+      - hour
+      - day
+      - week
+      - month
     BadRequest:
       type: object
       properties:
@@ -1644,6 +1758,54 @@ components:
           description: The type of error
           examples:
           - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
       required:
       - message
       - statusCode
@@ -1679,129 +1841,6 @@ components:
       required:
       - status
       - result
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    LegacyEvmMetricsResponse:
-      type: object
-      properties:
-        nextPageStartKey:
-          type: string
-        lastRun:
-          type: number
-          examples:
-          - 1717757617
-        status:
-          type: number
-          examples:
-          - 200
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/LegacyEvmMetric'
-      required:
-      - status
-      - results
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    InternalServerError:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
-      required:
-      - message
-      - statusCode
-      - error
-    LegacyInterval:
-      type: string
-      enum:
-      - hour
-      - day
-      - week
-      - month
 x-speakeasy-globals:
   parameters:
   - $ref: '#/components/parameters/GlobalParamChainId'

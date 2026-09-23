@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Data EVM Contracts API
-  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum.
   version: 1.0.0
   contact: {}
 servers:
@@ -109,35 +109,27 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.contracts.getMetadata({\n    address: \"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
-    PricingProviders:
-      type: object
-      properties:
-        coingeckoCoinId:
-          type: string
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
+    ResourceLinkType:
+      type: string
+      enum:
+      - Blog
+      - CoinGecko
+      - CoinMarketCap
+      - Discord
+      - Documentation
+      - Facebook
+      - Github
+      - Instagram
+      - LinkedIn
+      - Medium
+      - Reddit
+      - Support
+      - Telegram
+      - TikTok
+      - Twitter
+      - Website
+      - Whitepaper
+      - Youtube
     BadGateway:
       type: object
       properties:
@@ -162,7 +154,17 @@ components:
       - message
       - statusCode
       - error
-    Unauthorized:
+    ResourceLink:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ResourceLinkType'
+        url:
+          type: string
+      required:
+      - type
+      - url
+    TooManyRequests:
       type: object
       properties:
         message:
@@ -176,16 +178,48 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 429
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Too Many Requests
       required:
       - message
       - statusCode
       - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    ImageAsset:
+      type: object
+      properties:
+        assetId:
+          type: string
+        imageUri:
+          type: string
+          description: OUTPUT ONLY
     Erc20Contract:
       type: object
       properties:
@@ -241,76 +275,6 @@ components:
       - address
       - ercType
       - decimals
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    ContractDeploymentDetails:
-      type: object
-      properties:
-        txHash:
-          type: string
-        deployerAddress:
-          type: string
-          description: The address that initiated the transaction which deployed this contract.
-        deployerContractAddress:
-          type: string
-          description: The contract address which deployed this contract via smart contract. This field is only populated when the contract was deployed as part of smart contract execution.
-      required:
-      - txHash
-      - deployerAddress
-    ImageAsset:
-      type: object
-      properties:
-        assetId:
-          type: string
-        imageUri:
-          type: string
-          description: OUTPUT ONLY
     Forbidden:
       type: object
       properties:
@@ -335,119 +299,6 @@ components:
       - message
       - statusCode
       - error
-    Erc721Contract:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        description:
-          type: string
-        officialSite:
-          type: string
-        email:
-          type: string
-        logoAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        bannerAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        color:
-          type: string
-        resourceLinks:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceLink'
-        tags:
-          type: array
-          items:
-            type: string
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        deploymentDetails:
-          $ref: '#/components/schemas/ContractDeploymentDetails'
-        ercType:
-          type: string
-          enum:
-          - ERC-721
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-      required:
-      - address
-      - ercType
-    UnknownContract:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        description:
-          type: string
-        officialSite:
-          type: string
-        email:
-          type: string
-        logoAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        bannerAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        color:
-          type: string
-        resourceLinks:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceLink'
-        tags:
-          type: array
-          items:
-            type: string
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        deploymentDetails:
-          $ref: '#/components/schemas/ContractDeploymentDetails'
-        ercType:
-          type: string
-          enum:
-          - UNKNOWN
-      required:
-      - address
-      - ercType
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
     InternalServerError:
       type: object
       properties:
@@ -468,6 +319,30 @@ components:
           description: The type of error
           examples:
           - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
       required:
       - message
       - statusCode
@@ -521,37 +396,162 @@ components:
       required:
       - address
       - ercType
-    ResourceLinkType:
-      type: string
-      enum:
-      - Blog
-      - CoinGecko
-      - CoinMarketCap
-      - Discord
-      - Documentation
-      - Facebook
-      - Github
-      - Instagram
-      - LinkedIn
-      - Medium
-      - Reddit
-      - Support
-      - Telegram
-      - TikTok
-      - Twitter
-      - Website
-      - Whitepaper
-      - Youtube
-    ResourceLink:
+    Erc721Contract:
       type: object
       properties:
-        type:
-          $ref: '#/components/schemas/ResourceLinkType'
-        url:
+        name:
           type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - ERC-721
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
       required:
-      - type
-      - url
+      - address
+      - ercType
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    ContractDeploymentDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        deployerAddress:
+          type: string
+          description: The address that initiated the transaction which deployed this contract.
+        deployerContractAddress:
+          type: string
+          description: The contract address which deployed this contract via smart contract. This field is only populated when the contract was deployed as part of smart contract execution.
+      required:
+      - txHash
+      - deployerAddress
+    UnknownContract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - UNKNOWN
+      required:
+      - address
+      - ercType
+    PricingProviders:
+      type: object
+      properties:
+        coingeckoCoinId:
+          type: string
   securitySchemes:
     apiKey:
       type: apiKey

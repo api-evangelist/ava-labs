@@ -34,7 +34,9 @@
     "ava-labs-looking-glass-api-openapi.yml",
     "ava-labs-staking-information-api-openapi.yml"
   ],
-  "archived": [],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -44,13 +46,16 @@
     "ava-labs-data-api-openapi.yml: declared missing tag: Data API",
     "ava-labs-metrics-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "tag 'EVM Chains' spans 2 source specs (ava-labs-data-api-openapi.yml, ava-labs-metrics-api-openapi.yml): per-path servers applied",
-    "tag 'Health Check' spans 2 source specs (ava-labs-data-api-openapi.yml, ava-labs-metrics-api-openapi.yml): per-path servers applied"
+    "tag 'Health Check' spans 2 source specs (ava-labs-data-api-openapi.yml, ava-labs-metrics-api-openapi.yml): per-path servers applied",
+    "superseded outputs removed: ava-labs-nf-ts-api-openapi.yml",
+    "apis.yml register: written (+1 apis, 28 total)"
   ],
   "skipped": [
     "ava-labs-avax-supply-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-chain-metrics-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-chain-throughput-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-cumulative-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ava-labs-data-api-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-data-api-usage-metrics-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-evm-balances-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-evm-blocks-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -61,9 +66,8 @@
     "ava-labs-interchain-messaging-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-l1-validator-metrics-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-looking-glass-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "ava-labs-nfts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "ava-labs-nf-ts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-operations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "ava-labs-platform-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-primary-network-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-primary-network-balances-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "ava-labs-primary-network-blocks-api-openapi.yml: previously refined output, superseded by openapi/_original/",

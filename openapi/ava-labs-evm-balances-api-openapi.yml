@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Data EVM Balances API
-  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum. With Data API, you can easily build products that leverage real-time and historical transaction and transfer history, native and token balances, and various types of token metadata. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://immunefi.com/bounty/avalabs">here</a>.
+  description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum.
   version: 1.0.0
   contact: {}
 servers:
@@ -622,209 +622,21 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.address.balances.listCollectibles({\n    pageSize: 10,\n    address: \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\n    contractAddress: \"0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
 components:
   schemas:
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    ListErc721BalancesResponse:
+    ListCollectibleBalancesResponse:
       type: object
       properties:
         nextPageToken:
           type: string
           description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        nativeTokenBalance:
-          description: The native token balance for the address.
-          allOf:
-          - $ref: '#/components/schemas/NativeTokenBalance'
-        erc721TokenBalances:
-          description: The list of ERC-721 token balances for the address.
+        collectibleBalances:
           type: array
           items:
-            $ref: '#/components/schemas/Erc721TokenBalance'
+            oneOf:
+            - $ref: '#/components/schemas/Erc721TokenBalance'
+            - $ref: '#/components/schemas/Erc1155TokenBalance'
+          description: The list of ERC-721 and ERC-1155 token balances for the address.
       required:
-      - nativeTokenBalance
-      - erc721TokenBalances
-    Erc1155TokenMetadata:
-      type: object
-      properties:
-        indexStatus:
-          examples:
-          - indexed
-          $ref: '#/components/schemas/NftTokenMetadataStatus'
-        metadataLastUpdatedTimestamp:
-          type: number
-        name:
-          type: string
-        symbol:
-          type: string
-        imageUri:
-          type: string
-        description:
-          type: string
-        animationUri:
-          type: string
-        externalUrl:
-          type: string
-        background:
-          type: string
-        decimals:
-          type: number
-        properties:
-          type: string
-      required:
-      - indexStatus
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
-    Erc721TokenMetadata:
-      type: object
-      properties:
-        indexStatus:
-          examples:
-          - indexed
-          $ref: '#/components/schemas/NftTokenMetadataStatus'
-        metadataLastUpdatedTimestamp:
-          type: number
-        name:
-          type: string
-        symbol:
-          type: string
-        imageUri:
-          type: string
-        description:
-          type: string
-        animationUri:
-          type: string
-        externalUrl:
-          type: string
-        background:
-          type: string
-        attributes:
-          type: string
-      required:
-      - indexStatus
-    CurrencyCode:
-      type: string
-      description: ISO 4217 currency code.
-      enum:
-      - usd
-      - eur
-      - aud
-      - cad
-      - chf
-      - clp
-      - cny
-      - czk
-      - dkk
-      - gbp
-      - hkd
-      - huf
-      - jpy
-      - nzd
-    NftTokenMetadataStatus:
-      type: string
-      description: The metadata indexing status of the nft.
-      enum:
-      - UNKNOWN
-      - MISSING_TOKEN
-      - INVALID_TOKEN_URI
-      - INVALID_TOKEN_URI_SCHEME
-      - UNREACHABLE_TOKEN_URI
-      - THROTTLED_TOKEN_URI
-      - METADATA_CONTENT_TOO_LARGE
-      - INVALID_METADATA
-      - INVALID_METADATA_JSON
-      - INDEXED
-      - UNINDEXED
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
+      - collectibleBalances
     TooManyRequests:
       type: object
       properties:
@@ -849,71 +661,6 @@ components:
       - message
       - statusCode
       - error
-    ListErc20BalancesResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        nativeTokenBalance:
-          description: The native token balance for the address.
-          allOf:
-          - $ref: '#/components/schemas/NativeTokenBalance'
-        erc20TokenBalances:
-          description: The list of ERC-20 token balances for the address.
-          type: array
-          items:
-            $ref: '#/components/schemas/Erc20TokenBalance'
-      required:
-      - nativeTokenBalance
-      - erc20TokenBalances
-    Erc721TokenBalance:
-      type: object
-      properties:
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        ercType:
-          type: string
-          enum:
-          - ERC-721
-        tokenId:
-          type: string
-        tokenUri:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Erc721TokenMetadata'
-        ownerAddress:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        chainId:
-          type: string
-          description: The evm chain id.
-          examples:
-          - '43114'
-      required:
-      - address
-      - name
-      - symbol
-      - ercType
-      - tokenId
-      - tokenUri
-      - metadata
-      - chainId
     Erc20TokenBalance:
       type: object
       properties:
@@ -985,69 +732,51 @@ components:
       - chainId
       - balance
       - tokenReputation
-    BadRequest:
+    Erc721TokenMetadata:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+        indexStatus:
+          examples:
+          - indexed
+          $ref: '#/components/schemas/NftTokenMetadataStatus'
+        metadataLastUpdatedTimestamp:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
+        name:
           type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
+        symbol:
           type: string
-          description: The type of error
-          examples:
-          - Forbidden
+        imageUri:
+          type: string
+        description:
+          type: string
+        animationUri:
+          type: string
+        externalUrl:
+          type: string
+        background:
+          type: string
+        attributes:
+          type: string
       required:
-      - message
-      - statusCode
-      - error
-    ListCollectibleBalancesResponse:
+      - indexStatus
+    ListErc721BalancesResponse:
       type: object
       properties:
         nextPageToken:
           type: string
           description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        collectibleBalances:
+        nativeTokenBalance:
+          description: The native token balance for the address.
+          allOf:
+          - $ref: '#/components/schemas/NativeTokenBalance'
+        erc721TokenBalances:
+          description: The list of ERC-721 token balances for the address.
           type: array
           items:
-            oneOf:
-            - $ref: '#/components/schemas/Erc721TokenBalance'
-            - $ref: '#/components/schemas/Erc1155TokenBalance'
-          description: The list of ERC-721 and ERC-1155 token balances for the address.
+            $ref: '#/components/schemas/Erc721TokenBalance'
       required:
-      - collectibleBalances
+      - nativeTokenBalance
+      - erc721TokenBalances
     Erc1155TokenBalance:
       type: object
       properties:
@@ -1084,48 +813,30 @@ components:
       - metadata
       - chainId
       - balance
-    ListErc1155BalancesResponse:
+    Unauthorized:
       type: object
       properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        nativeTokenBalance:
-          description: The native token balance for the address.
-          allOf:
-          - $ref: '#/components/schemas/NativeTokenBalance'
-        erc1155TokenBalances:
-          description: The list of ERC-1155 token balances for the address.
-          type: array
-          items:
-            $ref: '#/components/schemas/Erc1155TokenBalance'
-      required:
-      - nativeTokenBalance
-      - erc1155TokenBalances
-    GetNativeBalanceResponse:
-      type: object
-      properties:
-        nativeTokenBalance:
-          description: The native token balance for the address.
-          allOf:
-          - $ref: '#/components/schemas/NativeTokenBalance'
-      required:
-      - nativeTokenBalance
-    Money:
-      type: object
-      properties:
-        currencyCode:
-          examples:
-          - usd
-          $ref: '#/components/schemas/CurrencyCode'
-        value:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
           type: number
-          description: Monetary value in base 10 decimals.
+          description: The HTTP status code of the response
           examples:
-          - '42.42'
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
       required:
-      - currencyCode
-      - value
+      - message
+      - statusCode
+      - error
     NativeTokenBalance:
       type: object
       properties:
@@ -1173,6 +884,232 @@ components:
       - decimals
       - chainId
       - balance
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    ListErc1155BalancesResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        nativeTokenBalance:
+          description: The native token balance for the address.
+          allOf:
+          - $ref: '#/components/schemas/NativeTokenBalance'
+        erc1155TokenBalances:
+          description: The list of ERC-1155 token balances for the address.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc1155TokenBalance'
+      required:
+      - nativeTokenBalance
+      - erc1155TokenBalances
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    ListErc20BalancesResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        nativeTokenBalance:
+          description: The native token balance for the address.
+          allOf:
+          - $ref: '#/components/schemas/NativeTokenBalance'
+        erc20TokenBalances:
+          description: The list of ERC-20 token balances for the address.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc20TokenBalance'
+      required:
+      - nativeTokenBalance
+      - erc20TokenBalances
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    Erc721TokenBalance:
+      type: object
+      properties:
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        ercType:
+          type: string
+          enum:
+          - ERC-721
+        tokenId:
+          type: string
+        tokenUri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Erc721TokenMetadata'
+        ownerAddress:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        chainId:
+          type: string
+          description: The evm chain id.
+          examples:
+          - '43114'
+      required:
+      - address
+      - name
+      - symbol
+      - ercType
+      - tokenId
+      - tokenUri
+      - metadata
+      - chainId
+    CurrencyCode:
+      type: string
+      description: ISO 4217 currency code.
+      enum:
+      - usd
+      - eur
+      - aud
+      - cad
+      - chf
+      - clp
+      - cny
+      - czk
+      - dkk
+      - gbp
+      - hkd
+      - huf
+      - jpy
+      - nzd
+    GetNativeBalanceResponse:
+      type: object
+      properties:
+        nativeTokenBalance:
+          description: The native token balance for the address.
+          allOf:
+          - $ref: '#/components/schemas/NativeTokenBalance'
+      required:
+      - nativeTokenBalance
+    Money:
+      type: object
+      properties:
+        currencyCode:
+          examples:
+          - usd
+          $ref: '#/components/schemas/CurrencyCode'
+        value:
+          type: number
+          description: Monetary value in base 10 decimals.
+          examples:
+          - '42.42'
+      required:
+      - currencyCode
+      - value
+    Erc1155TokenMetadata:
+      type: object
+      properties:
+        indexStatus:
+          examples:
+          - indexed
+          $ref: '#/components/schemas/NftTokenMetadataStatus'
+        metadataLastUpdatedTimestamp:
+          type: number
+        name:
+          type: string
+        symbol:
+          type: string
+        imageUri:
+          type: string
+        description:
+          type: string
+        animationUri:
+          type: string
+        externalUrl:
+          type: string
+        background:
+          type: string
+        decimals:
+          type: number
+        properties:
+          type: string
+      required:
+      - indexStatus
     InternalServerError:
       type: object
       properties:
@@ -1193,6 +1130,69 @@ components:
           description: The type of error
           examples:
           - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    NftTokenMetadataStatus:
+      type: string
+      description: The metadata indexing status of the nft.
+      enum:
+      - UNKNOWN
+      - MISSING_TOKEN
+      - INVALID_TOKEN_URI
+      - INVALID_TOKEN_URI_SCHEME
+      - UNREACHABLE_TOKEN_URI
+      - THROTTLED_TOKEN_URI
+      - METADATA_CONTENT_TOO_LARGE
+      - INVALID_METADATA
+      - INVALID_METADATA_JSON
+      - INDEXED
+      - UNINDEXED
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
       required:
       - message
       - statusCode

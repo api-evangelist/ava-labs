@@ -1,7 +1,10 @@
 openapi: 3.2.0
 info:
   title: Chain Metrics API
-  description: The Metrics API provides metrics and analytics of on-chain activity. The API is in Beta and may be subject to change.</br></br>If you have feedback or feature requests for the API, please submit them <a href="https://portal.productboard.com/dndv9ahlkdfye4opdm8ksafi/tabs/4-glacier-api">here</a>. Bug reports can be submitted <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJQrcp7QoNiqozMDKrVJGX5wpU827d3cVTgF8qa7t_J1Pb-g/viewform">here</a>, and any potential security issues can be reported <a href="https://hackenproof.com/avalanche">here</a>.
+  description: 'The Metrics API provides metrics and analytics of on-chain activity. The API is in Beta and may be subject to change.
+
+
+    If you have feedback or feature requests for the API, please submit them here. Bug reports can be submitted here, and any potential security issues can be reported here.'
   version: 1.0.0
   contact: {}
 servers:
@@ -29,64 +32,7 @@ paths:
         label: JavaScript
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.metrics.chains.getMetrics({\n    metric: \"activeAddresses\",\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    timeInterval: \"day\",\n    pageSize: 10,\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
       summary: Get metrics for EVM chains
-      description: 'EVM chain metrics are available for all Avalanche L1s on _Mainnet_ and _Fuji_ (testnet). You can request metrics by EVM chain ID. See the `/chains` endpoint for all supported chains.
-
-
-        All metrics are updated several times every hour. Each metric data point has a `value` and `timestamp` (Unix timestamp in seconds). All metric values include data within the duration of the associated timestamp plus the requested `timeInterval`. All timestamps are fixed to the hour. When requesting a timeInterval of **day**, **week**, or **month**, the timestamp will be 0:00 UTC of the day, Monday of the week, or first day of the month, respectively. The latest data point in any response may change on each update.
-
-
-        ### Metrics
-
-
-        <ins>activeAddresses</ins>: The number of distinct addresses seen within the selected `timeInterval` starting at the timestamp. Addresses counted are those that appear in the “from” and “to” fields of a transaction or ERC20/ERC721/ERC1155 transfer log event.
-
-
-        <ins>activeSenders</ins>: This metric follows the same structure as activeAddresses, but instead only counts addresses that appear in the “from” field of the respective transaction or transfer log event.
-
-
-        <ins>cumulativeTxCount</ins>: The cumulative transaction count from genesis up until 24 hours after the timestamp. This aggregation can be considered a “rolling sum” of the transaction count metric (txCount). Only `timeInterval=day` supported.
-
-
-        <ins>cumulativeAddresses</ins>: The cumulative count of unique addresses from genesis up until 24 hours after the timestamp. Addresses counted are those that appear in the “from” and “to” fields of a transaction or ERC20/ERC721/ERC1155 transfer log event. Only `timeInterval=day` supported.
-
-
-        <ins>cumulativeContracts</ins>: The cumulative count of contracts created from genesis up until the timestamp.  Contracts are counted by looking for the CREATE, CREATE2, and CREATE3 call types in all transaction traces (aka internal transactions). Only `timeInterval=day` supported.
-
-
-        <ins>cumulativeDeployers</ins>: The cumulative count of unique contract deployers from genesis up until 24 hours after the timestamp. Deployers counted are those that appear in the “from” field of transaction traces with the CREATE, CREATE2, and CREATE3 call types. Only `timeInterval=day` supported.
-
-
-        <ins>contracts</ins>: The count of contracts created within the requested timeInterval starting at the timestamp. Contracts are counted by looking for the CREATE, CREATE2, and CREATE3 call types in all transaction traces (aka internal transactions). Only `timeInterval=day` supported.
-
-
-        <ins>deployers</ins>: The count of unique deployers within the requested timeInterval starting at the timestamp. Deployers counted are those that appear in the “from” field of transaction traces with the CREATE, CREATE2, and CREATE3 call types. Only `timeInterval=day` supported.
-
-
-        <ins>gasUsed</ins>: The amount of gas used by transactions within the requested timeInterval starting at the timestamp.
-
-
-        <ins>txCount</ins>: The amount of transactions within the requested timeInterval starting at the timestamp.
-
-
-        <ins>avgGps</ins>: The average Gas used Per Second (GPS) within the day beginning at the timestamp.  The average is calculated by taking the sum of gas used by all blocks within the day and dividing it by the time interval between the last block of the previous day and the last block of the day that begins at the timestamp.  Only `timeInterval=day` supported.
-
-
-        <ins>maxGps</ins>: The max Gas used Per Second (GPS)  measured within the day beginning at the timestamp. Each GPS data point is calculated using the gas used in a single block divided by the time since the last block. Only `timeInterval=day` supported.
-
-
-        <ins>avgTps</ins>: The average Transactions Per Second (TPS) within the day beginning at the timestamp. The average is calculated by taking the sum of transactions within the day and dividing it by the time interval between the last block of the previous day and the last block of the day that begins at the timestamp. Only `timeInterval=day` supported.
-
-
-        <ins>maxTps</ins>: The max Transactions Per Second (TPS) measured within the day beginning at the timestamp. Each TPS data point is calculated by taking the number of transactions in a single block and dividing it by the time since the last block. Only `timeInterval=day` supported.
-
-
-        <ins>avgGasPrice</ins>: The average gas price within the day beginning at the timestamp. The gas price used is the price reported in transaction receipts. Only `timeInterval=day` supported.
-
-
-        <ins>maxGasPrice</ins>: The max gas price seen within the day beginning at the timestamp. The gas price used is the price reported in transaction receipts. Only `timeInterval=day` supported.
-
-
-        <ins>feesPaid</ins>: The sum of transaction fees paid within the day beginning at the timestamp. The fee is calculated as the gas used multiplied by the gas price as reported in all transaction receipts. Only `timeInterval=day` supported.'
+      description: EVM chain metrics are available for all Avalanche L1s on _Mainnet_ and _Fuji_ (testnet).
       parameters:
       - name: metric
         required: true
@@ -362,6 +308,8 @@ paths:
                 $ref: '#/components/schemas/ServiceUnavailable'
       tags:
       - Chain Metrics
+      summary: Get teleporter metrics by chain
+      x-summary-source: derived
   /v2/icm/timeseries:
     get:
       operationId: getICMTimeseries
@@ -373,7 +321,34 @@ paths:
       - lang: javascript
         label: JavaScript
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.metrics.chains.getICMTimeseries({\n    startTimestamp: 1689541049,\n    endTimestamp: 1689800249,\n    timeInterval: \"day\",\n    pageSize: 10,\n    groupBy: \"destBlockchainId\",\n    network: \"mainnet\",\n  });\n\n  console.log(result);\n}\n\nrun();"
-      description: "Get historical ICM message counts with flexible grouping.\n\nUse filters (`srcBlockchainId`, `destBlockchainId`, `network`)  to select data, and the `groupBy` parameter for aggregation level.\n\n### Examples:\n\n  - **Specific pair**:   `?srcBlockchainId=...&destBlockchainId=...`\n\n  - **From one source (aggregated)**: `?srcBlockchainId=...`\n\n  - **From one source (by destination)**:   `?srcBlockchainId=...&groupBy=destBlockchainId`\n\n  - **To one destination (aggregated)**: `?destBlockchainId=...`\n\n  - **To one destination (by source)**:   `?destBlockchainId=...&groupBy=srcBlockchainId`\n\n  - **Network total**: `?network=mainnet`\n\n  - **Network breakdown**:   `?network=mainnet&groupBy=srcBlockchainId,destBlockchainId`."
+      description: 'Get historical ICM message counts with flexible grouping.
+
+
+        Use filters (`srcBlockchainId`, `destBlockchainId`, `network`) to select data, and the `groupBy` parameter for aggregation level.
+
+
+        ### Examples:
+
+
+        - **Specific pair**: `?srcBlockchainId=...&destBlockchainId=...`
+
+
+        - **From one source (aggregated)**: `?srcBlockchainId=...`
+
+
+        - **From one source (by destination)**: `?srcBlockchainId=...&groupBy=destBlockchainId`
+
+
+        - **To one destination (aggregated)**: `?destBlockchainId=...`
+
+
+        - **To one destination (by source)**: `?destBlockchainId=...&groupBy=srcBlockchainId`
+
+
+        - **Network total**: `?network=mainnet`
+
+
+        - **Network breakdown**: `?network=mainnet&groupBy=srcBlockchainId,destBlockchainId`.'
       parameters:
       - name: startTimestamp
         required: false
@@ -512,7 +487,34 @@ paths:
       - lang: javascript
         label: JavaScript
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.metrics.chains.getICMSummary({\n    groupBy: \"destBlockchainId\",\n    network: \"mainnet\",\n  });\n\n  console.log(result);\n}\n\nrun();"
-      description: "Get rolling window ICM message counts (last hour, day, month, 90 days, year, all time).\n\nUse filters (`srcBlockchainId`, `destBlockchainId`, `network`)  to select data, and the `groupBy` parameter for aggregation level.\n\n### Examples:\n\n  - **Specific pair**:   `?srcBlockchainId=...&destBlockchainId=...`\n\n  - **From one source (aggregated)**: `?srcBlockchainId=...`\n\n  - **From one source (by destination)**:   `?srcBlockchainId=...&groupBy=destBlockchainId`\n\n  - **To one destination (aggregated)**: `?destBlockchainId=...`\n\n  - **To one destination (by source)**:   `?destBlockchainId=...&groupBy=srcBlockchainId`\n\n  - **Network total**: `?network=mainnet`\n\n  - **Network breakdown**:   `?network=mainnet&groupBy=srcBlockchainId,destBlockchainId`."
+      description: 'Get rolling window ICM message counts (last hour, day, month, 90 days, year, all time).
+
+
+        Use filters (`srcBlockchainId`, `destBlockchainId`, `network`) to select data, and the `groupBy` parameter for aggregation level.
+
+
+        ### Examples:
+
+
+        - **Specific pair**: `?srcBlockchainId=...&destBlockchainId=...`
+
+
+        - **From one source (aggregated)**: `?srcBlockchainId=...`
+
+
+        - **From one source (by destination)**: `?srcBlockchainId=...&groupBy=destBlockchainId`
+
+
+        - **To one destination (aggregated)**: `?destBlockchainId=...`
+
+
+        - **To one destination (by source)**: `?destBlockchainId=...&groupBy=srcBlockchainId`
+
+
+        - **Network total**: `?network=mainnet`
+
+
+        - **Network breakdown**: `?network=mainnet&groupBy=srcBlockchainId,destBlockchainId`.'
       parameters:
       - name: srcBlockchainId
         required: false
@@ -733,6 +735,150 @@ paths:
       - Chain Metrics
 components:
   schemas:
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    ChainRollingWindowMetric:
+      type: string
+      enum:
+      - gasUsed
+      - txCount
+      - avgGps
+      - maxGps
+      - avgTps
+      - maxTps
+      - avgGasPrice
+      - maxGasPrice
+      - feesPaid
+      - contracts
+      - deployers
+      - activeAddresses
+      - activeSenders
+    ICMRollingWindowMetricsApiResponse:
+      type: object
+      properties:
+        result:
+          description: Array of current metrics values for different windows.
+          allOf:
+          - $ref: '#/components/schemas/ICMRollingWindowMetricsValue'
+      required:
+      - result
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    ICMMetricsValue:
+      type: object
+      properties:
+        value:
+          type: number
+          description: Aggregated value for the current metrics.
+        timestamp:
+          type: number
+          description: Unix Epoch timestamp for which metrics are aggregated. Depending on the interval of the metric this can be at the start of the relevant hour, day, month, year, etc.
+        srcBlockchainId:
+          type: string
+          description: Source blockchainId.
+        destBlockchainId:
+          type: string
+          description: Destination blockchainId.
+      required:
+      - value
+      - timestamp
+      - srcBlockchainId
+      - destBlockchainId
+    TeleporterChainMetricsApiResponse:
+      type: object
+      properties:
+        result:
+          description: current metrics value for a given teleporter metric.
+          allOf:
+          - $ref: '#/components/schemas/TeleporterMetricsValue'
+      required:
+      - result
+    TimeIntervalGranularity:
+      type: string
+      enum:
+      - hour
+      - day
+      - week
+      - month
+    RollingWindowMetricsApiResponse:
+      type: object
+      properties:
+        result:
+          description: Array of current metrics values for different windows.
+          allOf:
+          - $ref: '#/components/schemas/ChainRollingWindowMetricsValue'
+      required:
+      - result
+    ChainMetric:
+      type: string
+      enum:
+      - activeAddresses
+      - activeSenders
+      - cumulativeTxCount
+      - cumulativeAddresses
+      - cumulativeContracts
+      - cumulativeDeployers
+      - contracts
+      - deployers
+      - gasUsed
+      - txCount
+      - avgGps
+      - maxGps
+      - avgTps
+      - maxTps
+      - avgGasPrice
+      - maxGasPrice
+      - feesPaid
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
     BadGateway:
       type: object
       properties:
@@ -770,16 +916,7 @@ components:
             $ref: '#/components/schemas/MetricsValue'
       required:
       - results
-    RollingWindowMetricsApiResponse:
-      type: object
-      properties:
-        result:
-          description: Array of current metrics values for different windows.
-          allOf:
-          - $ref: '#/components/schemas/ChainRollingWindowMetricsValue'
-      required:
-      - result
-    Unauthorized:
+    Forbidden:
       type: object
       properties:
         message:
@@ -793,16 +930,23 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 403
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Forbidden
       required:
       - message
       - statusCode
       - error
+    NetworkMetric:
+      type: string
+      enum:
+      - delegatorCount
+      - delegatorWeight
+      - validatorCount
+      - validatorWeight
     ServiceUnavailable:
       type: object
       properties:
@@ -839,54 +983,30 @@ components:
       required:
       - value
       - timestamp
-    NotFound:
+    ChainRollingWindowMetricsValue:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+        lastHour:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+          description: Aggregated value for the current metrics in last hour.
+        lastDay:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
+          description: Aggregated value for the current metrics in last day.
+        lastWeek:
+          type: number
+          description: Aggregated value for the current metrics in last week.
+        lastMonth:
+          type: number
+          description: Aggregated value for the current metrics in last month.
+        last90Days:
+          type: number
+          description: Aggregated value for the current metrics in last 90 days.
+        lastYear:
+          type: number
+          description: Aggregated value for the current metrics in last year.
+        allTime:
+          type: number
+          description: Aggregated value for the current metrics for all time.
     ICMRollingWindowMetricsValue:
       type: object
       properties:
@@ -920,73 +1040,14 @@ components:
       required:
       - srcBlockchainId
       - destBlockchainId
-    NetworkMetric:
-      type: string
-      enum:
-      - delegatorCount
-      - delegatorWeight
-      - validatorCount
-      - validatorWeight
-    ChainMetric:
-      type: string
-      enum:
-      - activeAddresses
-      - activeSenders
-      - cumulativeTxCount
-      - cumulativeAddresses
-      - cumulativeContracts
-      - cumulativeDeployers
-      - contracts
-      - deployers
-      - gasUsed
-      - txCount
-      - avgGps
-      - maxGps
-      - avgTps
-      - maxTps
-      - avgGasPrice
-      - maxGasPrice
-      - feesPaid
-    TimeIntervalGranularity:
-      type: string
-      enum:
-      - hour
-      - day
-      - week
-      - month
-    BadRequest:
+    TeleporterMetricsValue:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+        value:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
+          description: Aggregated value for the current metrics.
       required:
-      - message
-      - statusCode
-      - error
-    ICMRollingWindowMetricsApiResponse:
-      type: object
-      properties:
-        result:
-          description: Array of current metrics values for different windows.
-          allOf:
-          - $ref: '#/components/schemas/ICMRollingWindowMetricsValue'
-      required:
-      - result
+      - value
     ICMMetricsApiResponse:
       type: object
       properties:
@@ -1000,75 +1061,12 @@ components:
             $ref: '#/components/schemas/ICMMetricsValue'
       required:
       - results
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
-    ChainRollingWindowMetric:
-      type: string
-      enum:
-      - gasUsed
-      - txCount
-      - avgGps
-      - maxGps
-      - avgTps
-      - maxTps
-      - avgGasPrice
-      - maxGasPrice
-      - feesPaid
-      - contracts
-      - deployers
-      - activeAddresses
-      - activeSenders
     TeleporterMetric:
       type: string
       enum:
       - teleporterSourceTxnCount
       - teleporterDestinationTxnCount
       - teleporterTotalTxnCount
-    TeleporterMetricsValue:
-      type: object
-      properties:
-        value:
-          type: number
-          description: Aggregated value for the current metrics.
-      required:
-      - value
-    TeleporterChainMetricsApiResponse:
-      type: object
-      properties:
-        result:
-          description: current metrics value for a given teleporter metric.
-          allOf:
-          - $ref: '#/components/schemas/TeleporterMetricsValue'
-      required:
-      - result
     InternalServerError:
       type: object
       properties:
@@ -1093,50 +1091,54 @@ components:
       - message
       - statusCode
       - error
-    ChainRollingWindowMetricsValue:
+    BadRequest:
       type: object
       properties:
-        lastHour:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
           type: number
-          description: Aggregated value for the current metrics in last hour.
-        lastDay:
-          type: number
-          description: Aggregated value for the current metrics in last day.
-        lastWeek:
-          type: number
-          description: Aggregated value for the current metrics in last week.
-        lastMonth:
-          type: number
-          description: Aggregated value for the current metrics in last month.
-        last90Days:
-          type: number
-          description: Aggregated value for the current metrics in last 90 days.
-        lastYear:
-          type: number
-          description: Aggregated value for the current metrics in last year.
-        allTime:
-          type: number
-          description: Aggregated value for the current metrics for all time.
-    ICMMetricsValue:
-      type: object
-      properties:
-        value:
-          type: number
-          description: Aggregated value for the current metrics.
-        timestamp:
-          type: number
-          description: Unix Epoch timestamp for which metrics are aggregated. Depending on the interval of the metric this can be at the start of the relevant hour, day, month, year, etc.
-        srcBlockchainId:
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
           type: string
-          description: Source blockchainId.
-        destBlockchainId:
-          type: string
-          description: Destination blockchainId.
+          description: The type of error
+          examples:
+          - Bad Request
       required:
-      - value
-      - timestamp
-      - srcBlockchainId
-      - destBlockchainId
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
 x-speakeasy-globals:
   parameters:
   - $ref: '#/components/parameters/GlobalParamChainId'
