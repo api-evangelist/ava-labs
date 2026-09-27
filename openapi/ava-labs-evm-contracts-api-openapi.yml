@@ -109,6 +109,100 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.contracts.getMetadata({\n    address: \"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
+    ImageAsset:
+      type: object
+      properties:
+        assetId:
+          type: string
+        imageUri:
+          type: string
+          description: OUTPUT ONLY
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    ContractDeploymentDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        deployerAddress:
+          type: string
+          description: The address that initiated the transaction which deployed this contract.
+        deployerContractAddress:
+          type: string
+          description: The contract address which deployed this contract via smart contract. This field is only populated when the contract was deployed as part of smart contract execution.
+      required:
+      - txHash
+      - deployerAddress
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
     ResourceLinkType:
       type: string
       enum:
@@ -130,96 +224,6 @@ components:
       - Website
       - Whitepaper
       - Youtube
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    ResourceLink:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ResourceLinkType'
-        url:
-          type: string
-      required:
-      - type
-      - url
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    ImageAsset:
-      type: object
-      properties:
-        assetId:
-          type: string
-        imageUri:
-          type: string
-          description: OUTPUT ONLY
     Erc20Contract:
       type: object
       properties:
@@ -275,7 +279,7 @@ components:
       - address
       - ercType
       - decimals
-    Forbidden:
+    TooManyRequests:
       type: object
       properties:
         message:
@@ -289,17 +293,17 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 403
+          - 429
         error:
           type: string
           description: The type of error
           examples:
-          - Forbidden
+          - Too Many Requests
       required:
       - message
       - statusCode
       - error
-    InternalServerError:
+    NotFound:
       type: object
       properties:
         message:
@@ -313,17 +317,17 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 500
+          - 404
         error:
           type: string
           description: The type of error
           examples:
-          - Internal Server Error
+          - Not Found
       required:
       - message
       - statusCode
       - error
-    ServiceUnavailable:
+    Unauthorized:
       type: object
       properties:
         message:
@@ -337,17 +341,41 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 503
+          - 401
         error:
           type: string
           description: The type of error
           examples:
-          - Service Unavailable
+          - Unauthorized
       required:
       - message
       - statusCode
       - error
-    Erc1155Contract:
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    UnknownContract:
       type: object
       properties:
         name:
@@ -385,14 +413,7 @@ components:
         ercType:
           type: string
           enum:
-          - ERC-1155
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        pricingProviders:
-          $ref: '#/components/schemas/PricingProviders'
+          - UNKNOWN
       required:
       - address
       - ercType
@@ -443,69 +464,7 @@ components:
       required:
       - address
       - ercType
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    ContractDeploymentDetails:
-      type: object
-      properties:
-        txHash:
-          type: string
-        deployerAddress:
-          type: string
-          description: The address that initiated the transaction which deployed this contract.
-        deployerContractAddress:
-          type: string
-          description: The contract address which deployed this contract via smart contract. This field is only populated when the contract was deployed as part of smart contract execution.
-      required:
-      - txHash
-      - deployerAddress
-    UnknownContract:
+    Erc1155Contract:
       type: object
       properties:
         name:
@@ -543,7 +502,14 @@ components:
         ercType:
           type: string
           enum:
-          - UNKNOWN
+          - ERC-1155
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        pricingProviders:
+          $ref: '#/components/schemas/PricingProviders'
       required:
       - address
       - ercType
@@ -552,6 +518,40 @@ components:
       properties:
         coingeckoCoinId:
           type: string
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    ResourceLink:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ResourceLinkType'
+        url:
+          type: string
+      required:
+      - type
+      - url
   securitySchemes:
     apiKey:
       type: apiKey

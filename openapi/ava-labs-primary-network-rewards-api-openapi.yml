@@ -290,18 +290,78 @@ components:
       - message
       - statusCode
       - error
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    CurrencyCode:
+      type: string
+      description: ISO 4217 currency code.
+      enum:
+      - usd
+      - eur
+      - aud
+      - cad
+      - chf
+      - clp
+      - cny
+      - czk
+      - dkk
+      - gbp
+      - hkd
+      - huf
+      - jpy
+      - nzd
     RewardType:
       type: string
       enum:
       - VALIDATOR
       - DELEGATOR
       - VALIDATOR_FEE
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
     HistoricalReward:
       type: object
       properties:
@@ -344,7 +404,7 @@ components:
       - outputIndex
       - reward
       - rewardTxHash
-    Unauthorized:
+    NotFound:
       type: object
       properties:
         message:
@@ -358,102 +418,21 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 404
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Not Found
       required:
       - message
       - statusCode
       - error
-    PendingReward:
-      type: object
-      properties:
-        addresses:
-          description: An array of P-Chain wallet addresses.
-          examples:
-          - - avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg
-          type: array
-          items:
-            type: string
-        txHash:
-          type: string
-        amountStaked:
-          type: string
-        nodeId:
-          type: string
-        startTimestamp:
-          type: number
-        endTimestamp:
-          type: number
-        rewardType:
-          $ref: '#/components/schemas/RewardType'
-        progress:
-          type: number
-        estimatedReward:
-          description: An object containing P-chain Asset basic info and the amount of that Asset ID.
-          allOf:
-          - $ref: '#/components/schemas/AssetAmount'
-      required:
-      - addresses
-      - txHash
-      - amountStaked
-      - nodeId
-      - startTimestamp
-      - endTimestamp
-      - rewardType
-      - progress
-      - estimatedReward
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
     AssetAmount:
       type: object
       properties:
@@ -493,24 +472,6 @@ components:
       - denomination
       - type
       - amount
-    PrimaryNetworkAssetType:
-      type: string
-      description: Type of asset like SECP256K1 or NFT.
-      enum:
-      - secp256k1
-      - nft
-    ListHistoricalRewardsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        historicalRewards:
-          type: array
-          items:
-            $ref: '#/components/schemas/HistoricalReward'
-      required:
-      - historicalRewards
     ServiceUnavailable:
       type: object
       properties:
@@ -535,24 +496,63 @@ components:
       - message
       - statusCode
       - error
-    CurrencyCode:
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    ListPendingRewardsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        pendingRewards:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingReward'
+      required:
+      - pendingRewards
+    Money:
+      type: object
+      properties:
+        currencyCode:
+          examples:
+          - usd
+          $ref: '#/components/schemas/CurrencyCode'
+        value:
+          type: number
+          description: Monetary value in base 10 decimals.
+          examples:
+          - '42.42'
+      required:
+      - currencyCode
+      - value
+    Network:
       type: string
-      description: ISO 4217 currency code.
       enum:
-      - usd
-      - eur
-      - aud
-      - cad
-      - chf
-      - clp
-      - cny
-      - czk
-      - dkk
-      - gbp
-      - hkd
-      - huf
-      - jpy
-      - nzd
+      - mainnet
+      - fuji
+      - testnet
     AssetWithPriceInfo:
       type: object
       properties:
@@ -596,39 +596,63 @@ components:
       - denomination
       - type
       - amount
-    ListPendingRewardsResponse:
+    PrimaryNetworkAssetType:
+      type: string
+      description: Type of asset like SECP256K1 or NFT.
+      enum:
+      - secp256k1
+      - nft
+    ListHistoricalRewardsResponse:
       type: object
       properties:
         nextPageToken:
           type: string
           description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        pendingRewards:
+        historicalRewards:
           type: array
           items:
-            $ref: '#/components/schemas/PendingReward'
+            $ref: '#/components/schemas/HistoricalReward'
       required:
-      - pendingRewards
-    SortOrder:
-      type: string
-      enum:
-      - asc
-      - desc
-    Money:
+      - historicalRewards
+    PendingReward:
       type: object
       properties:
-        currencyCode:
+        addresses:
+          description: An array of P-Chain wallet addresses.
           examples:
-          - usd
-          $ref: '#/components/schemas/CurrencyCode'
-        value:
+          - - avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg
+          type: array
+          items:
+            type: string
+        txHash:
+          type: string
+        amountStaked:
+          type: string
+        nodeId:
+          type: string
+        startTimestamp:
           type: number
-          description: Monetary value in base 10 decimals.
-          examples:
-          - '42.42'
+        endTimestamp:
+          type: number
+        rewardType:
+          $ref: '#/components/schemas/RewardType'
+        progress:
+          type: number
+        estimatedReward:
+          description: An object containing P-chain Asset basic info and the amount of that Asset ID.
+          allOf:
+          - $ref: '#/components/schemas/AssetAmount'
       required:
-      - currencyCode
-      - value
-    InternalServerError:
+      - addresses
+      - txHash
+      - amountStaked
+      - nodeId
+      - startTimestamp
+      - endTimestamp
+      - rewardType
+      - progress
+      - estimatedReward
+    Unauthorized:
       type: object
       properties:
         message:
@@ -642,17 +666,17 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 500
+          - 401
         error:
           type: string
           description: The type of error
           examples:
-          - Internal Server Error
+          - Unauthorized
       required:
       - message
       - statusCode
       - error
-    BadRequest:
+    BadGateway:
       type: object
       properties:
         message:
@@ -666,36 +690,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 400
+          - 502
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
+          - Bad Gateway
       required:
       - message
       - statusCode

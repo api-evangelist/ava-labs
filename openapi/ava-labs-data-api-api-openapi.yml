@@ -55,20 +55,6 @@ components:
           description: Value including decimals
           examples:
           - '3331.009129'
-    TransactionEvent:
-      type: object
-      properties:
-        transaction:
-          description: Transaction details
-          allOf:
-          - $ref: '#/components/schemas/Transaction'
-        logs:
-          description: Array of log events
-          type: array
-          items:
-            $ref: '#/components/schemas/Log'
-      required:
-      - transaction
     WebhookInternalTransaction:
       type: object
       properties:
@@ -131,6 +117,117 @@ components:
       required:
       - accessAddresses
       - storageKeys
+    ERCTransfer:
+      type: object
+      properties:
+        transactionHash:
+          type: string
+          description: Transaction hash
+          examples:
+          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
+        type:
+          type: string
+          description: Transfer type
+          examples:
+          - ERC20
+        from:
+          type: string
+          description: Sender address
+          examples:
+          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
+        to:
+          type: string
+          description: Recipient address
+          examples:
+          - '0x40E832C3Df9562DfaE5A86A4849F27F687A9B46B'
+        value:
+          type: string
+          description: Amount transferred
+          examples:
+          - '3331009129'
+        tokenId:
+          type: string
+          description: Token Id
+          examples:
+          - '2'
+        blockTimestamp:
+          type: number
+          description: Block timestamp
+          examples:
+          - 1640995200
+        logIndex:
+          type: number
+          description: Log index
+          examples:
+          - 5
+        erc20Token:
+          description: erc20 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+        erc721Token:
+          description: erc721 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+        erc1155Token:
+          description: erc1155 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+      required:
+      - transactionHash
+      - type
+      - from
+      - to
+      - value
+      - blockTimestamp
+      - logIndex
+    ERCToken:
+      type: object
+      properties:
+        address:
+          type: string
+          description: Token contract address
+          examples:
+          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
+        name:
+          type: string
+          description: Token name
+          examples:
+          - TetherToken
+        symbol:
+          type: string
+          description: Token symbol
+          examples:
+          - USDt
+        decimals:
+          type: number
+          description: Token decimals
+          examples:
+          - 6
+        valueWithDecimals:
+          type: string
+          description: Value including decimals
+          examples:
+          - '3331.009129'
+      required:
+      - address
+      - name
+      - symbol
+      - decimals
+      - valueWithDecimals
+    TransactionEvent:
+      type: object
+      properties:
+        transaction:
+          description: Transaction details
+          allOf:
+          - $ref: '#/components/schemas/Transaction'
+        logs:
+          description: Array of log events
+          type: array
+          items:
+            $ref: '#/components/schemas/Log'
+      required:
+      - transaction
     Log:
       type: object
       properties:
@@ -353,40 +450,6 @@ components:
       - erc20Transfers
       - erc721Transfers
       - erc1155Transfers
-    ERCToken:
-      type: object
-      properties:
-        address:
-          type: string
-          description: Token contract address
-          examples:
-          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
-        name:
-          type: string
-          description: Token name
-          examples:
-          - TetherToken
-        symbol:
-          type: string
-          description: Token symbol
-          examples:
-          - USDt
-        decimals:
-          type: number
-          description: Token decimals
-          examples:
-          - 6
-        valueWithDecimals:
-          type: string
-          description: Value including decimals
-          examples:
-          - '3331.009129'
-      required:
-      - address
-      - name
-      - symbol
-      - decimals
-      - valueWithDecimals
     WebhookAddressActivityResponse:
       type: object
       properties:
@@ -416,69 +479,6 @@ components:
       - eventType
       - messageId
       - event
-    ERCTransfer:
-      type: object
-      properties:
-        transactionHash:
-          type: string
-          description: Transaction hash
-          examples:
-          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
-        type:
-          type: string
-          description: Transfer type
-          examples:
-          - ERC20
-        from:
-          type: string
-          description: Sender address
-          examples:
-          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
-        to:
-          type: string
-          description: Recipient address
-          examples:
-          - '0x40E832C3Df9562DfaE5A86A4849F27F687A9B46B'
-        value:
-          type: string
-          description: Amount transferred
-          examples:
-          - '3331009129'
-        tokenId:
-          type: string
-          description: Token Id
-          examples:
-          - '2'
-        blockTimestamp:
-          type: number
-          description: Block timestamp
-          examples:
-          - 1640995200
-        logIndex:
-          type: number
-          description: Log index
-          examples:
-          - 5
-        erc20Token:
-          description: erc20 Token details
-          allOf:
-          - $ref: '#/components/schemas/ERCToken'
-        erc721Token:
-          description: erc721 Token details
-          allOf:
-          - $ref: '#/components/schemas/ERCToken'
-        erc1155Token:
-          description: erc1155 Token details
-          allOf:
-          - $ref: '#/components/schemas/ERCToken'
-      required:
-      - transactionHash
-      - type
-      - from
-      - to
-      - value
-      - blockTimestamp
-      - logIndex
   securitySchemes:
     apiKey:
       type: apiKey

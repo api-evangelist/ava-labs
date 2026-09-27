@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Data NF Ts API
+  title: Data NFTs API
   description: The Data API provides web3 application developers with multi-chain data related to Avalanche's primary network, Avalanche subnets, and Ethereum.
   version: 1.0.0
   contact: {}
@@ -311,7 +311,7 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.nfts.get({\n    address: \"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\n    tokenId: \"145\",\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
-    BadGateway:
+    InternalServerError:
       type: object
       properties:
         message:
@@ -325,64 +325,31 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 502
+          - 500
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Gateway
+          - Internal Server Error
       required:
       - message
       - statusCode
       - error
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
+    NftTokenMetadataStatus:
+      type: string
+      description: The metadata indexing status of the nft.
+      enum:
+      - UNKNOWN
+      - MISSING_TOKEN
+      - INVALID_TOKEN_URI
+      - INVALID_TOKEN_URI_SCHEME
+      - UNREACHABLE_TOKEN_URI
+      - THROTTLED_TOKEN_URI
+      - METADATA_CONTENT_TOO_LARGE
+      - INVALID_METADATA
+      - INVALID_METADATA_JSON
+      - INDEXED
+      - UNINDEXED
     Erc1155TokenMetadata:
       type: object
       properties:
@@ -412,30 +379,6 @@ components:
           type: string
       required:
       - indexStatus
-    InternalServerError:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
-      required:
-      - message
-      - statusCode
-      - error
     ServiceUnavailable:
       type: object
       properties:
@@ -460,22 +403,7 @@ components:
       - message
       - statusCode
       - error
-    NftTokenMetadataStatus:
-      type: string
-      description: The metadata indexing status of the nft.
-      enum:
-      - UNKNOWN
-      - MISSING_TOKEN
-      - INVALID_TOKEN_URI
-      - INVALID_TOKEN_URI_SCHEME
-      - UNREACHABLE_TOKEN_URI
-      - THROTTLED_TOKEN_URI
-      - METADATA_CONTENT_TOO_LARGE
-      - INVALID_METADATA
-      - INVALID_METADATA_JSON
-      - INDEXED
-      - UNINDEXED
-    BadRequest:
+    Forbidden:
       type: object
       properties:
         message:
@@ -489,12 +417,60 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 400
+          - 403
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Request
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
       required:
       - message
       - statusCode
@@ -540,30 +516,30 @@ components:
       - tokenId
       - tokenUri
       - metadata
-    Unauthorized:
+    Erc1155Token:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
+        address:
           type: string
-          description: The type of error
+          description: A wallet or contract address in mixed-case checksum encoding.
           examples:
-          - Unauthorized
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        ercType:
+          type: string
+          enum:
+          - ERC-1155
+        tokenId:
+          type: string
+        tokenUri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Erc1155TokenMetadata'
       required:
-      - message
-      - statusCode
-      - error
+      - address
+      - ercType
+      - tokenId
+      - tokenUri
+      - metadata
     Erc721TokenMetadata:
       type: object
       properties:
@@ -591,30 +567,78 @@ components:
           type: string
       required:
       - indexStatus
-    Erc1155Token:
+    BadRequest:
       type: object
       properties:
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
           examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        ercType:
+          - 400
+        error:
           type: string
-          enum:
-          - ERC-1155
-        tokenId:
-          type: string
-        tokenUri:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Erc1155TokenMetadata'
+          description: The type of error
+          examples:
+          - Bad Request
       required:
-      - address
-      - ercType
-      - tokenId
-      - tokenUri
-      - metadata
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
     ListNftTokens:
       type: object
       properties:
@@ -629,30 +653,6 @@ components:
             - $ref: '#/components/schemas/Erc1155Token'
       required:
       - tokens
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
   securitySchemes:
     apiKey:
       type: apiKey

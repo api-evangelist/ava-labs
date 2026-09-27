@@ -627,27 +627,45 @@ paths:
       - Looking Glass
 components:
   schemas:
-    DateRangeNftHoldersParam:
+    AllTimeErc20BalanceQueryDto:
       type: object
       properties:
-        firstDate:
+        id:
           type: string
-        lastDate:
+        type:
           type: string
-        evmChainId:
-          type: string
-        contractAddress:
-          type: string
+          enum:
+          - AllTimeErc20Balance
+        params:
+          $ref: '#/components/schemas/DateRangeErc20MinBalanceParam'
       required:
-      - firstDate
-      - lastDate
-      - evmChainId
-      - contractAddress
-    Operator:
-      type: string
-      enum:
-      - AND
-      - OR
+      - id
+      - type
+      - params
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
     TooManyRequests:
       type: object
       properties:
@@ -672,30 +690,176 @@ components:
       - message
       - statusCode
       - error
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
-    PChainAddressDetails:
+    BadRequest:
       type: object
       properties:
-        addresses:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
           examples:
-          - - avax1abcdef1234567890abcdef1234567890abcdef
-          description: A list of P-Chain addresses.
-          type: array
-          items:
-            type: string
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    LatestBalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - LatestBalance
+        params:
+          $ref: '#/components/schemas/LatestBalanceParams'
+      required:
+      - id
+      - type
+      - params
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    AllTimeNativeBalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AllTimeNativeBalance
+        params:
+          $ref: '#/components/schemas/DateRangeMinBalanceParam'
+      required:
+      - id
+      - type
+      - params
+    LatestBalanceParams:
+      type: object
+      properties:
+        minBalance:
+          type: string
+        evmChainId:
+          type: string
+        tokenType:
+          $ref: '#/components/schemas/TokenType'
+        contractAddress:
+          type: string
+      required:
+      - minBalance
+      - evmChainId
+      - tokenType
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    AllTimeNftHoldersQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AllTimeNftHolders
+        params:
+          oneOf:
+          - $ref: '#/components/schemas/TimestampRangeNftHoldersParam'
+          - $ref: '#/components/schemas/DateRangeNftHoldersParam'
+      required:
+      - id
+      - type
+      - params
+    AnyTimeErc20BalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AnyTimeErc20Balance
+        params:
+          $ref: '#/components/schemas/DateRangeErc20MinBalanceParam'
+      required:
+      - id
+      - type
+      - params
+    AddressDetails:
+      type: object
+      properties:
+        address:
+          type: string
+          examples:
+          - '0x1234567890abcdef1234567890abcdef123456789'
+          description: An EVM address.
         sortKey:
           type: string
           examples:
           - 123
           description: Route dependent value associated with an address at a given point in time.
       required:
-      - addresses
+      - address
       - sortKey
+    Operator:
+      type: string
+      enum:
+      - AND
+      - OR
     DateRangeMinBalanceParam:
       type: object
       properties:
@@ -712,74 +876,60 @@ components:
       - lastDate
       - minBalance
       - evmChainId
-    LookingGlassResponse:
+    ServiceUnavailable:
       type: object
       properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        addresses:
-          description: List of addresses that match provided criteria.
-          type: array
-          items:
-            $ref: '#/components/schemas/AddressDetails'
-      required:
-      - addresses
-    LatestStarsArenaBalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - LatestBalanceStarsArena
-        params:
-          $ref: '#/components/schemas/LatestStarsArenaBalanceParams'
-      required:
-      - id
-      - type
-      - params
-    TimestampRangeNftHoldersParam:
-      type: object
-      properties:
-        evmChainId:
-          type: string
-        contractAddress:
-          type: string
-        startTs:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
           type: number
-        endTs:
-          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
       required:
-      - evmChainId
-      - contractAddress
-      - startTs
-      - endTs
-    DateRangeStarsArenaMinBalanceParam:
+      - message
+      - statusCode
+      - error
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    DateRangeNftHoldersParam:
       type: object
       properties:
         firstDate:
           type: string
         lastDate:
-          type: string
-        minBalance:
-          type: string
-        subjectAddress:
-          type: string
-      required:
-      - firstDate
-      - lastDate
-      - minBalance
-      - subjectAddress
-    DateRangeErc20MinBalanceParam:
-      type: object
-      properties:
-        firstDate:
-          type: string
-        lastDate:
-          type: string
-        minBalance:
           type: string
         evmChainId:
           type: string
@@ -788,39 +938,13 @@ components:
       required:
       - firstDate
       - lastDate
-      - minBalance
       - evmChainId
       - contractAddress
-    AllTimeStarsArenaBalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AllTimeStarsArenaBalance
-        params:
-          $ref: '#/components/schemas/DateRangeStarsArenaMinBalanceParam'
-      required:
-      - id
-      - type
-      - params
-    AllTimeErc20BalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AllTimeErc20Balance
-        params:
-          $ref: '#/components/schemas/DateRangeErc20MinBalanceParam'
-      required:
-      - id
-      - type
-      - params
+    TokenType:
+      type: string
+      enum:
+      - ERC20
+      - NATIVE
     CompositeQueryRequestDto:
       type: object
       properties:
@@ -865,47 +989,26 @@ components:
       required:
       - queries
       - operator
-    Unauthorized:
+    DateRangeErc20MinBalanceParam:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
+        firstDate:
           type: string
-          description: The type of error
-          examples:
-          - Unauthorized
+        lastDate:
+          type: string
+        minBalance:
+          type: string
+        evmChainId:
+          type: string
+        contractAddress:
+          type: string
       required:
-      - message
-      - statusCode
-      - error
-    AddressDetails:
-      type: object
-      properties:
-        address:
-          type: string
-          examples:
-          - '0x1234567890abcdef1234567890abcdef123456789'
-          description: An EVM address.
-        sortKey:
-          type: string
-          examples:
-          - 123
-          description: Route dependent value associated with an address at a given point in time.
-      required:
-      - address
-      - sortKey
-    AnyTimeNativeBalanceQueryDto:
+      - firstDate
+      - lastDate
+      - minBalance
+      - evmChainId
+      - contractAddress
+    AllTimeStarsArenaBalanceQueryDto:
       type: object
       properties:
         id:
@@ -913,14 +1016,56 @@ components:
         type:
           type: string
           enum:
-          - AnyTimeNativeBalance
+          - AllTimeStarsArenaBalance
         params:
-          $ref: '#/components/schemas/DateRangeMinBalanceParam'
+          $ref: '#/components/schemas/DateRangeStarsArenaMinBalanceParam'
       required:
       - id
       - type
       - params
-    AnyTimeNftHoldersQueryDto:
+    PChainLookingGlassResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        addresses:
+          description: List of addresses that match provided criteria.
+          type: array
+          items:
+            $ref: '#/components/schemas/PChainAddressDetails'
+      required:
+      - addresses
+    LookingGlassResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        addresses:
+          description: List of addresses that match provided criteria.
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressDetails'
+      required:
+      - addresses
+    DateRangeStarsArenaMinBalanceParam:
+      type: object
+      properties:
+        firstDate:
+          type: string
+        lastDate:
+          type: string
+        minBalance:
+          type: string
+        subjectAddress:
+          type: string
+      required:
+      - firstDate
+      - lastDate
+      - minBalance
+      - subjectAddress
+    AnyTimeStarsArenaBalanceQueryDto:
       type: object
       properties:
         id:
@@ -928,39 +1073,13 @@ components:
         type:
           type: string
           enum:
-          - AnyTimeNftHolders
+          - AnyTimeStarsArenaBalance
         params:
-          oneOf:
-          - $ref: '#/components/schemas/TimestampRangeNftHoldersParam'
-          - $ref: '#/components/schemas/DateRangeNftHoldersParam'
+          $ref: '#/components/schemas/DateRangeStarsArenaMinBalanceParam'
       required:
       - id
       - type
       - params
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
     CompositeQueryResponse:
       type: object
       properties:
@@ -991,183 +1110,6 @@ components:
       - subQueryCounts
       - totalCount
       - addresses
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    LatestStarsArenaBalanceParams:
-      type: object
-      properties:
-        minBalance:
-          type: string
-        subjectAddress:
-          type: string
-      required:
-      - minBalance
-      - subjectAddress
-    AnyTimeStarsArenaBalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AnyTimeStarsArenaBalance
-        params:
-          $ref: '#/components/schemas/DateRangeStarsArenaMinBalanceParam'
-      required:
-      - id
-      - type
-      - params
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
-    PChainLookingGlassResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        addresses:
-          description: List of addresses that match provided criteria.
-          type: array
-          items:
-            $ref: '#/components/schemas/PChainAddressDetails'
-      required:
-      - addresses
-    LatestBalanceParams:
-      type: object
-      properties:
-        minBalance:
-          type: string
-        evmChainId:
-          type: string
-        tokenType:
-          $ref: '#/components/schemas/TokenType'
-        contractAddress:
-          type: string
-      required:
-      - minBalance
-      - evmChainId
-      - tokenType
-    AllTimeNativeBalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AllTimeNativeBalance
-        params:
-          $ref: '#/components/schemas/DateRangeMinBalanceParam'
-      required:
-      - id
-      - type
-      - params
-    TokenType:
-      type: string
-      enum:
-      - ERC20
-      - NATIVE
-    AllTimeNftHoldersQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AllTimeNftHolders
-        params:
-          oneOf:
-          - $ref: '#/components/schemas/TimestampRangeNftHoldersParam'
-          - $ref: '#/components/schemas/DateRangeNftHoldersParam'
-      required:
-      - id
-      - type
-      - params
-    InternalServerError:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
-      required:
-      - message
-      - statusCode
-      - error
-    AnyTimeErc20BalanceQueryDto:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - AnyTimeErc20Balance
-        params:
-          $ref: '#/components/schemas/DateRangeErc20MinBalanceParam'
-      required:
-      - id
-      - type
-      - params
     NftHoldersResponse:
       type: object
       properties:
@@ -1207,7 +1149,39 @@ components:
       - addresses
       - totalHolders
       - totalTokens
-    BadRequest:
+    TimestampRangeNftHoldersParam:
+      type: object
+      properties:
+        evmChainId:
+          type: string
+        contractAddress:
+          type: string
+        startTs:
+          type: number
+        endTs:
+          type: number
+      required:
+      - evmChainId
+      - contractAddress
+      - startTs
+      - endTs
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    LatestStarsArenaBalanceParams:
+      type: object
+      properties:
+        minBalance:
+          type: string
+        subjectAddress:
+          type: string
+      required:
+      - minBalance
+      - subjectAddress
+    Unauthorized:
       type: object
       properties:
         message:
@@ -1221,17 +1195,17 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 400
+          - 401
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Request
+          - Unauthorized
       required:
       - message
       - statusCode
       - error
-    LatestBalanceQueryDto:
+    LatestStarsArenaBalanceQueryDto:
       type: object
       properties:
         id:
@@ -1239,37 +1213,63 @@ components:
         type:
           type: string
           enum:
-          - LatestBalance
+          - LatestBalanceStarsArena
         params:
-          $ref: '#/components/schemas/LatestBalanceParams'
+          $ref: '#/components/schemas/LatestStarsArenaBalanceParams'
       required:
       - id
       - type
       - params
-    NotFound:
+    PChainAddressDetails:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
+        addresses:
           examples:
-          - 404
-        error:
+          - - avax1abcdef1234567890abcdef1234567890abcdef
+          description: A list of P-Chain addresses.
+          type: array
+          items:
+            type: string
+        sortKey:
           type: string
-          description: The type of error
           examples:
-          - Not Found
+          - 123
+          description: Route dependent value associated with an address at a given point in time.
       required:
-      - message
-      - statusCode
-      - error
+      - addresses
+      - sortKey
+    AnyTimeNativeBalanceQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AnyTimeNativeBalance
+        params:
+          $ref: '#/components/schemas/DateRangeMinBalanceParam'
+      required:
+      - id
+      - type
+      - params
+    AnyTimeNftHoldersQueryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - AnyTimeNftHolders
+        params:
+          oneOf:
+          - $ref: '#/components/schemas/TimestampRangeNftHoldersParam'
+          - $ref: '#/components/schemas/DateRangeNftHoldersParam'
+      required:
+      - id
+      - type
+      - params
 x-speakeasy-globals:
   parameters:
   - $ref: '#/components/parameters/GlobalParamChainId'
