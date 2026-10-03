@@ -1371,150 +1371,116 @@ paths:
     - url: https://metrics.avax.network
 components:
   schemas:
-    TooManyRequests:
+    ListEvmBlocksResponse:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
+        nextPageToken:
           type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    VmName:
-      type: string
-      enum:
-      - EVM
-      - BITCOIN
-      - ETHEREUM
-    InternalServerError:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
-      required:
-      - message
-      - statusCode
-      - error
-    TransactionStatus:
-      type: string
-      enum:
-      - failed
-      - success
-    ChainInfo:
-      type: object
-      properties:
-        chainId:
-          type: string
-        status:
-          $ref: '#/components/schemas/ChainStatus'
-        chainName:
-          type: string
-        description:
-          type: string
-        platformChainId:
-          type: string
-        subnetId:
-          type: string
-        vmId:
-          type: string
-        vmName:
-          $ref: '#/components/schemas/VmName'
-        explorerUrl:
-          type: string
-        rpcUrl:
-          type: string
-        wsUrl:
-          type: string
-        isTestnet:
-          type: boolean
-        utilityAddresses:
-          $ref: '#/components/schemas/UtilityAddresses'
-        networkToken:
-          $ref: '#/components/schemas/NetworkToken'
-        chainLogoUri:
-          type: string
-        private:
-          type: boolean
-        enabledFeatures:
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        blocks:
           type: array
           items:
-            type: string
-            enum:
-            - nftIndexing
-            - webhooks
-            - teleporter
+            $ref: '#/components/schemas/EvmBlock'
       required:
-      - chainId
-      - status
-      - chainName
-      - description
-      - vmName
-      - rpcUrl
-      - isTestnet
-      - networkToken
-    ListChainsResponse:
+      - blocks
+    RichAddress:
       type: object
       properties:
-        chains:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChainInfo'
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        logoUri:
+          type: string
+          description: The logo uri for the address.
+          examples:
+          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
       required:
-      - chains
+      - address
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    Method:
+      type: object
+      properties:
+        callType:
+          examples:
+          - CONTRACT_CALL
+          $ref: '#/components/schemas/TransactionMethodType'
+        methodHash:
+          type: string
+          description: The contract method hash identifier. The method hash is only set if the `callType` is `CONTRACT_CALL`.
+          examples:
+          - '0xa9059cbb'
+        methodName:
+          type: string
+          description: The contract method name including parameter types. If the `callType` is `NATIVE_TRANSFER` this is set to 'Native Transfer'. If the `callType` is `CONTRACT_CREATION` this is set to 'Contract Created'.
+          examples:
+          - transfer(address,uint256)
+      required:
+      - callType
+      - methodHash
     NativeTransaction:
       type: object
       properties:
@@ -1604,7 +1570,7 @@ components:
       - from
       - to
       - value
-    NotFound:
+    InternalServerError:
       type: object
       properties:
         message:
@@ -1618,68 +1584,72 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 404
+          - 500
         error:
           type: string
           description: The type of error
           examples:
-          - Not Found
+          - Internal Server Error
       required:
       - message
       - statusCode
       - error
-    GetChainResponse:
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    ChainStatus:
+      type: string
+      description: Status of chain nodes. Chain nodes can become temporarily `UNAVAILABLE` for several reasons, such as validator stake falling below threshold. If chain nodes are `UNAVAILABLE`, requests that rely on data from the chain nodes may return 503 errors.
+      enum:
+      - OK
+      - UNAVAILABLE
+    ServiceUnavailable:
       type: object
       properties:
-        chainId:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
           type: string
-        status:
-          $ref: '#/components/schemas/ChainStatus'
-        chainName:
-          type: string
-        description:
-          type: string
-        platformChainId:
-          type: string
-        subnetId:
-          type: string
-        vmId:
-          type: string
-        vmName:
-          $ref: '#/components/schemas/VmName'
-        explorerUrl:
-          type: string
-        rpcUrl:
-          type: string
-        wsUrl:
-          type: string
-        isTestnet:
-          type: boolean
-        utilityAddresses:
-          $ref: '#/components/schemas/UtilityAddresses'
-        networkToken:
-          $ref: '#/components/schemas/NetworkToken'
-        chainLogoUri:
-          type: string
-        private:
-          type: boolean
-        enabledFeatures:
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    TransactionStatus:
+      type: string
+      enum:
+      - failed
+      - success
+    VmName:
+      type: string
+      enum:
+      - EVM
+      - BITCOIN
+      - ETHEREUM
+    ListChainsResponse:
+      type: object
+      properties:
+        chains:
           type: array
           items:
-            type: string
-            enum:
-            - nftIndexing
-            - webhooks
-            - teleporter
+            $ref: '#/components/schemas/ChainInfo'
       required:
-      - chainId
-      - status
-      - chainName
-      - description
-      - vmName
-      - rpcUrl
-      - isTestnet
-      - networkToken
+      - chains
     NetworkToken:
       type: object
       properties:
@@ -1709,109 +1679,6 @@ components:
       - name
       - symbol
       - decimals
-    ListNativeTransactionsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/NativeTransaction'
-      required:
-      - transactions
-    ApiFeature:
-      type: string
-      enum:
-      - nftIndexing
-      - webhooks
-      - teleporter
-    Method:
-      type: object
-      properties:
-        callType:
-          examples:
-          - CONTRACT_CALL
-          $ref: '#/components/schemas/TransactionMethodType'
-        methodHash:
-          type: string
-          description: The contract method hash identifier. The method hash is only set if the `callType` is `CONTRACT_CALL`.
-          examples:
-          - '0xa9059cbb'
-        methodName:
-          type: string
-          description: The contract method name including parameter types. If the `callType` is `NATIVE_TRANSFER` this is set to 'Native Transfer'. If the `callType` is `CONTRACT_CREATION` this is set to 'Contract Created'.
-          examples:
-          - transfer(address,uint256)
-      required:
-      - callType
-      - methodHash
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    UtilityAddresses:
-      type: object
-      properties:
-        multicall:
-          type: string
-    ChainStatus:
-      type: string
-      description: Status of chain nodes. Chain nodes can become temporarily `UNAVAILABLE` for several reasons, such as validator stake falling below threshold. If chain nodes are `UNAVAILABLE`, requests that rely on data from the chain nodes may return 503 errors.
-      enum:
-      - OK
-      - UNAVAILABLE
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
     ListAddressChainsResponse:
       type: object
       properties:
@@ -1823,49 +1690,6 @@ components:
           type: array
           items:
             type: string
-    TransactionMethodType:
-      type: string
-      description: The contract call type. NATIVE_TRANSFER indicates a transfer of the native token without any smart-contract interaction. CONTRACT_CALL indicates a smart-contract interaction. CONTRACT_CREATION indicates a smart-contract creation.
-      enum:
-      - NATIVE_TRANSFER
-      - CONTRACT_CALL
-      - CONTRACT_CREATION
-    ListEvmBlocksResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        blocks:
-          type: array
-          items:
-            $ref: '#/components/schemas/EvmBlock'
-      required:
-      - blocks
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
     EvmBlock:
       type: object
       properties:
@@ -1949,149 +1773,212 @@ components:
       - message
       - statusCode
       - error
-    RichAddress:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        decimals:
-          type: number
-          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
-          examples:
-          - 18
-        logoUri:
-          type: string
-          description: The logo uri for the address.
-          examples:
-          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-      required:
-      - address
-    SubnetMappingsResponse:
-      type: object
-      properties:
-        nextPageStartKey:
-          type: string
-        lastRun:
-          type: number
-          examples:
-          - 1717757617
-        status:
-          type: number
-          examples:
-          - 200
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubnetMapping'
-      required:
-      - status
-      - results
-    ChainInformation:
-      type: object
-      properties:
-        subnetID:
-          type: string
-        timestamp:
-          type: number
-        blockchainID:
-          type: string
-        vmID:
-          type: string
-        chainName:
-          type: string
-      required:
-      - subnetID
-      - timestamp
-      - blockchainID
-      - vmID
-      - chainName
-    LegacyNetworks:
+    TransactionMethodType:
       type: string
+      description: The contract call type. NATIVE_TRANSFER indicates a transfer of the native token without any smart-contract interaction. CONTRACT_CALL indicates a smart-contract interaction. CONTRACT_CREATION indicates a smart-contract creation.
       enum:
-      - mainnet
-      - fuji
-    ListChainsResponse_2:
+      - NATIVE_TRANSFER
+      - CONTRACT_CALL
+      - CONTRACT_CREATION
+    ListNativeTransactionsResponse:
       type: object
       properties:
         nextPageToken:
           type: string
           description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        chains:
-          description: Array of Subnet - EVM Chain ID mappings whose metrics we support.
+        transactions:
           type: array
           items:
-            $ref: '#/components/schemas/Chain'
+            $ref: '#/components/schemas/NativeTransaction'
       required:
-      - chains
-    SubnetMapping:
+      - transactions
+    BadRequest:
       type: object
       properties:
-        chainID:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
           type: number
-        subnetID:
-          type: string
-        timestamp:
-          type: number
-        network:
-          type: string
-      required:
-      - chainID
-      - subnetID
-      - timestamp
-      - network
-    ChainInformationResponse:
-      type: object
-      properties:
-        nextPageStartKey:
-          type: string
-        lastRun:
-          type: number
+          description: The HTTP status code of the response
           examples:
-          - 1717757617
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    GetChainResponse:
+      type: object
+      properties:
+        chainId:
+          type: string
         status:
-          type: number
-          examples:
-          - 200
-        results:
+          $ref: '#/components/schemas/ChainStatus'
+        chainName:
+          type: string
+        description:
+          type: string
+        platformChainId:
+          type: string
+        subnetId:
+          type: string
+        vmId:
+          type: string
+        vmName:
+          $ref: '#/components/schemas/VmName'
+        explorerUrl:
+          type: string
+        rpcUrl:
+          type: string
+        wsUrl:
+          type: string
+        isTestnet:
+          type: boolean
+        utilityAddresses:
+          $ref: '#/components/schemas/UtilityAddresses'
+        networkToken:
+          $ref: '#/components/schemas/NetworkToken'
+        chainLogoUri:
+          type: string
+        private:
+          type: boolean
+        enabledFeatures:
           type: array
           items:
-            $ref: '#/components/schemas/ChainInformation'
+            type: string
+            enum:
+            - nftIndexing
+            - webhooks
+            - teleporter
       required:
+      - chainId
       - status
-      - results
-    SubnetsResponse:
+      - chainName
+      - description
+      - vmName
+      - rpcUrl
+      - isTestnet
+      - networkToken
+    ApiFeature:
+      type: string
+      enum:
+      - nftIndexing
+      - webhooks
+      - teleporter
+    ChainInfo:
       type: object
       properties:
-        nextPageStartKey:
+        chainId:
           type: string
-        lastRun:
-          type: number
-          examples:
-          - 1717757617
         status:
-          type: number
-          examples:
-          - 200
-        results:
+          $ref: '#/components/schemas/ChainStatus'
+        chainName:
+          type: string
+        description:
+          type: string
+        platformChainId:
+          type: string
+        subnetId:
+          type: string
+        vmId:
+          type: string
+        vmName:
+          $ref: '#/components/schemas/VmName'
+        explorerUrl:
+          type: string
+        rpcUrl:
+          type: string
+        wsUrl:
+          type: string
+        isTestnet:
+          type: boolean
+        utilityAddresses:
+          $ref: '#/components/schemas/UtilityAddresses'
+        networkToken:
+          $ref: '#/components/schemas/NetworkToken'
+        chainLogoUri:
+          type: string
+        private:
+          type: boolean
+        enabledFeatures:
           type: array
           items:
-            $ref: '#/components/schemas/SubnetInformation'
+            type: string
+            enum:
+            - nftIndexing
+            - webhooks
+            - teleporter
       required:
+      - chainId
       - status
-      - results
+      - chainName
+      - description
+      - vmName
+      - rpcUrl
+      - isTestnet
+      - networkToken
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    UtilityAddresses:
+      type: object
+      properties:
+        multicall:
+          type: string
     SubnetInformation:
       type: object
       properties:
@@ -2113,6 +2000,25 @@ components:
       - subnetID
       - timestamp
       - validatorCount
+    ChainInformation:
+      type: object
+      properties:
+        subnetID:
+          type: string
+        timestamp:
+          type: number
+        blockchainID:
+          type: string
+        vmID:
+          type: string
+        chainName:
+          type: string
+      required:
+      - subnetID
+      - timestamp
+      - blockchainID
+      - vmID
+      - chainName
     Chain:
       type: object
       properties:
@@ -2146,12 +2052,106 @@ components:
       - blockchainId
       - subnetId
       - network
+    SubnetMappingsResponse:
+      type: object
+      properties:
+        nextPageStartKey:
+          type: string
+        lastRun:
+          type: number
+          examples:
+          - 1717757617
+        status:
+          type: number
+          examples:
+          - 200
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubnetMapping'
+      required:
+      - status
+      - results
+    ListChainsResponse_2:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        chains:
+          description: Array of Subnet - EVM Chain ID mappings whose metrics we support.
+          type: array
+          items:
+            $ref: '#/components/schemas/Chain'
+      required:
+      - chains
+    ChainInformationResponse:
+      type: object
+      properties:
+        nextPageStartKey:
+          type: string
+        lastRun:
+          type: number
+          examples:
+          - 1717757617
+        status:
+          type: number
+          examples:
+          - 200
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChainInformation'
+      required:
+      - status
+      - results
+    LegacyNetworks:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+    SubnetMapping:
+      type: object
+      properties:
+        chainID:
+          type: number
+        subnetID:
+          type: string
+        timestamp:
+          type: number
+        network:
+          type: string
+      required:
+      - chainID
+      - subnetID
+      - timestamp
+      - network
     NetworkType:
       type: string
       description: Network on which this blockchain or subnet is created on.
       enum:
       - mainnet
       - testnet
+    SubnetsResponse:
+      type: object
+      properties:
+        nextPageStartKey:
+          type: string
+        lastRun:
+          type: number
+          examples:
+          - 1717757617
+        status:
+          type: number
+          examples:
+          - 200
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubnetInformation'
+      required:
+      - status
+      - results
   securitySchemes:
     apiKey:
       type: apiKey

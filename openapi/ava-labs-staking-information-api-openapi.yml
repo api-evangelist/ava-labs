@@ -1169,7 +1169,27 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    InternalServerError:
+    StakingInformationResponse:
+      type: object
+      properties:
+        nextPageStartKey:
+          type: string
+        lastRun:
+          type: number
+          examples:
+          - 1717757617
+        status:
+          type: number
+          examples:
+          - 200
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StakingInformation'
+      required:
+      - status
+      - results
+    BadRequest:
       type: object
       properties:
         message:
@@ -1183,12 +1203,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 500
+          - 400
         error:
           type: string
           description: The type of error
           examples:
-          - Internal Server Error
+          - Bad Request
       required:
       - message
       - statusCode
@@ -1217,92 +1237,6 @@ components:
       - message
       - statusCode
       - error
-    StakingInformationResponse:
-      type: object
-      properties:
-        nextPageStartKey:
-          type: string
-        lastRun:
-          type: number
-          examples:
-          - 1717757617
-        status:
-          type: number
-          examples:
-          - 200
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/StakingInformation'
-      required:
-      - status
-      - results
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    LegacyNetworks:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-    StakingInformation:
-      type: object
-      properties:
-        value:
-          type: number
-        timestamp:
-          type: number
-        subnetID:
-          type: string
-      required:
-      - value
-      - timestamp
-      - subnetID
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
     NotFound:
       type: object
       properties:
@@ -1323,98 +1257,6 @@ components:
           description: The type of error
           examples:
           - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    ValidatorInformationResponse:
-      type: object
-      properties:
-        nextPageStartKey:
-          type: string
-        lastRun:
-          type: number
-          examples:
-          - 1717757617
-        status:
-          type: number
-          examples:
-          - 200
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidatorInformation'
-      required:
-      - status
-      - results
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
       required:
       - message
       - statusCode
@@ -1461,6 +1303,164 @@ components:
       - status
       - transactionHash
       - weight
+    ValidatorInformationResponse:
+      type: object
+      properties:
+        nextPageStartKey:
+          type: string
+        lastRun:
+          type: number
+          examples:
+          - 1717757617
+        status:
+          type: number
+          examples:
+          - 200
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidatorInformation'
+      required:
+      - status
+      - results
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    LegacyNetworks:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    StakingInformation:
+      type: object
+      properties:
+        value:
+          type: number
+        timestamp:
+          type: number
+        subnetID:
+          type: string
+      required:
+      - value
+      - timestamp
+      - subnetID
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
 x-speakeasy-globals:
   parameters:
   - $ref: '#/components/parameters/GlobalParamChainId'

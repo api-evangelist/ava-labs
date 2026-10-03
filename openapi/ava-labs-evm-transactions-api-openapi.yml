@@ -1476,14 +1476,580 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.transactions.listLatest({\n    pageSize: 10,\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
 components:
   schemas:
-    ImageAsset:
+    RichAddress:
       type: object
       properties:
-        assetId:
+        name:
           type: string
-        imageUri:
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
           type: string
-          description: OUTPUT ONLY
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        logoUri:
+          type: string
+          description: The logo uri for the address.
+          examples:
+          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+      required:
+      - address
+    Erc721Transfer:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        logIndex:
+          type: number
+        erc721Token:
+          $ref: '#/components/schemas/Erc721Token'
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - txHash
+      - from
+      - to
+      - logIndex
+      - erc721Token
+    Erc20Transfer:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        logIndex:
+          type: number
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        erc20Token:
+          $ref: '#/components/schemas/Erc20Token'
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - txHash
+      - from
+      - to
+      - logIndex
+      - value
+      - erc20Token
+    CurrencyCode:
+      type: string
+      description: ISO 4217 currency code.
+      enum:
+      - usd
+      - eur
+      - aud
+      - cad
+      - chf
+      - clp
+      - cny
+      - czk
+      - dkk
+      - gbp
+      - hkd
+      - huf
+      - jpy
+      - nzd
+    NetworkTokenDetails:
+      type: object
+      properties:
+        networkToken:
+          $ref: '#/components/schemas/NetworkToken'
+        currentPrice:
+          description: The current token price, if available.
+          allOf:
+          - $ref: '#/components/schemas/Money'
+        historicalPrice:
+          description: The historical token price at the time the transaction occured, if available. Note, this is only provided if the transaction occured more than 24 hours ago.
+          allOf:
+          - $ref: '#/components/schemas/Money'
+      required:
+      - networkToken
+    TransactionDetails:
+      type: object
+      properties:
+        nativeTransaction:
+          description: The native (top-level) transaction details.
+          allOf:
+          - $ref: '#/components/schemas/NativeTransaction'
+        erc20Transfers:
+          description: The list of ERC-20 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc20TransferDetails'
+        erc721Transfers:
+          description: The list of ERC-721 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc721TransferDetails'
+        erc1155Transfers:
+          description: The list of ERC-1155 transfers.
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc1155TransferDetails'
+        internalTransactions:
+          description: The list of internal transactions. Note that this list only includes CALL and CALLCODE internal transactions that had a non-zero value and CREATE/CREATE2/CREATE3  calls. Use a client provider to recieve a full debug trace of the transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalTransactionDetails'
+      required:
+      - nativeTransaction
+    ListErc1155TransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc1155Transfer'
+      required:
+      - transactions
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    Erc721Token:
+      type: object
+      properties:
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        ercType:
+          type: string
+          enum:
+          - ERC-721
+        tokenId:
+          type: string
+        tokenUri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Erc721TokenMetadata'
+        ownerAddress:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+      required:
+      - address
+      - name
+      - symbol
+      - ercType
+      - tokenId
+      - tokenUri
+      - metadata
+    Erc20Contract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - ERC-20
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        pricingProviders:
+          $ref: '#/components/schemas/PricingProviders'
+      required:
+      - address
+      - ercType
+      - decimals
+    ContractDeploymentDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        deployerAddress:
+          type: string
+          description: The address that initiated the transaction which deployed this contract.
+        deployerContractAddress:
+          type: string
+          description: The contract address which deployed this contract via smart contract. This field is only populated when the contract was deployed as part of smart contract execution.
+      required:
+      - txHash
+      - deployerAddress
+    Erc1155Token:
+      type: object
+      properties:
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        ercType:
+          type: string
+          enum:
+          - ERC-1155
+        tokenId:
+          type: string
+        tokenUri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Erc1155TokenMetadata'
+      required:
+      - address
+      - ercType
+      - tokenId
+      - tokenUri
+      - metadata
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    UnknownContract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - UNKNOWN
+      required:
+      - address
+      - ercType
+    Method:
+      type: object
+      properties:
+        callType:
+          examples:
+          - CONTRACT_CALL
+          $ref: '#/components/schemas/TransactionMethodType'
+        methodHash:
+          type: string
+          description: The contract method hash identifier. The method hash is only set if the `callType` is `CONTRACT_CALL`.
+          examples:
+          - '0xa9059cbb'
+        methodName:
+          type: string
+          description: The contract method name including parameter types. If the `callType` is `NATIVE_TRANSFER` this is set to 'Native Transfer'. If the `callType` is `CONTRACT_CREATION` this is set to 'Contract Created'.
+          examples:
+          - transfer(address,uint256)
+      required:
+      - callType
+      - methodHash
+    InternalTransactionDetails:
+      type: object
+      properties:
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        internalTxType:
+          $ref: '#/components/schemas/InternalTransactionOpCall'
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        isReverted:
+          type: boolean
+          description: True if the internal transaction was reverted.
+        gasUsed:
+          type: string
+        gasLimit:
+          type: string
+      required:
+      - from
+      - to
+      - internalTxType
+      - value
+      - isReverted
+      - gasUsed
+      - gasLimit
+    NativeTransaction:
+      type: object
+      properties:
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        chainId:
+          type: string
+          description: The EVM chain ID on which the transaction occured.
+          examples:
+          - '43114'
+        blockIndex:
+          type: number
+          description: The index at which the transaction occured in the block (0-indexed).
+          examples:
+          - 0
+        txHash:
+          type: string
+          description: The transaction hash identifier.
+          examples:
+          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
+        txStatus:
+          type: string
+          description: The transaction status, which is either 0 (failed) or 1 (successful).
+          examples:
+          - '1'
+        txType:
+          type: number
+          description: The transaction type.
+          examples:
+          - 1
+        gasLimit:
+          type: string
+          description: The gas limit set for the transaction.
+          examples:
+          - '51373'
+        gasUsed:
+          type: string
+          description: The amount of gas used.
+          examples:
+          - '51373'
+        gasPrice:
+          type: string
+          description: The gas price denominated by the number of decimals of the native token.
+          examples:
+          - '470000000000'
+        nonce:
+          type: string
+          description: The nonce used by the sender of the transaction.
+          examples:
+          - '1'
+        from:
+          $ref: '#/components/schemas/RichAddress'
+        to:
+          $ref: '#/components/schemas/RichAddress'
+        method:
+          $ref: '#/components/schemas/Method'
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+      required:
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - chainId
+      - blockIndex
+      - txHash
+      - txStatus
+      - txType
+      - gasLimit
+      - gasUsed
+      - gasPrice
+      - nonce
+      - from
+      - to
+      - value
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
     Erc1155Transfer:
       type: object
       properties:
@@ -1529,6 +2095,116 @@ components:
       - logIndex
       - value
       - erc1155Token
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    ListErc721TransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc721Transfer'
+      required:
+      - transactions
+    TransactionDirectionType:
+      type: string
+      enum:
+      - SOURCE_TRANSACTION
+      - DESTINATION_TRANSACTION
+    InternalTransactionOpCall:
+      type: string
+      enum:
+      - UNKNOWN
+      - CALL
+      - CREATE
+      - CREATE2
+      - CREATE3
+      - CALLCODE
+      - DELEGATECALL
+      - STATICCALL
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    ListTransactionDetailsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionDetails'
+      required:
+      - transactions
+    Money:
+      type: object
+      properties:
+        currencyCode:
+          examples:
+          - usd
+          $ref: '#/components/schemas/CurrencyCode'
+        value:
+          type: number
+          description: Monetary value in base 10 decimals.
+          examples:
+          - '42.42'
+      required:
+      - currencyCode
+      - value
+    NftTokenMetadataStatus:
+      type: string
+      description: The metadata indexing status of the nft.
+      enum:
+      - UNKNOWN
+      - MISSING_TOKEN
+      - INVALID_TOKEN_URI
+      - INVALID_TOKEN_URI_SCHEME
+      - UNREACHABLE_TOKEN_URI
+      - THROTTLED_TOKEN_URI
+      - METADATA_CONTENT_TOO_LARGE
+      - INVALID_METADATA
+      - INVALID_METADATA_JSON
+      - INDEXED
+      - UNINDEXED
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    TransactionStatus:
+      type: string
+      enum:
+      - failed
+      - success
     InternalTransaction:
       type: object
       properties:
@@ -1581,317 +2257,22 @@ components:
       - isReverted
       - gasUsed
       - gasLimit
-    ContractDeploymentDetails:
-      type: object
-      properties:
-        txHash:
-          type: string
-        deployerAddress:
-          type: string
-          description: The address that initiated the transaction which deployed this contract.
-        deployerContractAddress:
-          type: string
-          description: The contract address which deployed this contract via smart contract. This field is only populated when the contract was deployed as part of smart contract execution.
-      required:
-      - txHash
-      - deployerAddress
-    TransactionDetails:
-      type: object
-      properties:
-        nativeTransaction:
-          description: The native (top-level) transaction details.
-          allOf:
-          - $ref: '#/components/schemas/NativeTransaction'
-        erc20Transfers:
-          description: The list of ERC-20 transfers.
-          type: array
-          items:
-            $ref: '#/components/schemas/Erc20TransferDetails'
-        erc721Transfers:
-          description: The list of ERC-721 transfers.
-          type: array
-          items:
-            $ref: '#/components/schemas/Erc721TransferDetails'
-        erc1155Transfers:
-          description: The list of ERC-1155 transfers.
-          type: array
-          items:
-            $ref: '#/components/schemas/Erc1155TransferDetails'
-        internalTransactions:
-          description: The list of internal transactions. Note that this list only includes CALL and CALLCODE internal transactions that had a non-zero value and CREATE/CREATE2/CREATE3  calls. Use a client provider to recieve a full debug trace of the transaction.
-          type: array
-          items:
-            $ref: '#/components/schemas/InternalTransactionDetails'
-      required:
-      - nativeTransaction
-    InternalTransactionDetails:
+    Erc721TransferDetails:
       type: object
       properties:
         from:
           $ref: '#/components/schemas/RichAddress'
         to:
           $ref: '#/components/schemas/RichAddress'
-        internalTxType:
-          $ref: '#/components/schemas/InternalTransactionOpCall'
-        value:
-          type: string
-          examples:
-          - '10000000000000000000'
-        isReverted:
-          type: boolean
-          description: True if the internal transaction was reverted.
-        gasUsed:
-          type: string
-        gasLimit:
-          type: string
+        logIndex:
+          type: number
+        erc721Token:
+          $ref: '#/components/schemas/Erc721Token'
       required:
       - from
       - to
-      - internalTxType
-      - value
-      - isReverted
-      - gasUsed
-      - gasLimit
-    InternalTransactionOpCall:
-      type: string
-      enum:
-      - UNKNOWN
-      - CALL
-      - CREATE
-      - CREATE2
-      - CREATE3
-      - CALLCODE
-      - DELEGATECALL
-      - STATICCALL
-    TransactionDirectionType:
-      type: string
-      enum:
-      - SOURCE_TRANSACTION
-      - DESTINATION_TRANSACTION
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    Erc1155Token:
-      type: object
-      properties:
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        ercType:
-          type: string
-          enum:
-          - ERC-1155
-        tokenId:
-          type: string
-        tokenUri:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Erc1155TokenMetadata'
-      required:
-      - address
-      - ercType
-      - tokenId
-      - tokenUri
-      - metadata
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    Erc20Token:
-      type: object
-      properties:
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        decimals:
-          type: number
-          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
-          examples:
-          - 18
-        logoUri:
-          type: string
-          description: The logo uri for the address.
-          examples:
-          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
-        ercType:
-          type: string
-          enum:
-          - ERC-20
-        price:
-          description: The token price, if available.
-          allOf:
-          - $ref: '#/components/schemas/Money'
-      required:
-      - address
-      - name
-      - symbol
-      - decimals
-      - ercType
-    CurrencyCode:
-      type: string
-      description: ISO 4217 currency code.
-      enum:
-      - usd
-      - eur
-      - aud
-      - cad
-      - chf
-      - clp
-      - cny
-      - czk
-      - dkk
-      - gbp
-      - hkd
-      - huf
-      - jpy
-      - nzd
-    Erc1155Contract:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        description:
-          type: string
-        officialSite:
-          type: string
-        email:
-          type: string
-        logoAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        bannerAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        color:
-          type: string
-        resourceLinks:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceLink'
-        tags:
-          type: array
-          items:
-            type: string
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        deploymentDetails:
-          $ref: '#/components/schemas/ContractDeploymentDetails'
-        ercType:
-          type: string
-          enum:
-          - ERC-1155
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        pricingProviders:
-          $ref: '#/components/schemas/PricingProviders'
-      required:
-      - address
-      - ercType
-    TeleporterMessageInfo:
-      type: object
-      properties:
-        teleporterMessageId:
-          type: string
-        direction:
-          $ref: '#/components/schemas/TransactionDirectionType'
-        sourceChainId:
-          type: string
-          description: chain id of the source chain. valid only for destination transactions
-        destinationChainId:
-          type: string
-          description: chain id of the destination chain. valid only for source transactions
-      required:
-      - teleporterMessageId
-      - direction
-    ListErc20TransactionsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Erc20Transfer'
-      required:
-      - transactions
-    PricingProviders:
-      type: object
-      properties:
-        coingeckoCoinId:
-          type: string
-    ResourceLink:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ResourceLinkType'
-        url:
-          type: string
-      required:
-      - type
-      - url
+      - logIndex
+      - erc721Token
     FullNativeTransactionDetails:
       type: object
       properties:
@@ -1992,27 +2373,36 @@ components:
       - value
       - input
       - baseFeePerGas
-    NftTokenMetadataStatus:
-      type: string
-      description: The metadata indexing status of the nft.
-      enum:
-      - UNKNOWN
-      - MISSING_TOKEN
-      - INVALID_TOKEN_URI
-      - INVALID_TOKEN_URI_SCHEME
-      - UNREACHABLE_TOKEN_URI
-      - THROTTLED_TOKEN_URI
-      - METADATA_CONTENT_TOO_LARGE
-      - INVALID_METADATA
-      - INVALID_METADATA_JSON
-      - INDEXED
-      - UNINDEXED
-    TransactionStatus:
-      type: string
-      enum:
-      - failed
-      - success
-    InternalServerError:
+    NetworkToken:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        logoUri:
+          type: string
+          description: The logo uri for the address.
+          examples:
+          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
+        description:
+          type: string
+      required:
+      - name
+      - symbol
+      - decimals
+    TooManyRequests:
       type: object
       properties:
         message:
@@ -2026,17 +2416,307 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 500
+          - 429
         error:
           type: string
           description: The type of error
           examples:
-          - Internal Server Error
+          - Too Many Requests
       required:
       - message
       - statusCode
       - error
-    Erc721TransferDetails:
+    Erc1155Contract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - ERC-1155
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        pricingProviders:
+          $ref: '#/components/schemas/PricingProviders'
+      required:
+      - address
+      - ercType
+    ImageAsset:
+      type: object
+      properties:
+        assetId:
+          type: string
+        imageUri:
+          type: string
+          description: OUTPUT ONLY
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    Erc20Token:
+      type: object
+      properties:
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+        decimals:
+          type: number
+          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+          examples:
+          - 18
+        logoUri:
+          type: string
+          description: The logo uri for the address.
+          examples:
+          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
+        ercType:
+          type: string
+          enum:
+          - ERC-20
+        price:
+          description: The token price, if available.
+          allOf:
+          - $ref: '#/components/schemas/Money'
+      required:
+      - address
+      - name
+      - symbol
+      - decimals
+      - ercType
+    ResourceLink:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ResourceLinkType'
+        url:
+          type: string
+      required:
+      - type
+      - url
+    PricingProviders:
+      type: object
+      properties:
+        coingeckoCoinId:
+          type: string
+    Erc721Contract:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The contract name.
+          examples:
+          - Wrapped AVAX
+        description:
+          type: string
+        officialSite:
+          type: string
+        email:
+          type: string
+        logoAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        bannerAsset:
+          $ref: '#/components/schemas/ImageAsset'
+        color:
+          type: string
+        resourceLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceLink'
+        tags:
+          type: array
+          items:
+            type: string
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        deploymentDetails:
+          $ref: '#/components/schemas/ContractDeploymentDetails'
+        ercType:
+          type: string
+          enum:
+          - ERC-721
+        symbol:
+          type: string
+          description: The contract symbol.
+          examples:
+          - WAVAX
+      required:
+      - address
+      - ercType
+    ResourceLinkType:
+      type: string
+      enum:
+      - Blog
+      - CoinGecko
+      - CoinMarketCap
+      - Discord
+      - Documentation
+      - Facebook
+      - Github
+      - Instagram
+      - LinkedIn
+      - Medium
+      - Reddit
+      - Support
+      - Telegram
+      - TikTok
+      - Twitter
+      - Website
+      - Whitepaper
+      - Youtube
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    ListNativeTransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NativeTransaction'
+      required:
+      - transactions
+    ListInternalTransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalTransaction'
+      required:
+      - transactions
+    ListErc20TransactionsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erc20Transfer'
+      required:
+      - transactions
+    Erc1155TransferDetails:
       type: object
       properties:
         from:
@@ -2045,13 +2725,112 @@ components:
           $ref: '#/components/schemas/RichAddress'
         logIndex:
           type: number
-        erc721Token:
-          $ref: '#/components/schemas/Erc721Token'
+        value:
+          type: string
+          examples:
+          - '10000000000000000000'
+        erc1155Token:
+          $ref: '#/components/schemas/Erc1155Token'
       required:
       - from
       - to
       - logIndex
-      - erc721Token
+      - value
+      - erc1155Token
+    Erc721TokenMetadata:
+      type: object
+      properties:
+        indexStatus:
+          examples:
+          - indexed
+          $ref: '#/components/schemas/NftTokenMetadataStatus'
+        metadataLastUpdatedTimestamp:
+          type: number
+        name:
+          type: string
+        symbol:
+          type: string
+        imageUri:
+          type: string
+        description:
+          type: string
+        animationUri:
+          type: string
+        externalUrl:
+          type: string
+        background:
+          type: string
+        attributes:
+          type: string
+      required:
+      - indexStatus
+    ListTransfersResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        transfers:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/Erc20Transfer'
+            - $ref: '#/components/schemas/Erc721Transfer'
+            - $ref: '#/components/schemas/Erc1155Transfer'
+      required:
+      - transfers
+    ListContractsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        contracts:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/Erc721Contract'
+            - $ref: '#/components/schemas/Erc1155Contract'
+            - $ref: '#/components/schemas/Erc20Contract'
+            - $ref: '#/components/schemas/UnknownContract'
+            discriminator:
+              propertyName: ercType
+              mapping:
+                ERC-721: '#/components/schemas/Erc721Contract'
+                ERC-1155: '#/components/schemas/Erc1155Contract'
+                ERC-20: '#/components/schemas/Erc20Contract'
+                UNKNOWN: '#/components/schemas/UnknownContract'
+      required:
+      - contracts
+    Erc1155TokenMetadata:
+      type: object
+      properties:
+        indexStatus:
+          examples:
+          - indexed
+          $ref: '#/components/schemas/NftTokenMetadataStatus'
+        metadataLastUpdatedTimestamp:
+          type: number
+        name:
+          type: string
+        symbol:
+          type: string
+        imageUri:
+          type: string
+        description:
+          type: string
+        animationUri:
+          type: string
+        externalUrl:
+          type: string
+        background:
+          type: string
+        decimals:
+          type: number
+        properties:
+          type: string
+      required:
+      - indexStatus
     Erc20TransferDetails:
       type: object
       properties:
@@ -2107,610 +2886,6 @@ components:
       required:
       - networkTokenDetails
       - nativeTransaction
-    NativeTransaction:
-      type: object
-      properties:
-        blockNumber:
-          type: string
-          description: The block number on the chain.
-          examples:
-          - '339'
-        blockTimestamp:
-          type: number
-          description: The block finality timestamp.
-          examples:
-          - 1648672486
-        blockHash:
-          type: string
-          description: The block hash identifier.
-          examples:
-          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
-        chainId:
-          type: string
-          description: The EVM chain ID on which the transaction occured.
-          examples:
-          - '43114'
-        blockIndex:
-          type: number
-          description: The index at which the transaction occured in the block (0-indexed).
-          examples:
-          - 0
-        txHash:
-          type: string
-          description: The transaction hash identifier.
-          examples:
-          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
-        txStatus:
-          type: string
-          description: The transaction status, which is either 0 (failed) or 1 (successful).
-          examples:
-          - '1'
-        txType:
-          type: number
-          description: The transaction type.
-          examples:
-          - 1
-        gasLimit:
-          type: string
-          description: The gas limit set for the transaction.
-          examples:
-          - '51373'
-        gasUsed:
-          type: string
-          description: The amount of gas used.
-          examples:
-          - '51373'
-        gasPrice:
-          type: string
-          description: The gas price denominated by the number of decimals of the native token.
-          examples:
-          - '470000000000'
-        nonce:
-          type: string
-          description: The nonce used by the sender of the transaction.
-          examples:
-          - '1'
-        from:
-          $ref: '#/components/schemas/RichAddress'
-        to:
-          $ref: '#/components/schemas/RichAddress'
-        method:
-          $ref: '#/components/schemas/Method'
-        value:
-          type: string
-          examples:
-          - '10000000000000000000'
-      required:
-      - blockNumber
-      - blockTimestamp
-      - blockHash
-      - chainId
-      - blockIndex
-      - txHash
-      - txStatus
-      - txType
-      - gasLimit
-      - gasUsed
-      - gasPrice
-      - nonce
-      - from
-      - to
-      - value
-    Erc1155TransferDetails:
-      type: object
-      properties:
-        from:
-          $ref: '#/components/schemas/RichAddress'
-        to:
-          $ref: '#/components/schemas/RichAddress'
-        logIndex:
-          type: number
-        value:
-          type: string
-          examples:
-          - '10000000000000000000'
-        erc1155Token:
-          $ref: '#/components/schemas/Erc1155Token'
-      required:
-      - from
-      - to
-      - logIndex
-      - value
-      - erc1155Token
-    Erc721Token:
-      type: object
-      properties:
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        ercType:
-          type: string
-          enum:
-          - ERC-721
-        tokenId:
-          type: string
-        tokenUri:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Erc721TokenMetadata'
-        ownerAddress:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-      required:
-      - address
-      - name
-      - symbol
-      - ercType
-      - tokenId
-      - tokenUri
-      - metadata
-    SortOrder:
-      type: string
-      enum:
-      - asc
-      - desc
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    NetworkToken:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        decimals:
-          type: number
-          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
-          examples:
-          - 18
-        logoUri:
-          type: string
-          description: The logo uri for the address.
-          examples:
-          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
-        description:
-          type: string
-      required:
-      - name
-      - symbol
-      - decimals
-    ListNativeTransactionsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/NativeTransaction'
-      required:
-      - transactions
-    Method:
-      type: object
-      properties:
-        callType:
-          examples:
-          - CONTRACT_CALL
-          $ref: '#/components/schemas/TransactionMethodType'
-        methodHash:
-          type: string
-          description: The contract method hash identifier. The method hash is only set if the `callType` is `CONTRACT_CALL`.
-          examples:
-          - '0xa9059cbb'
-        methodName:
-          type: string
-          description: The contract method name including parameter types. If the `callType` is `NATIVE_TRANSFER` this is set to 'Native Transfer'. If the `callType` is `CONTRACT_CREATION` this is set to 'Contract Created'.
-          examples:
-          - transfer(address,uint256)
-      required:
-      - callType
-      - methodHash
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    ResourceLinkType:
-      type: string
-      enum:
-      - Blog
-      - CoinGecko
-      - CoinMarketCap
-      - Discord
-      - Documentation
-      - Facebook
-      - Github
-      - Instagram
-      - LinkedIn
-      - Medium
-      - Reddit
-      - Support
-      - Telegram
-      - TikTok
-      - Twitter
-      - Website
-      - Whitepaper
-      - Youtube
-    ListTransfersResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        transfers:
-          type: array
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/Erc20Transfer'
-            - $ref: '#/components/schemas/Erc721Transfer'
-            - $ref: '#/components/schemas/Erc1155Transfer'
-      required:
-      - transfers
-    ListErc721TransactionsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Erc721Transfer'
-      required:
-      - transactions
-    Erc20Transfer:
-      type: object
-      properties:
-        blockNumber:
-          type: string
-          description: The block number on the chain.
-          examples:
-          - '339'
-        blockTimestamp:
-          type: number
-          description: The block finality timestamp.
-          examples:
-          - 1648672486
-        blockHash:
-          type: string
-          description: The block hash identifier.
-          examples:
-          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
-        txHash:
-          type: string
-          description: The transaction hash identifier.
-          examples:
-          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
-        from:
-          $ref: '#/components/schemas/RichAddress'
-        to:
-          $ref: '#/components/schemas/RichAddress'
-        logIndex:
-          type: number
-        value:
-          type: string
-          examples:
-          - '10000000000000000000'
-        erc20Token:
-          $ref: '#/components/schemas/Erc20Token'
-      required:
-      - blockNumber
-      - blockTimestamp
-      - blockHash
-      - txHash
-      - from
-      - to
-      - logIndex
-      - value
-      - erc20Token
-    ListInternalTransactionsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/InternalTransaction'
-      required:
-      - transactions
-    Money:
-      type: object
-      properties:
-        currencyCode:
-          examples:
-          - usd
-          $ref: '#/components/schemas/CurrencyCode'
-        value:
-          type: number
-          description: Monetary value in base 10 decimals.
-          examples:
-          - '42.42'
-      required:
-      - currencyCode
-      - value
-    ListTransactionDetailsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/TransactionDetails'
-      required:
-      - transactions
-    Erc1155TokenMetadata:
-      type: object
-      properties:
-        indexStatus:
-          examples:
-          - indexed
-          $ref: '#/components/schemas/NftTokenMetadataStatus'
-        metadataLastUpdatedTimestamp:
-          type: number
-        name:
-          type: string
-        symbol:
-          type: string
-        imageUri:
-          type: string
-        description:
-          type: string
-        animationUri:
-          type: string
-        externalUrl:
-          type: string
-        background:
-          type: string
-        decimals:
-          type: number
-        properties:
-          type: string
-      required:
-      - indexStatus
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
-    ListErc1155TransactionsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Erc1155Transfer'
-      required:
-      - transactions
-    NetworkTokenDetails:
-      type: object
-      properties:
-        networkToken:
-          $ref: '#/components/schemas/NetworkToken'
-        currentPrice:
-          description: The current token price, if available.
-          allOf:
-          - $ref: '#/components/schemas/Money'
-        historicalPrice:
-          description: The historical token price at the time the transaction occured, if available. Note, this is only provided if the transaction occured more than 24 hours ago.
-          allOf:
-          - $ref: '#/components/schemas/Money'
-      required:
-      - networkToken
-    Erc20Contract:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        description:
-          type: string
-        officialSite:
-          type: string
-        email:
-          type: string
-        logoAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        bannerAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        color:
-          type: string
-        resourceLinks:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceLink'
-        tags:
-          type: array
-          items:
-            type: string
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        deploymentDetails:
-          $ref: '#/components/schemas/ContractDeploymentDetails'
-        ercType:
-          type: string
-          enum:
-          - ERC-20
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        decimals:
-          type: number
-          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
-          examples:
-          - 18
-        pricingProviders:
-          $ref: '#/components/schemas/PricingProviders'
-      required:
-      - address
-      - ercType
-      - decimals
-    UnknownContract:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        description:
-          type: string
-        officialSite:
-          type: string
-        email:
-          type: string
-        logoAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        bannerAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        color:
-          type: string
-        resourceLinks:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceLink'
-        tags:
-          type: array
-          items:
-            type: string
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        deploymentDetails:
-          $ref: '#/components/schemas/ContractDeploymentDetails'
-        ercType:
-          type: string
-          enum:
-          - UNKNOWN
-      required:
-      - address
-      - ercType
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
     TransactionMethodType:
       type: string
       description: The contract call type. NATIVE_TRANSFER indicates a transfer of the native token without any smart-contract interaction. CONTRACT_CALL indicates a smart-contract interaction. CONTRACT_CREATION indicates a smart-contract creation.
@@ -2718,197 +2893,22 @@ components:
       - NATIVE_TRANSFER
       - CONTRACT_CALL
       - CONTRACT_CREATION
-    Erc721TokenMetadata:
+    TeleporterMessageInfo:
       type: object
       properties:
-        indexStatus:
-          examples:
-          - indexed
-          $ref: '#/components/schemas/NftTokenMetadataStatus'
-        metadataLastUpdatedTimestamp:
-          type: number
-        name:
+        teleporterMessageId:
           type: string
-        symbol:
+        direction:
+          $ref: '#/components/schemas/TransactionDirectionType'
+        sourceChainId:
           type: string
-        imageUri:
+          description: chain id of the source chain. valid only for destination transactions
+        destinationChainId:
           type: string
-        description:
-          type: string
-        animationUri:
-          type: string
-        externalUrl:
-          type: string
-        background:
-          type: string
-        attributes:
-          type: string
+          description: chain id of the destination chain. valid only for source transactions
       required:
-      - indexStatus
-    Erc721Contract:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        description:
-          type: string
-        officialSite:
-          type: string
-        email:
-          type: string
-        logoAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        bannerAsset:
-          $ref: '#/components/schemas/ImageAsset'
-        color:
-          type: string
-        resourceLinks:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceLink'
-        tags:
-          type: array
-          items:
-            type: string
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        deploymentDetails:
-          $ref: '#/components/schemas/ContractDeploymentDetails'
-        ercType:
-          type: string
-          enum:
-          - ERC-721
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-      required:
-      - address
-      - ercType
-    Erc721Transfer:
-      type: object
-      properties:
-        blockNumber:
-          type: string
-          description: The block number on the chain.
-          examples:
-          - '339'
-        blockTimestamp:
-          type: number
-          description: The block finality timestamp.
-          examples:
-          - 1648672486
-        blockHash:
-          type: string
-          description: The block hash identifier.
-          examples:
-          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
-        txHash:
-          type: string
-          description: The transaction hash identifier.
-          examples:
-          - '0x3e9303f81be00b4af28515dab7b914bf3dbff209ea10e7071fa24d4af0a112d4'
-        from:
-          $ref: '#/components/schemas/RichAddress'
-        to:
-          $ref: '#/components/schemas/RichAddress'
-        logIndex:
-          type: number
-        erc721Token:
-          $ref: '#/components/schemas/Erc721Token'
-      required:
-      - blockNumber
-      - blockTimestamp
-      - blockHash
-      - txHash
-      - from
-      - to
-      - logIndex
-      - erc721Token
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    ListContractsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        contracts:
-          type: array
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/Erc721Contract'
-            - $ref: '#/components/schemas/Erc1155Contract'
-            - $ref: '#/components/schemas/Erc20Contract'
-            - $ref: '#/components/schemas/UnknownContract'
-            discriminator:
-              propertyName: ercType
-              mapping:
-                ERC-721: '#/components/schemas/Erc721Contract'
-                ERC-1155: '#/components/schemas/Erc1155Contract'
-                ERC-20: '#/components/schemas/Erc20Contract'
-                UNKNOWN: '#/components/schemas/UnknownContract'
-      required:
-      - contracts
-    RichAddress:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The contract name.
-          examples:
-          - Wrapped AVAX
-        symbol:
-          type: string
-          description: The contract symbol.
-          examples:
-          - WAVAX
-        decimals:
-          type: number
-          description: The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
-          examples:
-          - 18
-        logoUri:
-          type: string
-          description: The logo uri for the address.
-          examples:
-          - https://images.ctfassets.net/gcj8jwzm6086/5VHupNKwnDYJvqMENeV7iJ/fdd6326b7a82c8388e4ee9d4be7062d4/avalanche-avax-logo.svg
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-      required:
-      - address
+      - teleporterMessageId
+      - direction
   securitySchemes:
     apiKey:
       type: apiKey

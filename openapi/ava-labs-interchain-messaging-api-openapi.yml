@@ -436,54 +436,19 @@ components:
       - decimals
       - ercType
       - value
-    TooManyRequests:
+    IcmSourceTransaction:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
+        txHash:
           type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+        timestamp:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
+        gasSpent:
           type: string
-          description: The type of error
-          examples:
-          - Bad Request
       required:
-      - message
-      - statusCode
-      - error
+      - txHash
+      - timestamp
+      - gasSpent
     CurrencyCode:
       type: string
       description: ISO 4217 currency code.
@@ -502,6 +467,133 @@ components:
       - huf
       - jpy
       - nzd
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    Money:
+      type: object
+      properties:
+        currencyCode:
+          examples:
+          - usd
+          $ref: '#/components/schemas/CurrencyCode'
+        value:
+          type: number
+          description: Monetary value in base 10 decimals.
+          examples:
+          - '42.42'
+      required:
+      - currencyCode
+      - value
+    IcmReceipt:
+      type: object
+      properties:
+        receivedMessageNonce:
+          type: string
+        relayerRewardAddress:
+          type: string
+      required:
+      - receivedMessageNonce
+      - relayerRewardAddress
     PendingIcmMessage:
       type: object
       properties:
@@ -557,7 +649,7 @@ components:
       - rewardDetails
       - sourceTransaction
       - status
-    InternalServerError:
+    BadGateway:
       type: object
       properties:
         message:
@@ -571,12 +663,57 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 500
+          - 502
         error:
           type: string
           description: The type of error
           examples:
-          - Internal Server Error
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    ListIcmMessagesResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        messages:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/PendingIcmMessage'
+            - $ref: '#/components/schemas/DeliveredIcmMessage'
+            - $ref: '#/components/schemas/DeliveredSourceNotIndexedIcmMessage'
+            discriminator:
+              propertyName: status
+              mapping:
+                pending: '#/components/schemas/PendingIcmMessage'
+                delivered: '#/components/schemas/DeliveredIcmMessage'
+                delivered_source_not_indexed: '#/components/schemas/DeliveredSourceNotIndexedIcmMessage'
+      required:
+      - messages
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
       required:
       - message
       - statusCode
@@ -605,64 +742,25 @@ components:
       - message
       - statusCode
       - error
-    IcmReceipt:
+    IcmDestinationTransaction:
       type: object
       properties:
-        receivedMessageNonce:
+        txHash:
           type: string
-        relayerRewardAddress:
-          type: string
-      required:
-      - receivedMessageNonce
-      - relayerRewardAddress
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+        timestamp:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
+        gasSpent:
           type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
+        rewardRedeemer:
           type: string
-          description: The type of error
-          examples:
-          - Forbidden
+        delivererAddress:
+          type: string
       required:
-      - message
-      - statusCode
-      - error
+      - txHash
+      - timestamp
+      - gasSpent
+      - rewardRedeemer
+      - delivererAddress
     DeliveredIcmMessage:
       type: object
       properties:
@@ -721,62 +819,7 @@ components:
       - sourceTransaction
       - destinationTransaction
       - status
-    Money:
-      type: object
-      properties:
-        currencyCode:
-          examples:
-          - usd
-          $ref: '#/components/schemas/CurrencyCode'
-        value:
-          type: number
-          description: Monetary value in base 10 decimals.
-          examples:
-          - '42.42'
-      required:
-      - currencyCode
-      - value
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
-    ListIcmMessagesResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        messages:
-          type: array
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/PendingIcmMessage'
-            - $ref: '#/components/schemas/DeliveredIcmMessage'
-            - $ref: '#/components/schemas/DeliveredSourceNotIndexedIcmMessage'
-            discriminator:
-              propertyName: status
-              mapping:
-                pending: '#/components/schemas/PendingIcmMessage'
-                delivered: '#/components/schemas/DeliveredIcmMessage'
-                delivered_source_not_indexed: '#/components/schemas/DeliveredSourceNotIndexedIcmMessage'
-      required:
-      - messages
-    IcmSourceTransaction:
-      type: object
-      properties:
-        txHash:
-          type: string
-        timestamp:
-          type: number
-        gasSpent:
-          type: string
-      required:
-      - txHash
-      - timestamp
-      - gasSpent
-    Unauthorized:
+    TooManyRequests:
       type: object
       properties:
         message:
@@ -790,55 +833,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 429
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    IcmDestinationTransaction:
-      type: object
-      properties:
-        txHash:
-          type: string
-        timestamp:
-          type: number
-        gasSpent:
-          type: string
-        rewardRedeemer:
-          type: string
-        delivererAddress:
-          type: string
-      required:
-      - txHash
-      - timestamp
-      - gasSpent
-      - rewardRedeemer
-      - delivererAddress
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
+          - Too Many Requests
       required:
       - message
       - statusCode

@@ -1222,6 +1222,57 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.listL1Validators({\n    pageSize: 10,\n    l1ValidationId: \"BsSpTd1SDvdhaoYAuKJvRj1WnoRyu8mAuMZeuz9g7brGj6KhX\",\n    nodeId: \"NodeID-111111111111111111116DBWJs\",\n    subnetId: \"11111111111111111111111111111111LpoYY\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
 components:
   schemas:
+    ChainAddressChainIdMapListResponse:
+      type: object
+      properties:
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChainAddressChainIdMap'
+      required:
+      - addresses
+    CompletedValidatorDetails:
+      type: object
+      properties:
+        txHash:
+          type: string
+        nodeId:
+          type: string
+        subnetId:
+          type: string
+        amountStaked:
+          type: string
+        delegationFee:
+          type: string
+          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations.
+        startTimestamp:
+          type: number
+        endTimestamp:
+          type: number
+        blsCredentials:
+          description: Present for AddPermissionlessValidatorTx
+          allOf:
+          - $ref: '#/components/schemas/BlsCredentials'
+        delegatorCount:
+          type: number
+        amountDelegated:
+          type: string
+        rewards:
+          $ref: '#/components/schemas/Rewards'
+        validationStatus:
+          type: string
+          enum:
+          - completed
+      required:
+      - txHash
+      - nodeId
+      - subnetId
+      - amountStaked
+      - startTimestamp
+      - endTimestamp
+      - delegatorCount
+      - rewards
+      - validationStatus
     ActiveDelegatorDetails:
       type: object
       properties:
@@ -1260,259 +1311,6 @@ components:
       - estimatedGrossReward
       - estimatedNetReward
       - delegationStatus
-    ListL1ValidatorsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        validators:
-          description: The list of L1 validations for the given Subnet ID, NodeId or validationId
-          type: array
-          items:
-            $ref: '#/components/schemas/L1ValidatorDetailsFull'
-        blockHeight:
-          type: string
-          description: Block height at which the L1 validator's remaining balance is calculated
-      required:
-      - validators
-      - blockHeight
-    DelegatorsDetails:
-      type: object
-      properties:
-        delegatorCount:
-          type: number
-        totalAmountStaked:
-          type: string
-      required:
-      - delegatorCount
-      - totalAmountStaked
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    Blockchain:
-      type: object
-      properties:
-        createBlockTimestamp:
-          type: number
-        createBlockNumber:
-          type: string
-        blockchainId:
-          type: string
-        vmId:
-          type: string
-        subnetId:
-          type: string
-        blockchainName:
-          type: string
-        evmChainId:
-          type: number
-          description: EVM Chain ID for the EVM-based chains. This field is extracted from genesis data, and may be present for non-EVM chains as well.
-          example: 43114
-        genesisData:
-          type: object
-          description: The genesis data of the blockchain.
-          example: '{"chainId": 43114}'
-      required:
-      - createBlockTimestamp
-      - createBlockNumber
-      - blockchainId
-      - vmId
-      - subnetId
-      - blockchainName
-      - evmChainId
-    ListValidatorDetailsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        validators:
-          type: array
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/CompletedValidatorDetails'
-            - $ref: '#/components/schemas/ActiveValidatorDetails'
-            - $ref: '#/components/schemas/PendingValidatorDetails'
-            - $ref: '#/components/schemas/RemovedValidatorDetails'
-            discriminator:
-              propertyName: validationStatus
-              mapping:
-                active: '#/components/schemas/ActiveValidatorDetails'
-                pending: '#/components/schemas/PendingValidatorDetails'
-                completed: '#/components/schemas/CompletedValidatorDetails'
-                removed: '#/components/schemas/RemovedValidatorDetails'
-          description: The list of validator Details.
-      required:
-      - validators
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    L1ValidatorManagerDetails:
-      type: object
-      properties:
-        blockchainId:
-          type: string
-        contractAddress:
-          type: string
-      required:
-      - blockchainId
-      - contractAddress
-    SortByOption:
-      type: string
-      enum:
-      - blockIndex
-      - delegationCapacity
-      - timeRemaining
-      - delegationFee
-      - uptimePerformance
-    ValidatorHealthDetails:
-      type: object
-      properties:
-        reachabilityPercent:
-          type: number
-          description: Percent of requests responded to in last polling.
-        benchedPChainRequestsPercent:
-          type: number
-          description: Percent of requests benched on the P-Chain in last polling.
-        benchedXChainRequestsPercent:
-          type: number
-          description: Percentage of requests benched on the X-Chain in last polling.
-        benchedCChainRequestsPercent:
-          type: number
-          description: Percentage of requests benched on the C-Chain in last polling.
-      required:
-      - reachabilityPercent
-      - benchedPChainRequestsPercent
-      - benchedXChainRequestsPercent
-      - benchedCChainRequestsPercent
-    ListSubnetsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        subnets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subnet'
-      required:
-      - subnets
-    InternalServerError:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
-      required:
-      - message
-      - statusCode
-      - error
-    XChainAssetDetails:
-      type: object
-      properties:
-        assetId:
-          type: string
-          description: Unique ID for an asset.
-          examples:
-          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
-        name:
-          type: string
-          description: Name of this asset.
-          examples:
-          - Avalanche
-        symbol:
-          type: string
-          description: Symbol for this asset (max 4 characters).
-          examples:
-          - AVAX
-        denomination:
-          type: number
-          description: Denomination of this asset to represent fungibility.
-          examples:
-          - 9
-        type:
-          examples:
-          - secp256k1
-          $ref: '#/components/schemas/PrimaryNetworkAssetType'
-        createdAtTimestamp:
-          type: number
-          description: Timestamp in seconds this asset was created on.
-          examples:
-          - 1675444720
-        cap:
-          examples:
-          - fixed
-          $ref: '#/components/schemas/PrimaryNetworkAssetCap'
-      required:
-      - assetId
-      - name
-      - symbol
-      - denomination
-      - type
-      - createdAtTimestamp
-      - cap
-    SortOrder:
-      type: string
-      enum:
-      - asc
-      - desc
     Subnet:
       type: object
       properties:
@@ -1564,156 +1362,22 @@ components:
       - subnetOwnershipInfo
       - isL1
       - blockchains
-    NotFound:
+    StakingDistribution:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
+        version:
           type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    ChainAddressChainIdMap:
-      type: object
-      properties:
-        address:
-          type: string
-        blockchainIds:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlockchainIds'
-      required:
-      - address
-      - blockchainIds
-    CompletedValidatorDetails:
-      type: object
-      properties:
-        txHash:
-          type: string
-        nodeId:
-          type: string
-        subnetId:
-          type: string
+          description: AvalancheGo version for the validator node.
         amountStaked:
           type: string
-        delegationFee:
-          type: string
-          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations.
-        startTimestamp:
+          description: The total amount staked by validators using this version.
+        validatorCount:
           type: number
-        endTimestamp:
-          type: number
-        blsCredentials:
-          description: Present for AddPermissionlessValidatorTx
-          allOf:
-          - $ref: '#/components/schemas/BlsCredentials'
-        delegatorCount:
-          type: number
-        amountDelegated:
-          type: string
-        rewards:
-          $ref: '#/components/schemas/Rewards'
-        validationStatus:
-          type: string
-          enum:
-          - completed
+          description: The number of validators using this version.
       required:
-      - txHash
-      - nodeId
-      - subnetId
+      - version
       - amountStaked
-      - startTimestamp
-      - endTimestamp
-      - delegatorCount
-      - rewards
-      - validationStatus
-    RemovedValidatorDetails:
-      type: object
-      properties:
-        txHash:
-          type: string
-        nodeId:
-          type: string
-        subnetId:
-          type: string
-        amountStaked:
-          type: string
-        delegationFee:
-          type: string
-          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations.
-        startTimestamp:
-          type: number
-        endTimestamp:
-          type: number
-        blsCredentials:
-          description: Present for AddPermissionlessValidatorTx
-          allOf:
-          - $ref: '#/components/schemas/BlsCredentials'
-        removeTxHash:
-          type: string
-          description: The transaction hash that removed the permissioned subnet validator.
-        removeTimestamp:
-          type: number
-          description: The timestamp of the transaction that removed the permissioned subnet validator.
-        validationStatus:
-          type: string
-          enum:
-          - removed
-      required:
-      - txHash
-      - nodeId
-      - subnetId
-      - amountStaked
-      - startTimestamp
-      - endTimestamp
-      - removeTxHash
-      - removeTimestamp
-      - validationStatus
-    XChainId:
-      type: string
-      enum:
-      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
-      - x-chain
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
+      - validatorCount
     Forbidden:
       type: object
       properties:
@@ -1738,71 +1402,174 @@ components:
       - message
       - statusCode
       - error
-    L1ValidatorDetailsFull:
+    PrimaryNetworkAssetType:
+      type: string
+      description: Type of asset like SECP256K1 or NFT.
+      enum:
+      - secp256k1
+      - nft
+    BalanceOwner:
       type: object
       properties:
-        validationId:
+        addresses:
+          type: array
+          items:
+            type: string
+        threshold:
+          type: number
+      required:
+      - addresses
+      - threshold
+    PendingDelegatorDetails:
+      type: object
+      properties:
+        txHash:
           type: string
-          description: Unique L1 validation ID used network-wide to identify L1 validation until its weight is reduced to 0 i.e. removed.
-        validationIdHex:
-          type: string
-          description: Unique L1 validation ID used network-wide to identify L1 validation until its weight is reduced to 0 i.e. removed. In hex format
         nodeId:
           type: string
-        subnetId:
+        rewardAddresses:
+          type: array
+          items:
+            type: string
+        amountDelegated:
           type: string
-        weight:
+        delegationFee:
+          type: string
+        startTimestamp:
           type: number
-          description: Weight of the L1 validator used while sampling validators within the L1. A zero-weight L1 validator means it has been removed from the L1, and the validationID is no longer valid
-        remainingBalance:
+        endTimestamp:
           type: number
-          description: Remaining L1 validator balance in nAVAX until inactive. It can rejoin L1 sampling by increasing balance with IncreaseL1ValidatorBalanceTx
-        creationTimestamp:
-          type: number
-          description: The timestamp of the transaction which created this L1 validator
-        blsCredentials:
-          type: object
-        remainingBalanceOwner:
-          description: The L1 validator owner's balance, returned after it's disabled or removed
-          allOf:
-          - $ref: '#/components/schemas/BalanceOwner'
-        deactivationOwner:
-          description: Owner ddresses details which can disable or remove the L1 validator
-          allOf:
-          - $ref: '#/components/schemas/BalanceOwner'
+        estimatedGrossReward:
+          type: string
+          description: Estimated total rewards that will be distributed for the successful delegation.
+        estimatedNetReward:
+          type: string
+          description: Estimated net rewards that will be distributed to the delegator after deducting delegation fee from the gross reward for the successful delegation.
+        delegationStatus:
+          type: string
+          enum:
+          - pending
       required:
-      - validationId
-      - validationIdHex
+      - txHash
       - nodeId
-      - subnetId
-      - weight
-      - remainingBalance
-      - creationTimestamp
-      - blsCredentials
-      - remainingBalanceOwner
-      - deactivationOwner
-    ListDelegatorDetailsResponse:
+      - rewardAddresses
+      - amountDelegated
+      - delegationFee
+      - startTimestamp
+      - endTimestamp
+      - estimatedGrossReward
+      - estimatedNetReward
+      - delegationStatus
+    ListSubnetsResponse:
       type: object
       properties:
         nextPageToken:
           type: string
           description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        delegators:
+        subnets:
           type: array
           items:
-            oneOf:
-            - $ref: '#/components/schemas/CompletedDelegatorDetails'
-            - $ref: '#/components/schemas/ActiveDelegatorDetails'
-            - $ref: '#/components/schemas/PendingDelegatorDetails'
-            discriminator:
-              propertyName: delegationStatus
-              mapping:
-                active: '#/components/schemas/ActiveDelegatorDetails'
-                pending: '#/components/schemas/PendingDelegatorDetails'
-                completed: '#/components/schemas/CompletedDelegatorDetails'
-          description: The list of Delegator Details.
+            $ref: '#/components/schemas/Subnet'
       required:
-      - delegators
+      - subnets
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    ValidatorHealthDetails:
+      type: object
+      properties:
+        reachabilityPercent:
+          type: number
+          description: Percent of requests responded to in last polling.
+        benchedPChainRequestsPercent:
+          type: number
+          description: Percent of requests benched on the P-Chain in last polling.
+        benchedXChainRequestsPercent:
+          type: number
+          description: Percentage of requests benched on the X-Chain in last polling.
+        benchedCChainRequestsPercent:
+          type: number
+          description: Percentage of requests benched on the C-Chain in last polling.
+      required:
+      - reachabilityPercent
+      - benchedPChainRequestsPercent
+      - benchedXChainRequestsPercent
+      - benchedCChainRequestsPercent
+    ValidationStatusType:
+      type: string
+      enum:
+      - completed
+      - active
+      - pending
+      - removed
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    ListL1ValidatorsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        validators:
+          description: The list of L1 validations for the given Subnet ID, NodeId or validationId
+          type: array
+          items:
+            $ref: '#/components/schemas/L1ValidatorDetailsFull'
+        blockHeight:
+          type: string
+          description: Block height at which the L1 validator's remaining balance is calculated
+      required:
+      - validators
+      - blockHeight
     PendingValidatorDetails:
       type: object
       properties:
@@ -1837,6 +1604,279 @@ components:
       - startTimestamp
       - endTimestamp
       - validationStatus
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    GetNetworkDetailsResponse:
+      type: object
+      properties:
+        validatorDetails:
+          $ref: '#/components/schemas/ValidatorsDetails'
+        delegatorDetails:
+          $ref: '#/components/schemas/DelegatorsDetails'
+      required:
+      - validatorDetails
+      - delegatorDetails
+    L1ValidatorManagerDetails:
+      type: object
+      properties:
+        blockchainId:
+          type: string
+        contractAddress:
+          type: string
+      required:
+      - blockchainId
+      - contractAddress
+    Rewards:
+      type: object
+      properties:
+        validationRewardAmount:
+          type: string
+        delegationRewardAmount:
+          type: string
+        rewardAddresses:
+          type: array
+          items:
+            type: string
+        rewardTxHash:
+          type: string
+      required:
+      - validationRewardAmount
+      - delegationRewardAmount
+    BlsCredentials:
+      type: object
+      properties:
+        publicKey:
+          type: string
+        proofOfPossession:
+          type: string
+      required:
+      - publicKey
+      - proofOfPossession
+    SubnetOwnershipInfo:
+      type: object
+      properties:
+        locktime:
+          type: number
+          description: Locktime in seconds after which Subnet owners can control this Subnet.
+          examples:
+          - 0
+        threshold:
+          type: number
+          description: Minimum number of signatures required to sign the Subnet update transactions.
+          examples:
+          - 1
+        addresses:
+          description: Addresses that are eligible to sign the Subnet update transactions.
+          examples:
+          - - avax1qm2a25eytsrj235hxg6jc0mwk99tss64eqevsw
+          type: array
+          items:
+            type: string
+      required:
+      - locktime
+      - threshold
+      - addresses
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    ChainAddressChainIdMap:
+      type: object
+      properties:
+        address:
+          type: string
+        blockchainIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockchainIds'
+      required:
+      - address
+      - blockchainIds
+    XChainId:
+      type: string
+      enum:
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - x-chain
+    ListDelegatorDetailsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        delegators:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/CompletedDelegatorDetails'
+            - $ref: '#/components/schemas/ActiveDelegatorDetails'
+            - $ref: '#/components/schemas/PendingDelegatorDetails'
+            discriminator:
+              propertyName: delegationStatus
+              mapping:
+                active: '#/components/schemas/ActiveDelegatorDetails'
+                pending: '#/components/schemas/PendingDelegatorDetails'
+                completed: '#/components/schemas/CompletedDelegatorDetails'
+          description: The list of Delegator Details.
+      required:
+      - delegators
+    DelegationStatusType:
+      type: string
+      enum:
+      - completed
+      - active
+      - pending
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    Geolocation:
+      type: object
+      properties:
+        city:
+          type: string
+          description: The name of the validator node.
+        country:
+          type: string
+          description: The city of the validator node.
+        countryCode:
+          type: string
+          description: The country code of the validator node.
+        latitude:
+          type: number
+          description: The latitude of the validator node.
+        longitude:
+          type: number
+          description: The longitude of the validator node.
+      required:
+      - city
+      - country
+      - countryCode
+      - latitude
+      - longitude
+    ListValidatorDetailsResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        validators:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/CompletedValidatorDetails'
+            - $ref: '#/components/schemas/ActiveValidatorDetails'
+            - $ref: '#/components/schemas/PendingValidatorDetails'
+            - $ref: '#/components/schemas/RemovedValidatorDetails'
+            discriminator:
+              propertyName: validationStatus
+              mapping:
+                active: '#/components/schemas/ActiveValidatorDetails'
+                pending: '#/components/schemas/PendingValidatorDetails'
+                completed: '#/components/schemas/CompletedValidatorDetails'
+                removed: '#/components/schemas/RemovedValidatorDetails'
+          description: The list of validator Details.
+      required:
+      - validators
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
+    BlockchainIds:
+      type: string
+      enum:
+      - 11111111111111111111111111111111LpoYY
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
+      - yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
     ActiveValidatorDetails:
       type: object
       properties:
@@ -1905,109 +1945,12 @@ components:
       - validationStatus
       - validatorHealth
       - geolocation
-    BalanceOwner:
-      type: object
-      properties:
-        addresses:
-          type: array
-          items:
-            type: string
-        threshold:
-          type: number
-      required:
-      - addresses
-      - threshold
-    GetNetworkDetailsResponse:
-      type: object
-      properties:
-        validatorDetails:
-          $ref: '#/components/schemas/ValidatorsDetails'
-        delegatorDetails:
-          $ref: '#/components/schemas/DelegatorsDetails'
-      required:
-      - validatorDetails
-      - delegatorDetails
-    PendingDelegatorDetails:
-      type: object
-      properties:
-        txHash:
-          type: string
-        nodeId:
-          type: string
-        rewardAddresses:
-          type: array
-          items:
-            type: string
-        amountDelegated:
-          type: string
-        delegationFee:
-          type: string
-        startTimestamp:
-          type: number
-        endTimestamp:
-          type: number
-        estimatedGrossReward:
-          type: string
-          description: Estimated total rewards that will be distributed for the successful delegation.
-        estimatedNetReward:
-          type: string
-          description: Estimated net rewards that will be distributed to the delegator after deducting delegation fee from the gross reward for the successful delegation.
-        delegationStatus:
-          type: string
-          enum:
-          - pending
-      required:
-      - txHash
-      - nodeId
-      - rewardAddresses
-      - amountDelegated
-      - delegationFee
-      - startTimestamp
-      - endTimestamp
-      - estimatedGrossReward
-      - estimatedNetReward
-      - delegationStatus
-    BlsCredentials:
-      type: object
-      properties:
-        publicKey:
-          type: string
-        proofOfPossession:
-          type: string
-      required:
-      - publicKey
-      - proofOfPossession
-    ListBlockchainsResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        blockchains:
-          type: array
-          items:
-            $ref: '#/components/schemas/Blockchain'
-      required:
-      - blockchains
-    Network:
+    PrimaryNetworkAssetCap:
       type: string
+      description: Cap represents if an asset is a variable or fixed cap asset.
       enum:
-      - mainnet
-      - fuji
-      - testnet
-    PrimaryNetworkAssetType:
-      type: string
-      description: Type of asset like SECP256K1 or NFT.
-      enum:
-      - secp256k1
-      - nft
-    ValidationStatusType:
-      type: string
-      enum:
-      - completed
-      - active
-      - pending
-      - removed
+      - fixed
+      - variable
     CompletedDelegatorDetails:
       type: object
       properties:
@@ -2048,133 +1991,91 @@ components:
       - grossReward
       - netReward
       - delegationStatus
-    StakingDistribution:
+    RemovedValidatorDetails:
       type: object
       properties:
-        version:
+        txHash:
           type: string
-          description: AvalancheGo version for the validator node.
+        nodeId:
+          type: string
+        subnetId:
+          type: string
         amountStaked:
           type: string
-          description: The total amount staked by validators using this version.
-        validatorCount:
+        delegationFee:
+          type: string
+          description: The percentage of total estimated delegator rewards allocated to validator nodes for supporting delegations.
+        startTimestamp:
           type: number
-          description: The number of validators using this version.
+        endTimestamp:
+          type: number
+        blsCredentials:
+          description: Present for AddPermissionlessValidatorTx
+          allOf:
+          - $ref: '#/components/schemas/BlsCredentials'
+        removeTxHash:
+          type: string
+          description: The transaction hash that removed the permissioned subnet validator.
+        removeTimestamp:
+          type: number
+          description: The timestamp of the transaction that removed the permissioned subnet validator.
+        validationStatus:
+          type: string
+          enum:
+          - removed
       required:
-      - version
+      - txHash
+      - nodeId
+      - subnetId
       - amountStaked
-      - validatorCount
-    ChainAddressChainIdMapListResponse:
+      - startTimestamp
+      - endTimestamp
+      - removeTxHash
+      - removeTimestamp
+      - validationStatus
+    L1ValidatorDetailsFull:
       type: object
       properties:
-        addresses:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChainAddressChainIdMap'
-      required:
-      - addresses
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+        validationId:
+          type: string
+          description: Unique L1 validation ID used network-wide to identify L1 validation until its weight is reduced to 0 i.e. removed.
+        validationIdHex:
+          type: string
+          description: Unique L1 validation ID used network-wide to identify L1 validation until its weight is reduced to 0 i.e. removed. In hex format
+        nodeId:
+          type: string
+        subnetId:
+          type: string
+        weight:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    BlockchainIds:
-      type: string
-      enum:
-      - 11111111111111111111111111111111LpoYY
-      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
-      - 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
-      - yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp
-    Rewards:
-      type: object
-      properties:
-        validationRewardAmount:
-          type: string
-        delegationRewardAmount:
-          type: string
-        rewardAddresses:
-          type: array
-          items:
-            type: string
-        rewardTxHash:
-          type: string
-      required:
-      - validationRewardAmount
-      - delegationRewardAmount
-    Geolocation:
-      type: object
-      properties:
-        city:
-          type: string
-          description: The name of the validator node.
-        country:
-          type: string
-          description: The city of the validator node.
-        countryCode:
-          type: string
-          description: The country code of the validator node.
-        latitude:
+          description: Weight of the L1 validator used while sampling validators within the L1. A zero-weight L1 validator means it has been removed from the L1, and the validationID is no longer valid
+        remainingBalance:
           type: number
-          description: The latitude of the validator node.
-        longitude:
+          description: Remaining L1 validator balance in nAVAX until inactive. It can rejoin L1 sampling by increasing balance with IncreaseL1ValidatorBalanceTx
+        creationTimestamp:
           type: number
-          description: The longitude of the validator node.
+          description: The timestamp of the transaction which created this L1 validator
+        blsCredentials:
+          type: object
+        remainingBalanceOwner:
+          description: The L1 validator owner's balance, returned after it's disabled or removed
+          allOf:
+          - $ref: '#/components/schemas/BalanceOwner'
+        deactivationOwner:
+          description: Owner ddresses details which can disable or remove the L1 validator
+          allOf:
+          - $ref: '#/components/schemas/BalanceOwner'
       required:
-      - city
-      - country
-      - countryCode
-      - latitude
-      - longitude
-    DelegationStatusType:
-      type: string
-      enum:
-      - completed
-      - active
-      - pending
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
+      - validationId
+      - validationIdHex
+      - nodeId
+      - subnetId
+      - weight
+      - remainingBalance
+      - creationTimestamp
+      - blsCredentials
+      - remainingBalanceOwner
+      - deactivationOwner
     ValidatorsDetails:
       type: object
       properties:
@@ -2198,36 +2099,135 @@ components:
       - estimatedAnnualStakingReward
       - stakingDistributionByVersion
       - stakingRatio
-    PrimaryNetworkAssetCap:
-      type: string
-      description: Cap represents if an asset is a variable or fixed cap asset.
-      enum:
-      - fixed
-      - variable
-    SubnetOwnershipInfo:
+    ListBlockchainsResponse:
       type: object
       properties:
-        locktime:
-          type: number
-          description: Locktime in seconds after which Subnet owners can control this Subnet.
-          examples:
-          - 0
-        threshold:
-          type: number
-          description: Minimum number of signatures required to sign the Subnet update transactions.
-          examples:
-          - 1
-        addresses:
-          description: Addresses that are eligible to sign the Subnet update transactions.
-          examples:
-          - - avax1qm2a25eytsrj235hxg6jc0mwk99tss64eqevsw
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        blockchains:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Blockchain'
       required:
-      - locktime
-      - threshold
-      - addresses
+      - blockchains
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    XChainAssetDetails:
+      type: object
+      properties:
+        assetId:
+          type: string
+          description: Unique ID for an asset.
+          examples:
+          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
+        name:
+          type: string
+          description: Name of this asset.
+          examples:
+          - Avalanche
+        symbol:
+          type: string
+          description: Symbol for this asset (max 4 characters).
+          examples:
+          - AVAX
+        denomination:
+          type: number
+          description: Denomination of this asset to represent fungibility.
+          examples:
+          - 9
+        type:
+          examples:
+          - secp256k1
+          $ref: '#/components/schemas/PrimaryNetworkAssetType'
+        createdAtTimestamp:
+          type: number
+          description: Timestamp in seconds this asset was created on.
+          examples:
+          - 1675444720
+        cap:
+          examples:
+          - fixed
+          $ref: '#/components/schemas/PrimaryNetworkAssetCap'
+      required:
+      - assetId
+      - name
+      - symbol
+      - denomination
+      - type
+      - createdAtTimestamp
+      - cap
+    Blockchain:
+      type: object
+      properties:
+        createBlockTimestamp:
+          type: number
+        createBlockNumber:
+          type: string
+        blockchainId:
+          type: string
+        vmId:
+          type: string
+        subnetId:
+          type: string
+        blockchainName:
+          type: string
+        evmChainId:
+          type: number
+          description: EVM Chain ID for the EVM-based chains. This field is extracted from genesis data, and may be present for non-EVM chains as well.
+          example: 43114
+        genesisData:
+          type: object
+          description: The genesis data of the blockchain.
+          example: '{"chainId": 43114}'
+      required:
+      - createBlockTimestamp
+      - createBlockNumber
+      - blockchainId
+      - vmId
+      - subnetId
+      - blockchainName
+      - evmChainId
+    SortByOption:
+      type: string
+      enum:
+      - blockIndex
+      - delegationCapacity
+      - timeRemaining
+      - delegationFee
+      - uptimePerformance
+    DelegatorsDetails:
+      type: object
+      properties:
+        delegatorCount:
+          type: number
+        totalAmountStaked:
+          type: string
+      required:
+      - delegatorCount
+      - totalAmountStaked
   securitySchemes:
     apiKey:
       type: apiKey

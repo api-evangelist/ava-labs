@@ -371,30 +371,16 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    InternalServerError:
+    LegacyEvmMetric:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
+        timestamp:
           type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
+        value:
+          type: number
       required:
-      - message
-      - statusCode
-      - error
+      - timestamp
+      - value
     ServiceUnavailable:
       type: object
       properties:
@@ -419,6 +405,54 @@ components:
       - message
       - statusCode
       - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
     LegacyEvmMetricsResponse:
       type: object
       properties:
@@ -439,6 +473,30 @@ components:
       required:
       - status
       - results
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
     Forbidden:
       type: object
       properties:
@@ -487,7 +545,7 @@ components:
       - message
       - statusCode
       - error
-    NotFound:
+    BadGateway:
       type: object
       properties:
         message:
@@ -501,12 +559,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 404
+          - 502
         error:
           type: string
           description: The type of error
           examples:
-          - Not Found
+          - Bad Gateway
       required:
       - message
       - statusCode
@@ -531,64 +589,6 @@ components:
           description: The type of error
           examples:
           - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    LegacyEvmMetric:
-      type: object
-      properties:
-        timestamp:
-          type: number
-        value:
-          type: number
-      required:
-      - timestamp
-      - value
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
       required:
       - message
       - statusCode

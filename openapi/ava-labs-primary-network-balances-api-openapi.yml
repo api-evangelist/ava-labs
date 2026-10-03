@@ -119,56 +119,99 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.balances.listByAddresses({\n    blockTimestamp: 1599696000,\n    addresses: \"avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg\",\n    blockchainId: \"p-chain\",\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
-    PChainBalance:
+    PrimaryNetworkChainInfo:
       type: object
       properties:
-        unlockedUnstaked:
-          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of unstaked Avax that is consumable by any transaction.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        unlockedStaked:
-          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of staked Avax that is consumable by any transaction when the staking period ends.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        lockedPlatform:
-          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of unstaked Avax that is locked at the platform level and not consumable by any transaction at the current time.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        lockedStakeable:
-          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of unstaked Avax that is locked at the platform level and only consumeable for staking transactions.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        lockedStaked:
-          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of staked Avax that will be locked when the staking period ends.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        pendingStaked:
-          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of staked Avax whose staking period has not yet started.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        atomicMemoryUnlocked:
-          description: A list of objects containing P-chain Asset basic info, amount and utxo count of that Asset ID. Denotes the amount of unlocked Avax in the atomic memory between P-Chain and other chain.
-          type: array
-          items:
-            $ref: '#/components/schemas/PChainSharedAsset'
-        atomicMemoryLocked:
-          description: A list of objects containing P-chain Asset basic info, amount and utxo count of that Asset ID. Denotes the amount of locked Avax in the atomic memory between P-Chain and other chain.
-          type: array
-          items:
-            $ref: '#/components/schemas/PChainSharedAsset'
+        chainName:
+          $ref: '#/components/schemas/PrimaryNetworkChainName'
+        network:
+          $ref: '#/components/schemas/Network'
       required:
-      - unlockedUnstaked
-      - unlockedStaked
-      - lockedPlatform
-      - lockedStakeable
-      - lockedStaked
-      - pendingStaked
+      - chainName
+      - network
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    PrimaryNetworkAssetType:
+      type: string
+      description: Type of asset like SECP256K1 or NFT.
+      enum:
+      - secp256k1
+      - nft
+    BlockchainId:
+      type: string
+      enum:
+      - 11111111111111111111111111111111LpoYY
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
+      - yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp
+      - p-chain
+      - x-chain
+      - c-chain
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    PrimaryNetworkChainName:
+      type: string
+      enum:
+      - p-chain
+      - x-chain
+      - c-chain
+    CChainAtomicBalances:
+      type: object
+      properties:
+        atomicMemoryUnlocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/CChainSharedAssetBalance'
+        atomicMemoryLocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/CChainSharedAssetBalance'
+      required:
       - atomicMemoryUnlocked
       - atomicMemoryLocked
     PChainSharedAsset:
@@ -223,80 +266,6 @@ components:
       - utxoCount
       - sharedWithChainId
       - status
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    XChainBalances:
-      type: object
-      properties:
-        locked:
-          description: A list of objects containing X-chain Asset balance information.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        unlocked:
-          description: A list of objects containing X-chain Asset balance information.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        atomicMemoryUnlocked:
-          type: array
-          items:
-            $ref: '#/components/schemas/XChainSharedAssetBalance'
-        atomicMemoryLocked:
-          type: array
-          items:
-            $ref: '#/components/schemas/XChainSharedAssetBalance'
-      required:
-      - locked
-      - unlocked
-      - atomicMemoryUnlocked
-      - atomicMemoryLocked
     InternalServerError:
       type: object
       properties:
@@ -321,95 +290,17 @@ components:
       - message
       - statusCode
       - error
-    PrimaryNetworkChainName:
+    Network:
       type: string
       enum:
-      - p-chain
-      - x-chain
-      - c-chain
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    AggregatedAssetAmount:
-      type: object
-      properties:
-        assetId:
-          type: string
-          description: Unique ID for an asset.
-          examples:
-          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
-        name:
-          type: string
-          description: Name of this asset.
-          examples:
-          - Avalanche
-        symbol:
-          type: string
-          description: Symbol for this asset (max 4 characters).
-          examples:
-          - AVAX
-        denomination:
-          type: number
-          description: Denomination of this asset to represent fungibility.
-          examples:
-          - 9
-        type:
-          examples:
-          - secp256k1
-          $ref: '#/components/schemas/PrimaryNetworkAssetType'
-        amount:
-          type: string
-          description: Amount of the asset.
-          examples:
-          - '5001000'
-        utxoCount:
-          type: number
-          examples:
-          - 1
-      required:
-      - assetId
-      - name
-      - symbol
-      - denomination
-      - type
-      - amount
-      - utxoCount
-    PrimaryNetworkChainInfo:
-      type: object
-      properties:
-        chainName:
-          $ref: '#/components/schemas/PrimaryNetworkChainName'
-        network:
-          $ref: '#/components/schemas/Network'
-      required:
-      - chainName
-      - network
-    ListCChainAtomicBalancesResponse:
+      - mainnet
+      - fuji
+      - testnet
+    ListPChainBalancesResponse:
       type: object
       properties:
         balances:
-          $ref: '#/components/schemas/CChainAtomicBalances'
+          $ref: '#/components/schemas/PChainBalance'
         chainInfo:
           $ref: '#/components/schemas/PrimaryNetworkChainInfo'
       required:
@@ -439,60 +330,6 @@ components:
       - message
       - statusCode
       - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    ListXChainBalancesResponse:
-      type: object
-      properties:
-        balances:
-          $ref: '#/components/schemas/XChainBalances'
-        chainInfo:
-          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
-      required:
-      - balances
-      - chainInfo
-    CChainAtomicBalances:
-      type: object
-      properties:
-        atomicMemoryUnlocked:
-          type: array
-          items:
-            $ref: '#/components/schemas/CChainSharedAssetBalance'
-        atomicMemoryLocked:
-          type: array
-          items:
-            $ref: '#/components/schemas/CChainSharedAssetBalance'
-      required:
-      - atomicMemoryUnlocked
-      - atomicMemoryLocked
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
     XChainSharedAssetBalance:
       type: object
       properties:
@@ -540,12 +377,82 @@ components:
       - amount
       - utxoCount
       - sharedWithChainId
-    PrimaryNetworkAssetType:
-      type: string
-      description: Type of asset like SECP256K1 or NFT.
-      enum:
-      - secp256k1
-      - nft
+    PChainBalance:
+      type: object
+      properties:
+        unlockedUnstaked:
+          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of unstaked Avax that is consumable by any transaction.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        unlockedStaked:
+          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of staked Avax that is consumable by any transaction when the staking period ends.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        lockedPlatform:
+          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of unstaked Avax that is locked at the platform level and not consumable by any transaction at the current time.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        lockedStakeable:
+          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of unstaked Avax that is locked at the platform level and only consumeable for staking transactions.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        lockedStaked:
+          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of staked Avax that will be locked when the staking period ends.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        pendingStaked:
+          description: A list of objects containing P-chain Asset basic info, amount,  and utxo count of that Asset ID.  Denotes the amount of staked Avax whose staking period has not yet started.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        atomicMemoryUnlocked:
+          description: A list of objects containing P-chain Asset basic info, amount and utxo count of that Asset ID. Denotes the amount of unlocked Avax in the atomic memory between P-Chain and other chain.
+          type: array
+          items:
+            $ref: '#/components/schemas/PChainSharedAsset'
+        atomicMemoryLocked:
+          description: A list of objects containing P-chain Asset basic info, amount and utxo count of that Asset ID. Denotes the amount of locked Avax in the atomic memory between P-Chain and other chain.
+          type: array
+          items:
+            $ref: '#/components/schemas/PChainSharedAsset'
+      required:
+      - unlockedUnstaked
+      - unlockedStaked
+      - lockedPlatform
+      - lockedStakeable
+      - lockedStaked
+      - pendingStaked
+      - atomicMemoryUnlocked
+      - atomicMemoryLocked
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
     CChainSharedAssetBalance:
       type: object
       properties:
@@ -593,18 +500,7 @@ components:
       - amount
       - utxoCount
       - sharedWithChainId
-    BlockchainId:
-      type: string
-      enum:
-      - 11111111111111111111111111111111LpoYY
-      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
-      - 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
-      - yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp
-      - p-chain
-      - x-chain
-      - c-chain
-    Unauthorized:
+    BadRequest:
       type: object
       properties:
         message:
@@ -618,27 +514,27 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 400
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Bad Request
       required:
       - message
       - statusCode
       - error
-    ListPChainBalancesResponse:
+    ListCChainAtomicBalancesResponse:
       type: object
       properties:
         balances:
-          $ref: '#/components/schemas/PChainBalance'
+          $ref: '#/components/schemas/CChainAtomicBalances'
         chainInfo:
           $ref: '#/components/schemas/PrimaryNetworkChainInfo'
       required:
       - balances
       - chainInfo
-    BadGateway:
+    NotFound:
       type: object
       properties:
         message:
@@ -652,12 +548,116 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 502
+          - 404
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Gateway
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    ListXChainBalancesResponse:
+      type: object
+      properties:
+        balances:
+          $ref: '#/components/schemas/XChainBalances'
+        chainInfo:
+          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
+      required:
+      - balances
+      - chainInfo
+    XChainBalances:
+      type: object
+      properties:
+        locked:
+          description: A list of objects containing X-chain Asset balance information.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        unlocked:
+          description: A list of objects containing X-chain Asset balance information.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        atomicMemoryUnlocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/XChainSharedAssetBalance'
+        atomicMemoryLocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/XChainSharedAssetBalance'
+      required:
+      - locked
+      - unlocked
+      - atomicMemoryUnlocked
+      - atomicMemoryLocked
+    AggregatedAssetAmount:
+      type: object
+      properties:
+        assetId:
+          type: string
+          description: Unique ID for an asset.
+          examples:
+          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
+        name:
+          type: string
+          description: Name of this asset.
+          examples:
+          - Avalanche
+        symbol:
+          type: string
+          description: Symbol for this asset (max 4 characters).
+          examples:
+          - AVAX
+        denomination:
+          type: number
+          description: Denomination of this asset to represent fungibility.
+          examples:
+          - 9
+        type:
+          examples:
+          - secp256k1
+          $ref: '#/components/schemas/PrimaryNetworkAssetType'
+        amount:
+          type: string
+          description: Amount of the asset.
+          examples:
+          - '5001000'
+        utxoCount:
+          type: number
+          examples:
+          - 1
+      required:
+      - assetId
+      - name
+      - symbol
+      - denomination
+      - type
+      - amount
+      - utxoCount
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
       required:
       - message
       - statusCode

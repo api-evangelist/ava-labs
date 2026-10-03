@@ -32,257 +32,6 @@ webhooks:
       x-summary-source: derived
 components:
   schemas:
-    NetworkTokenInfo:
-      type: object
-      properties:
-        tokenName:
-          type: string
-          description: Token name
-          examples:
-          - TetherToken
-        tokenSymbol:
-          type: string
-          description: Token symbol
-          examples:
-          - USDt
-        tokenDecimals:
-          type: number
-          description: Token decimals
-          examples:
-          - 6
-        valueWithDecimals:
-          type: string
-          description: Value including decimals
-          examples:
-          - '3331.009129'
-    WebhookInternalTransaction:
-      type: object
-      properties:
-        from:
-          type: string
-          description: Sender address
-          examples:
-          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
-        to:
-          type: string
-          description: Recipient address
-          examples:
-          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
-        internalTxType:
-          type: string
-          description: Internal transaction type
-          examples:
-          - call
-        value:
-          type: string
-          description: Value transferred
-          examples:
-          - '50000000000000000'
-        gasUsed:
-          type: string
-          description: Gas used
-          examples:
-          - '44038'
-        gasLimit:
-          type: string
-          description: Gas limit
-          examples:
-          - '50000'
-        transactionHash:
-          type: string
-          description: Transaction hash
-          examples:
-          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
-      required:
-      - from
-      - to
-      - internalTxType
-      - value
-      - gasUsed
-      - gasLimit
-      - transactionHash
-    AccessListData:
-      type: object
-      properties:
-        accessAddresses:
-          type: string
-          description: Access Address
-          examples:
-          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
-        storageKeys:
-          description: Storage keys
-          type: array
-          items:
-            type: string
-      required:
-      - accessAddresses
-      - storageKeys
-    ERCTransfer:
-      type: object
-      properties:
-        transactionHash:
-          type: string
-          description: Transaction hash
-          examples:
-          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
-        type:
-          type: string
-          description: Transfer type
-          examples:
-          - ERC20
-        from:
-          type: string
-          description: Sender address
-          examples:
-          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
-        to:
-          type: string
-          description: Recipient address
-          examples:
-          - '0x40E832C3Df9562DfaE5A86A4849F27F687A9B46B'
-        value:
-          type: string
-          description: Amount transferred
-          examples:
-          - '3331009129'
-        tokenId:
-          type: string
-          description: Token Id
-          examples:
-          - '2'
-        blockTimestamp:
-          type: number
-          description: Block timestamp
-          examples:
-          - 1640995200
-        logIndex:
-          type: number
-          description: Log index
-          examples:
-          - 5
-        erc20Token:
-          description: erc20 Token details
-          allOf:
-          - $ref: '#/components/schemas/ERCToken'
-        erc721Token:
-          description: erc721 Token details
-          allOf:
-          - $ref: '#/components/schemas/ERCToken'
-        erc1155Token:
-          description: erc1155 Token details
-          allOf:
-          - $ref: '#/components/schemas/ERCToken'
-      required:
-      - transactionHash
-      - type
-      - from
-      - to
-      - value
-      - blockTimestamp
-      - logIndex
-    ERCToken:
-      type: object
-      properties:
-        address:
-          type: string
-          description: Token contract address
-          examples:
-          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
-        name:
-          type: string
-          description: Token name
-          examples:
-          - TetherToken
-        symbol:
-          type: string
-          description: Token symbol
-          examples:
-          - USDt
-        decimals:
-          type: number
-          description: Token decimals
-          examples:
-          - 6
-        valueWithDecimals:
-          type: string
-          description: Value including decimals
-          examples:
-          - '3331.009129'
-      required:
-      - address
-      - name
-      - symbol
-      - decimals
-      - valueWithDecimals
-    TransactionEvent:
-      type: object
-      properties:
-        transaction:
-          description: Transaction details
-          allOf:
-          - $ref: '#/components/schemas/Transaction'
-        logs:
-          description: Array of log events
-          type: array
-          items:
-            $ref: '#/components/schemas/Log'
-      required:
-      - transaction
-    Log:
-      type: object
-      properties:
-        address:
-          type: string
-          description: Contract address
-          examples:
-          - '0x54C800d2331E10467143911aabCa092d68bF4166'
-        topic0:
-          type: string
-          description: First topic
-          examples:
-          - '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925'
-        topic1:
-          type: string
-          description: Second topic (optional)
-          examples:
-          - '0x0000000000000000000000000000333883f313ad709f583d0a3d2e18a44ef29b'
-        topic2:
-          type: string
-          description: Third topic (optional)
-          examples:
-          - '0x0000000000000000000000000000000000000000000000000000000000000000'
-        topic3:
-          type: string
-          description: Fourth topic (optional)
-          examples:
-          - '0x0000000000000000000000000000000000000000000000000000000000001350'
-        data:
-          type: string
-          description: Event data
-          examples:
-          - 0x
-        transactionIndex:
-          type: number
-          description: Transaction index
-          examples:
-          - 2
-        logIndex:
-          type: number
-          description: Log index
-          examples:
-          - 10
-        removed:
-          type: boolean
-          description: Indicates if the log was removed
-          examples:
-          - false
-      required:
-      - address
-      - topic0
-      - data
-      - transactionIndex
-      - logIndex
-      - removed
     Transaction:
       type: object
       properties:
@@ -479,6 +228,257 @@ components:
       - eventType
       - messageId
       - event
+    ERCTransfer:
+      type: object
+      properties:
+        transactionHash:
+          type: string
+          description: Transaction hash
+          examples:
+          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
+        type:
+          type: string
+          description: Transfer type
+          examples:
+          - ERC20
+        from:
+          type: string
+          description: Sender address
+          examples:
+          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
+        to:
+          type: string
+          description: Recipient address
+          examples:
+          - '0x40E832C3Df9562DfaE5A86A4849F27F687A9B46B'
+        value:
+          type: string
+          description: Amount transferred
+          examples:
+          - '3331009129'
+        tokenId:
+          type: string
+          description: Token Id
+          examples:
+          - '2'
+        blockTimestamp:
+          type: number
+          description: Block timestamp
+          examples:
+          - 1640995200
+        logIndex:
+          type: number
+          description: Log index
+          examples:
+          - 5
+        erc20Token:
+          description: erc20 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+        erc721Token:
+          description: erc721 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+        erc1155Token:
+          description: erc1155 Token details
+          allOf:
+          - $ref: '#/components/schemas/ERCToken'
+      required:
+      - transactionHash
+      - type
+      - from
+      - to
+      - value
+      - blockTimestamp
+      - logIndex
+    ERCToken:
+      type: object
+      properties:
+        address:
+          type: string
+          description: Token contract address
+          examples:
+          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
+        name:
+          type: string
+          description: Token name
+          examples:
+          - TetherToken
+        symbol:
+          type: string
+          description: Token symbol
+          examples:
+          - USDt
+        decimals:
+          type: number
+          description: Token decimals
+          examples:
+          - 6
+        valueWithDecimals:
+          type: string
+          description: Value including decimals
+          examples:
+          - '3331.009129'
+      required:
+      - address
+      - name
+      - symbol
+      - decimals
+      - valueWithDecimals
+    Log:
+      type: object
+      properties:
+        address:
+          type: string
+          description: Contract address
+          examples:
+          - '0x54C800d2331E10467143911aabCa092d68bF4166'
+        topic0:
+          type: string
+          description: First topic
+          examples:
+          - '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925'
+        topic1:
+          type: string
+          description: Second topic (optional)
+          examples:
+          - '0x0000000000000000000000000000333883f313ad709f583d0a3d2e18a44ef29b'
+        topic2:
+          type: string
+          description: Third topic (optional)
+          examples:
+          - '0x0000000000000000000000000000000000000000000000000000000000000000'
+        topic3:
+          type: string
+          description: Fourth topic (optional)
+          examples:
+          - '0x0000000000000000000000000000000000000000000000000000000000001350'
+        data:
+          type: string
+          description: Event data
+          examples:
+          - 0x
+        transactionIndex:
+          type: number
+          description: Transaction index
+          examples:
+          - 2
+        logIndex:
+          type: number
+          description: Log index
+          examples:
+          - 10
+        removed:
+          type: boolean
+          description: Indicates if the log was removed
+          examples:
+          - false
+      required:
+      - address
+      - topic0
+      - data
+      - transactionIndex
+      - logIndex
+      - removed
+    TransactionEvent:
+      type: object
+      properties:
+        transaction:
+          description: Transaction details
+          allOf:
+          - $ref: '#/components/schemas/Transaction'
+        logs:
+          description: Array of log events
+          type: array
+          items:
+            $ref: '#/components/schemas/Log'
+      required:
+      - transaction
+    AccessListData:
+      type: object
+      properties:
+        accessAddresses:
+          type: string
+          description: Access Address
+          examples:
+          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
+        storageKeys:
+          description: Storage keys
+          type: array
+          items:
+            type: string
+      required:
+      - accessAddresses
+      - storageKeys
+    NetworkTokenInfo:
+      type: object
+      properties:
+        tokenName:
+          type: string
+          description: Token name
+          examples:
+          - TetherToken
+        tokenSymbol:
+          type: string
+          description: Token symbol
+          examples:
+          - USDt
+        tokenDecimals:
+          type: number
+          description: Token decimals
+          examples:
+          - 6
+        valueWithDecimals:
+          type: string
+          description: Value including decimals
+          examples:
+          - '3331.009129'
+    WebhookInternalTransaction:
+      type: object
+      properties:
+        from:
+          type: string
+          description: Sender address
+          examples:
+          - '0x737F6b0b8A04e8462d0fC7076451298F0dA9a972'
+        to:
+          type: string
+          description: Recipient address
+          examples:
+          - '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
+        internalTxType:
+          type: string
+          description: Internal transaction type
+          examples:
+          - call
+        value:
+          type: string
+          description: Value transferred
+          examples:
+          - '50000000000000000'
+        gasUsed:
+          type: string
+          description: Gas used
+          examples:
+          - '44038'
+        gasLimit:
+          type: string
+          description: Gas limit
+          examples:
+          - '50000'
+        transactionHash:
+          type: string
+          description: Transaction hash
+          examples:
+          - '0xfd91150d236ec5c3b1ee325781affad5b0b4d7eb0187c84c220ab115eaa563e8'
+      required:
+      - from
+      - to
+      - internalTxType
+      - value
+      - gasUsed
+      - gasLimit
+      - transactionHash
   securitySchemes:
     apiKey:
       type: apiKey
