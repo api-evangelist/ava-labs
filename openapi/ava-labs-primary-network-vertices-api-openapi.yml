@@ -337,12 +337,6 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.vertices.listByHeight({\n    vertexHeight: 123,\n    pageSize: 10,\n    blockchainId: \"x-chain\",\n    sortOrder: \"asc\",\n  });\n\n  for await (const page of result) {\n    console.log(page);\n  }\n}\n\nrun();"
 components:
   schemas:
-    PrimaryNetworkChainName:
-      type: string
-      enum:
-      - p-chain
-      - x-chain
-      - c-chain
     PrimaryNetworkChainInfo:
       type: object
       properties:
@@ -353,30 +347,6 @@ components:
       required:
       - chainName
       - network
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
     NotFound:
       type: object
       properties:
@@ -401,7 +371,7 @@ components:
       - message
       - statusCode
       - error
-    BadRequest:
+    Unauthorized:
       type: object
       properties:
         message:
@@ -415,12 +385,36 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 400
+          - 401
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Request
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
       required:
       - message
       - statusCode
@@ -430,30 +424,12 @@ components:
       enum:
       - asc
       - desc
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
+    XChainId:
+      type: string
+      enum:
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - x-chain
     InternalServerError:
       type: object
       properties:
@@ -484,7 +460,7 @@ components:
       - mainnet
       - fuji
       - testnet
-    Forbidden:
+    BadGateway:
       type: object
       properties:
         message:
@@ -498,22 +474,40 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 403
+          - 502
         error:
           type: string
           description: The type of error
           examples:
-          - Forbidden
+          - Bad Gateway
       required:
       - message
       - statusCode
       - error
-    XChainId:
-      type: string
-      enum:
-      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
-      - x-chain
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
     TooManyRequests:
       type: object
       properties:
@@ -570,6 +564,12 @@ components:
       - txCount
       - transactions
       - vertexSizeBytes
+    PrimaryNetworkChainName:
+      type: string
+      enum:
+      - p-chain
+      - x-chain
+      - c-chain
     ListXChainVerticesResponse:
       type: object
       properties:
@@ -585,7 +585,7 @@ components:
       required:
       - vertices
       - chainInfo
-    Unauthorized:
+    BadRequest:
       type: object
       properties:
         message:
@@ -599,12 +599,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 400
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Bad Request
       required:
       - message
       - statusCode

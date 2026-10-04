@@ -418,54 +418,6 @@ paths:
       - L1 Validator Metrics
 components:
   schemas:
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
     NotFound:
       type: object
       properties:
@@ -490,7 +442,7 @@ components:
       - message
       - statusCode
       - error
-    BadGateway:
+    Unauthorized:
       type: object
       properties:
         message:
@@ -504,36 +456,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 502
+          - 401
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    InternalServerError:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
+          - Unauthorized
       required:
       - message
       - statusCode
@@ -562,19 +490,90 @@ components:
       - message
       - statusCode
       - error
-    MetricsApiResponse:
+    InternalServerError:
       type: object
       properties:
-        nextPageToken:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
           type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        results:
-          description: Array of current metrics values at different timestamps.
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricsValue'
+          description: The type of error
+          examples:
+          - Internal Server Error
       required:
-      - results
+      - message
+      - statusCode
+      - error
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    MetricsValue:
+      type: object
+      properties:
+        value:
+          type: number
+          description: Aggregated value for the current metrics.
+        timestamp:
+          type: number
+          description: Unix Epoch timestamp for which metrics are aggregated. Depending on the interval of the metric this can be at the start of the relevant hour, day, month, year, etc.
+      required:
+      - value
+      - timestamp
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
     TooManyRequests:
       type: object
       properties:
@@ -599,19 +598,20 @@ components:
       - message
       - statusCode
       - error
-    MetricsValue:
+    MetricsApiResponse:
       type: object
       properties:
-        value:
-          type: number
-          description: Aggregated value for the current metrics.
-        timestamp:
-          type: number
-          description: Unix Epoch timestamp for which metrics are aggregated. Depending on the interval of the metric this can be at the start of the relevant hour, day, month, year, etc.
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        results:
+          description: Array of current metrics values at different timestamps.
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricsValue'
       required:
-      - value
-      - timestamp
-    Unauthorized:
+      - results
+    BadRequest:
       type: object
       properties:
         message:
@@ -625,12 +625,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 400
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Bad Request
       required:
       - message
       - statusCode

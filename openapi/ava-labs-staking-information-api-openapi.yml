@@ -1169,7 +1169,20 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    StakingInformationResponse:
+    StakingInformation:
+      type: object
+      properties:
+        value:
+          type: number
+        timestamp:
+          type: number
+        subnetID:
+          type: string
+      required:
+      - value
+      - timestamp
+      - subnetID
+    ValidatorInformationResponse:
       type: object
       properties:
         nextPageStartKey:
@@ -1185,58 +1198,15 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/StakingInformation'
+            $ref: '#/components/schemas/ValidatorInformation'
       required:
       - status
       - results
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
+    LegacyNetworks:
+      type: string
+      enum:
+      - mainnet
+      - fuji
     NotFound:
       type: object
       properties:
@@ -1261,69 +1231,7 @@ components:
       - message
       - statusCode
       - error
-    ValidatorInformation:
-      type: object
-      properties:
-        timestamp:
-          type: number
-        subnetID:
-          type: string
-        nodeID:
-          type: string
-        addresses:
-          type: array
-          items:
-            type: string
-        delegationFee:
-          type: number
-        delegatorCount:
-          type: number
-        delegatorWeight:
-          type: number
-        endTime:
-          type: number
-        startTime:
-          type: number
-        status:
-          type: string
-        transactionHash:
-          type: string
-        weight:
-          type: number
-      required:
-      - timestamp
-      - subnetID
-      - nodeID
-      - addresses
-      - delegationFee
-      - delegatorCount
-      - delegatorWeight
-      - endTime
-      - startTime
-      - status
-      - transactionHash
-      - weight
-    ValidatorInformationResponse:
-      type: object
-      properties:
-        nextPageStartKey:
-          type: string
-        lastRun:
-          type: number
-          examples:
-          - 1717757617
-        status:
-          type: number
-          examples:
-          - 200
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidatorInformation'
-      required:
-      - status
-      - results
-    BadGateway:
+    Unauthorized:
       type: object
       properties:
         message:
@@ -1337,21 +1245,16 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 502
+          - 401
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Gateway
+          - Unauthorized
       required:
       - message
       - statusCode
       - error
-    LegacyNetworks:
-      type: string
-      enum:
-      - mainnet
-      - fuji
     Forbidden:
       type: object
       properties:
@@ -1400,19 +1303,116 @@ components:
       - message
       - statusCode
       - error
-    StakingInformation:
+    BadGateway:
       type: object
       properties:
-        value:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
           type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    StakingInformationResponse:
+      type: object
+      properties:
+        nextPageStartKey:
+          type: string
+        lastRun:
+          type: number
+          examples:
+          - 1717757617
+        status:
+          type: number
+          examples:
+          - 200
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StakingInformation'
+      required:
+      - status
+      - results
+    ValidatorInformation:
+      type: object
+      properties:
         timestamp:
           type: number
         subnetID:
           type: string
+        nodeID:
+          type: string
+        addresses:
+          type: array
+          items:
+            type: string
+        delegationFee:
+          type: number
+        delegatorCount:
+          type: number
+        delegatorWeight:
+          type: number
+        endTime:
+          type: number
+        startTime:
+          type: number
+        status:
+          type: string
+        transactionHash:
+          type: string
+        weight:
+          type: number
       required:
-      - value
       - timestamp
       - subnetID
+      - nodeID
+      - addresses
+      - delegationFee
+      - delegatorCount
+      - delegatorWeight
+      - endTime
+      - startTime
+      - status
+      - transactionHash
+      - weight
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
     TooManyRequests:
       type: object
       properties:
@@ -1437,7 +1437,7 @@ components:
       - message
       - statusCode
       - error
-    Unauthorized:
+    BadRequest:
       type: object
       properties:
         message:
@@ -1451,12 +1451,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 400
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Bad Request
       required:
       - message
       - statusCode

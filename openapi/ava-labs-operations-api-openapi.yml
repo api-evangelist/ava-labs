@@ -171,9 +171,23 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche();\n\nasync function run() {\n  const result = await avalanche.data.operations.exportTransactions({\n    type: \"TRANSACTION_EXPORT_PRIMARY_NETWORK_STAKING\",\n    firstDate: \"2023-05-01\",\n    lastDate: \"2023-05-02\",\n    options: {\n      includeChains: [\n        \"p-chain\",\n      ],\n    },\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
-    EVMOperationType:
+    TransactionExportMetadata:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/OperationStatusCode'
+        downloadUrl:
+          type: string
+          description: File download URL. Provided only for COMPLETED and COMPLETED_WITH_WARNING operations.
+        nextDate:
+          type: string
+          description: The next date (YYYY-MM-DD) to use as the firstDate in follow up requests if a request results in a transaction history exceeding the max size and has been reported as `COMPLETED_WITH_WARNING` with the warning 'WarnTruncatedExport'.
+    OperationType:
       type: string
       enum:
+      - TRANSACTION_EXPORT_PRIMARY_NETWORK
+      - TRANSACTION_EXPORT_PRIMARY_NETWORK_STAKING
+      - TRANSACTION_EXPORT_PRIMARY_NETWORK_SIMPLE
       - TRANSACTION_EXPORT_EVM
     Forbidden:
       type: object
@@ -199,64 +213,7 @@ components:
       - message
       - statusCode
       - error
-    CreatePrimaryNetworkTransactionExportRequest:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/PrimaryNetworkOperationType'
-        firstDate:
-          type: string
-          examples:
-          - '2023-05-01'
-        lastDate:
-          type: string
-          examples:
-          - '2023-05-02'
-        startDate:
-          type: string
-          examples:
-          - '2023-05-01'
-          deprecated: true
-        endDate:
-          type: string
-          examples:
-          - '2023-05-02'
-          deprecated: true
-        options:
-          $ref: '#/components/schemas/PrimaryNetworkOptions'
-      required:
-      - type
-      - options
-    PrimaryNetworkOperationType:
-      type: string
-      enum:
-      - TRANSACTION_EXPORT_PRIMARY_NETWORK
-      - TRANSACTION_EXPORT_PRIMARY_NETWORK_STAKING
-      - TRANSACTION_EXPORT_PRIMARY_NETWORK_SIMPLE
-    EvmNetworkOptions:
-      type: object
-      properties:
-        addresses:
-          type: array
-          items:
-            type: string
-        includeChains:
-          examples:
-          - - '43114'
-          type: array
-          items:
-            type: string
-      required:
-      - addresses
-      - includeChains
-    OperationType:
-      type: string
-      enum:
-      - TRANSACTION_EXPORT_PRIMARY_NETWORK
-      - TRANSACTION_EXPORT_PRIMARY_NETWORK_STAKING
-      - TRANSACTION_EXPORT_PRIMARY_NETWORK_SIMPLE
-      - TRANSACTION_EXPORT_EVM
-    Unauthorized:
+    TooManyRequests:
       type: object
       properties:
         message:
@@ -270,12 +227,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 429
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Too Many Requests
       required:
       - message
       - statusCode
@@ -304,6 +261,118 @@ components:
       - operationStatus
       - createdAtTimestamp
       - updatedAtTimestamp
+    PrimaryNetworkOperationType:
+      type: string
+      enum:
+      - TRANSACTION_EXPORT_PRIMARY_NETWORK
+      - TRANSACTION_EXPORT_PRIMARY_NETWORK_STAKING
+      - TRANSACTION_EXPORT_PRIMARY_NETWORK_SIMPLE
+    EVMOperationType:
+      type: string
+      enum:
+      - TRANSACTION_EXPORT_EVM
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    OperationStatusCode:
+      type: string
+      enum:
+      - ErrInvalidRequest
+      - ErrInternal
+      - WarnTruncatedExport
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
     CreateEvmTransactionExportRequest:
       type: object
       properties:
@@ -332,7 +401,7 @@ components:
       required:
       - type
       - options
-    InternalServerError:
+    BadRequest:
       type: object
       properties:
         message:
@@ -346,51 +415,32 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 500
+          - 400
         error:
           type: string
           description: The type of error
           examples:
-          - Internal Server Error
+          - Bad Request
       required:
       - message
       - statusCode
       - error
-    ServiceUnavailable:
+    EvmNetworkOptions:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
+        addresses:
+          type: array
+          items:
+            type: string
+        includeChains:
           examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
+          - - '43114'
+          type: array
+          items:
+            type: string
       required:
-      - message
-      - statusCode
-      - error
-    TransactionExportMetadata:
-      type: object
-      properties:
-        code:
-          $ref: '#/components/schemas/OperationStatusCode'
-        downloadUrl:
-          type: string
-          description: File download URL. Provided only for COMPLETED and COMPLETED_WITH_WARNING operations.
-        nextDate:
-          type: string
-          description: The next date (YYYY-MM-DD) to use as the firstDate in follow up requests if a request results in a transaction history exceeding the max size and has been reported as `COMPLETED_WITH_WARNING` with the warning 'WarnTruncatedExport'.
+      - addresses
+      - includeChains
     PrimaryNetworkOptions:
       type: object
       properties:
@@ -419,84 +469,34 @@ components:
             - c-chain
       required:
       - includeChains
-    BadGateway:
+    CreatePrimaryNetworkTransactionExportRequest:
       type: object
       properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
+        type:
+          $ref: '#/components/schemas/PrimaryNetworkOperationType'
+        firstDate:
           type: string
-          description: The type of error
           examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
+          - '2023-05-01'
+        lastDate:
           type: string
-          description: The type of error
           examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
+          - '2023-05-02'
+        startDate:
           type: string
-          description: The type of error
           examples:
-          - Not Found
+          - '2023-05-01'
+          deprecated: true
+        endDate:
+          type: string
+          examples:
+          - '2023-05-02'
+          deprecated: true
+        options:
+          $ref: '#/components/schemas/PrimaryNetworkOptions'
       required:
-      - message
-      - statusCode
-      - error
-    OperationStatusCode:
-      type: string
-      enum:
-      - ErrInvalidRequest
-      - ErrInternal
-      - WarnTruncatedExport
+      - type
+      - options
     OperationStatus:
       type: string
       enum:
@@ -504,7 +504,7 @@ components:
       - COMPLETED
       - COMPLETED_WITH_WARNING
       - FAILED
-    TooManyRequests:
+    ServiceUnavailable:
       type: object
       properties:
         message:
@@ -518,12 +518,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 429
+          - 503
         error:
           type: string
           description: The type of error
           examples:
-          - Too Many Requests
+          - Service Unavailable
       required:
       - message
       - statusCode

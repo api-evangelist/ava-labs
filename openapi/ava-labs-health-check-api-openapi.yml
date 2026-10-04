@@ -156,78 +156,6 @@ paths:
     - url: https://metrics.avax.network
 components:
   schemas:
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    ServiceUnavailable:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 503
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Service Unavailable
-      required:
-      - message
-      - statusCode
-      - error
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
     HealthCheckResultDto:
       type: object
       properties:
@@ -264,16 +192,7 @@ components:
           examples:
           - database:
               status: up
-    HealthIndicatorResultDto:
-      type: object
-      properties:
-        status:
-          type: string
-          enum:
-          - up
-          - down
-          description: Status of the health indicator.
-    InternalServerError:
+    NotFound:
       type: object
       properties:
         message:
@@ -287,12 +206,36 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 500
+          - 404
         error:
           type: string
           description: The type of error
           examples:
-          - Internal Server Error
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
       required:
       - message
       - statusCode
@@ -321,7 +264,7 @@ components:
       - message
       - statusCode
       - error
-    TooManyRequests:
+    InternalServerError:
       type: object
       properties:
         message:
@@ -335,12 +278,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 429
+          - 500
         error:
           type: string
           description: The type of error
           examples:
-          - Too Many Requests
+          - Internal Server Error
       required:
       - message
       - statusCode
@@ -369,7 +312,7 @@ components:
       - message
       - statusCode
       - error
-    Unauthorized:
+    ServiceUnavailable:
       type: object
       properties:
         message:
@@ -383,12 +326,69 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 503
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    HealthIndicatorResultDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - up
+          - down
+          description: Status of the health indicator.
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
       required:
       - message
       - statusCode

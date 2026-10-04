@@ -311,83 +311,6 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.nfts.get({\n    address: \"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\n    tokenId: \"145\",\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    NftTokenMetadataStatus:
-      type: string
-      description: The metadata indexing status of the nft.
-      enum:
-      - UNKNOWN
-      - MISSING_TOKEN
-      - INVALID_TOKEN_URI
-      - INVALID_TOKEN_URI_SCHEME
-      - UNREACHABLE_TOKEN_URI
-      - THROTTLED_TOKEN_URI
-      - METADATA_CONTENT_TOO_LARGE
-      - INVALID_METADATA
-      - INVALID_METADATA_JSON
-      - INDEXED
-      - UNINDEXED
-    ListNftTokens:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        tokens:
-          type: array
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/Erc721Token'
-            - $ref: '#/components/schemas/Erc1155Token'
-      required:
-      - tokens
-    Erc1155Token:
-      type: object
-      properties:
-        address:
-          type: string
-          description: A wallet or contract address in mixed-case checksum encoding.
-          examples:
-          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-        ercType:
-          type: string
-          enum:
-          - ERC-1155
-        tokenId:
-          type: string
-        tokenUri:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Erc1155TokenMetadata'
-      required:
-      - address
-      - ercType
-      - tokenId
-      - tokenUri
-      - metadata
     NotFound:
       type: object
       properties:
@@ -412,7 +335,7 @@ components:
       - message
       - statusCode
       - error
-    ServiceUnavailable:
+    Unauthorized:
       type: object
       properties:
         message:
@@ -426,17 +349,17 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 503
+          - 401
         error:
           type: string
           description: The type of error
           examples:
-          - Service Unavailable
+          - Unauthorized
       required:
       - message
       - statusCode
       - error
-    BadGateway:
+    Forbidden:
       type: object
       properties:
         message:
@@ -450,12 +373,12 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 502
+          - 403
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Gateway
+          - Forbidden
       required:
       - message
       - statusCode
@@ -511,7 +434,31 @@ components:
       - message
       - statusCode
       - error
-    Forbidden:
+    Erc1155Token:
+      type: object
+      properties:
+        address:
+          type: string
+          description: A wallet or contract address in mixed-case checksum encoding.
+          examples:
+          - '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+        ercType:
+          type: string
+          enum:
+          - ERC-1155
+        tokenId:
+          type: string
+        tokenUri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Erc1155TokenMetadata'
+      required:
+      - address
+      - ercType
+      - tokenId
+      - tokenUri
+      - metadata
+    BadGateway:
       type: object
       properties:
         message:
@@ -525,40 +472,31 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 403
+          - 502
         error:
           type: string
           description: The type of error
           examples:
-          - Forbidden
+          - Bad Gateway
       required:
       - message
       - statusCode
       - error
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
+    NftTokenMetadataStatus:
+      type: string
+      description: The metadata indexing status of the nft.
+      enum:
+      - UNKNOWN
+      - MISSING_TOKEN
+      - INVALID_TOKEN_URI
+      - INVALID_TOKEN_URI_SCHEME
+      - UNREACHABLE_TOKEN_URI
+      - THROTTLED_TOKEN_URI
+      - METADATA_CONTENT_TOO_LARGE
+      - INVALID_METADATA
+      - INVALID_METADATA_JSON
+      - INDEXED
+      - UNINDEXED
     Erc1155TokenMetadata:
       type: object
       properties:
@@ -629,7 +567,7 @@ components:
       - tokenId
       - tokenUri
       - metadata
-    Unauthorized:
+    ServiceUnavailable:
       type: object
       properties:
         message:
@@ -643,12 +581,74 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 401
+          - 503
         error:
           type: string
           description: The type of error
           examples:
-          - Unauthorized
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    ListNftTokens:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        tokens:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/Erc721Token'
+            - $ref: '#/components/schemas/Erc1155Token'
+      required:
+      - tokens
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
       required:
       - message
       - statusCode
