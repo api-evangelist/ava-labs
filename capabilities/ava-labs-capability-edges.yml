@@ -1,0 +1,38 @@
+slug: ava-labs
+provider: Ava Labs
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 2
+edges:
+- tag: Webhooks
+  spec_file: ava-labs-webhooks-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.92
+  evidence: POST /v1/webhooks  createWebhook  Create a webhook; DELETE /v1/webhooks/{id}  deactivateWebhook;
+    POST /v1/webhooks:generateOrRotateSharedSecret
+  reason: Full lifecycle of outbound webhook subscriptions (create, list, update, deactivate, rotate signing
+    secret, manage subscribed addresses) with event-type schemas such as EVMAddressActivityResponse —
+    plainly outbound webhook and event subscription management on a developer platform.
+- tag: Data API Usage Metrics
+  spec_file: ava-labs-data-api-usage-metrics-api-openapi.yml
+  capability_id: BC-4270.50
+  capability_id_l1: BC-4270
+  capability_name: API Consumption Governance
+  confidence: 0.72
+  evidence: GET /v1/apiUsageMetrics  getApiUsageMetrics  Get usage metrics for the Data API; GET /v1/apiLogs  Get
+    logs for requests made by client
+  reason: Operations expose per-client API request usage metrics and request logs across the Data API
+    and RPC endpoints — this is consumption analytics over a public developer API surface, i.e. API consumption
+    governance. Not a business-domain metric despite the word 'Metrics'; confidence held at 0.72 because
+    quota/rate-limit enforcement itself is not exposed, only usage reporting.
