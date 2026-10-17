@@ -735,6 +735,48 @@ paths:
       - Chain Metrics
 components:
   schemas:
+    RollingWindowMetricsApiResponse:
+      type: object
+      properties:
+        result:
+          description: Array of current metrics values for different windows.
+          allOf:
+          - $ref: '#/components/schemas/ChainRollingWindowMetricsValue'
+      required:
+      - result
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    ICMRollingWindowMetricsApiResponse:
+      type: object
+      properties:
+        result:
+          description: Array of current metrics values for different windows.
+          allOf:
+          - $ref: '#/components/schemas/ICMRollingWindowMetricsValue'
+      required:
+      - result
     ICMRollingWindowMetricsValue:
       type: object
       properties:
@@ -768,13 +810,7 @@ components:
       required:
       - srcBlockchainId
       - destBlockchainId
-    TeleporterMetric:
-      type: string
-      enum:
-      - teleporterSourceTxnCount
-      - teleporterDestinationTxnCount
-      - teleporterTotalTxnCount
-    Forbidden:
+    BadGateway:
       type: object
       properties:
         message:
@@ -788,31 +824,16 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 403
+          - 502
         error:
           type: string
           description: The type of error
           examples:
-          - Forbidden
+          - Bad Gateway
       required:
       - message
       - statusCode
       - error
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
-    ICMRollingWindowMetricsApiResponse:
-      type: object
-      properties:
-        result:
-          description: Array of current metrics values for different windows.
-          allOf:
-          - $ref: '#/components/schemas/ICMRollingWindowMetricsValue'
-      required:
-      - result
     MetricsValue:
       type: object
       properties:
@@ -825,39 +846,35 @@ components:
       required:
       - value
       - timestamp
-    RollingWindowMetricsApiResponse:
+    ICMMetricsValue:
+      type: object
+      properties:
+        value:
+          type: number
+          description: Aggregated value for the current metrics.
+        timestamp:
+          type: number
+          description: Unix Epoch timestamp for which metrics are aggregated. Depending on the interval of the metric this can be at the start of the relevant hour, day, month, year, etc.
+        srcBlockchainId:
+          type: string
+          description: Source blockchainId.
+        destBlockchainId:
+          type: string
+          description: Destination blockchainId.
+      required:
+      - value
+      - timestamp
+      - srcBlockchainId
+      - destBlockchainId
+    TeleporterChainMetricsApiResponse:
       type: object
       properties:
         result:
-          description: Array of current metrics values for different windows.
+          description: current metrics value for a given teleporter metric.
           allOf:
-          - $ref: '#/components/schemas/ChainRollingWindowMetricsValue'
+          - $ref: '#/components/schemas/TeleporterMetricsValue'
       required:
       - result
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
     MetricsApiResponse:
       type: object
       properties:
@@ -887,85 +904,75 @@ components:
       - deployers
       - activeAddresses
       - activeSenders
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    NetworkMetric:
+    TeleporterMetric:
       type: string
       enum:
-      - delegatorCount
-      - delegatorWeight
-      - validatorCount
-      - validatorWeight
+      - teleporterSourceTxnCount
+      - teleporterDestinationTxnCount
+      - teleporterTotalTxnCount
+    TimeIntervalGranularity:
+      type: string
+      enum:
+      - hour
+      - day
+      - week
+      - month
+    ServiceUnavailable:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 503
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    TeleporterMetricsValue:
+      type: object
+      properties:
+        value:
+          type: number
+          description: Aggregated value for the current metrics.
+      required:
+      - value
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
     InternalServerError:
       type: object
       properties:
@@ -990,16 +997,7 @@ components:
       - message
       - statusCode
       - error
-    TeleporterChainMetricsApiResponse:
-      type: object
-      properties:
-        result:
-          description: current metrics value for a given teleporter metric.
-          allOf:
-          - $ref: '#/components/schemas/TeleporterMetricsValue'
-      required:
-      - result
-    BadRequest:
+    Forbidden:
       type: object
       properties:
         message:
@@ -1013,56 +1011,49 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 400
+          - 403
         error:
           type: string
           description: The type of error
           examples:
-          - Bad Request
+          - Forbidden
       required:
       - message
       - statusCode
       - error
-    ICMMetricsApiResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        results:
-          description: Array of current ICM metrics values.
-          type: array
-          items:
-            $ref: '#/components/schemas/ICMMetricsValue'
-      required:
-      - results
-    TimeIntervalGranularity:
+    NetworkMetric:
       type: string
       enum:
-      - hour
-      - day
-      - week
-      - month
-    ICMMetricsValue:
-      type: object
-      properties:
-        value:
-          type: number
-          description: Aggregated value for the current metrics.
-        timestamp:
-          type: number
-          description: Unix Epoch timestamp for which metrics are aggregated. Depending on the interval of the metric this can be at the start of the relevant hour, day, month, year, etc.
-        srcBlockchainId:
-          type: string
-          description: Source blockchainId.
-        destBlockchainId:
-          type: string
-          description: Destination blockchainId.
-      required:
-      - value
-      - timestamp
-      - srcBlockchainId
-      - destBlockchainId
+      - delegatorCount
+      - delegatorWeight
+      - validatorCount
+      - validatorWeight
+    ChainMetric:
+      type: string
+      enum:
+      - activeAddresses
+      - activeSenders
+      - cumulativeTxCount
+      - cumulativeAddresses
+      - cumulativeContracts
+      - cumulativeDeployers
+      - contracts
+      - deployers
+      - gasUsed
+      - txCount
+      - avgGps
+      - maxGps
+      - avgTps
+      - maxTps
+      - avgGasPrice
+      - maxGasPrice
+      - feesPaid
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
     ChainRollingWindowMetricsValue:
       type: object
       properties:
@@ -1087,35 +1078,7 @@ components:
         allTime:
           type: number
           description: Aggregated value for the current metrics for all time.
-    ChainMetric:
-      type: string
-      enum:
-      - activeAddresses
-      - activeSenders
-      - cumulativeTxCount
-      - cumulativeAddresses
-      - cumulativeContracts
-      - cumulativeDeployers
-      - contracts
-      - deployers
-      - gasUsed
-      - txCount
-      - avgGps
-      - maxGps
-      - avgTps
-      - maxTps
-      - avgGasPrice
-      - maxGasPrice
-      - feesPaid
-    TeleporterMetricsValue:
-      type: object
-      properties:
-        value:
-          type: number
-          description: Aggregated value for the current metrics.
-      required:
-      - value
-    ServiceUnavailable:
+    NotFound:
       type: object
       properties:
         message:
@@ -1129,12 +1092,49 @@ components:
           type: number
           description: The HTTP status code of the response
           examples:
-          - 503
+          - 404
         error:
           type: string
           description: The type of error
           examples:
-          - Service Unavailable
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    ICMMetricsApiResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        results:
+          description: Array of current ICM metrics values.
+          type: array
+          items:
+            $ref: '#/components/schemas/ICMMetricsValue'
+      required:
+      - results
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
       required:
       - message
       - statusCode

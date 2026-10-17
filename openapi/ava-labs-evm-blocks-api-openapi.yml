@@ -300,203 +300,6 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  chainId: \"43114\",\n});\n\nasync function run() {\n  const result = await avalanche.data.evm.blocks.get({\n    blockId: \"0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c\",\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Unauthorized
-      required:
-      - message
-      - statusCode
-      - error
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    InternalServerError:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
-      required:
-      - message
-      - statusCode
-      - error
-    Network:
-      type: string
-      enum:
-      - mainnet
-      - fuji
-      - testnet
-    ListEvmBlocksResponse:
-      type: object
-      properties:
-        nextPageToken:
-          type: string
-          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
-        blocks:
-          type: array
-          items:
-            $ref: '#/components/schemas/EvmBlock'
-      required:
-      - blocks
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    GetEvmBlockResponse:
-      type: object
-      properties:
-        chainId:
-          type: string
-          description: The EVM chain ID on which the block was created.
-          examples:
-          - '43114'
-        blockNumber:
-          type: string
-          description: The block number on the chain.
-          examples:
-          - '339'
-        blockTimestamp:
-          type: number
-          description: The block finality timestamp.
-          examples:
-          - 1648672486
-        blockHash:
-          type: string
-          description: The block hash identifier.
-          examples:
-          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
-        txCount:
-          type: number
-          description: The number of evm transactions in the block.
-        baseFee:
-          type: string
-          description: The base gas fee for a transaction to be included in the block.
-        gasUsed:
-          type: string
-          description: The gas used for transactions in the block.
-        gasLimit:
-          type: string
-          description: The total gas limit set for transactions in the block.
-        gasCost:
-          type: string
-        parentHash:
-          type: string
-          description: The hash of the parent block.
-        feesSpent:
-          type: string
-          description: The amount of fees spent/burned for transactions in the block.
-        cumulativeTransactions:
-          type: string
-          description: The cumulative number of transactions for the chain including this block.
-      required:
-      - chainId
-      - blockNumber
-      - blockTimestamp
-      - blockHash
-      - txCount
-      - baseFee
-      - gasUsed
-      - gasLimit
-      - gasCost
-      - parentHash
-      - feesSpent
-      - cumulativeTransactions
     ServiceUnavailable:
       type: object
       properties:
@@ -521,6 +324,18 @@ components:
       - message
       - statusCode
       - error
+    ListEvmBlocksResponse:
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `pageToken` to retrieve the next page. If this field is omitted or empty, there are no subsequent pages.
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvmBlock'
+      required:
+      - blocks
     TooManyRequests:
       type: object
       properties:
@@ -541,30 +356,6 @@ components:
           description: The type of error
           examples:
           - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
       required:
       - message
       - statusCode
@@ -628,6 +419,215 @@ components:
       - parentHash
       - feesSpent
       - cumulativeTransactions
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    GetEvmBlockResponse:
+      type: object
+      properties:
+        chainId:
+          type: string
+          description: The EVM chain ID on which the block was created.
+          examples:
+          - '43114'
+        blockNumber:
+          type: string
+          description: The block number on the chain.
+          examples:
+          - '339'
+        blockTimestamp:
+          type: number
+          description: The block finality timestamp.
+          examples:
+          - 1648672486
+        blockHash:
+          type: string
+          description: The block hash identifier.
+          examples:
+          - '0x17533aeb5193378b9ff441d61728e7a2ebaf10f61fd5310759451627dfca2e7c'
+        txCount:
+          type: number
+          description: The number of evm transactions in the block.
+        baseFee:
+          type: string
+          description: The base gas fee for a transaction to be included in the block.
+        gasUsed:
+          type: string
+          description: The gas used for transactions in the block.
+        gasLimit:
+          type: string
+          description: The total gas limit set for transactions in the block.
+        gasCost:
+          type: string
+        parentHash:
+          type: string
+          description: The hash of the parent block.
+        feesSpent:
+          type: string
+          description: The amount of fees spent/burned for transactions in the block.
+        cumulativeTransactions:
+          type: string
+          description: The cumulative number of transactions for the chain including this block.
+      required:
+      - chainId
+      - blockNumber
+      - blockTimestamp
+      - blockHash
+      - txCount
+      - baseFee
+      - gasUsed
+      - gasLimit
+      - gasCost
+      - parentHash
+      - feesSpent
+      - cumulativeTransactions
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
+      required:
+      - message
+      - statusCode
+      - error
   securitySchemes:
     apiKey:
       type: apiKey

@@ -119,93 +119,18 @@ paths:
         source: "import { Avalanche } from \"@avalanche-sdk/chainkit\";\n\nconst avalanche = new Avalanche({\n  network: \"mainnet\",\n});\n\nasync function run() {\n  const result = await avalanche.data.primaryNetwork.balances.listByAddresses({\n    blockTimestamp: 1599696000,\n    addresses: \"avax1h2ccj9f5ay5acl6tyn9mwmw32p8wref8vl8ctg\",\n    blockchainId: \"p-chain\",\n  });\n\n  console.log(result);\n}\n\nrun();"
 components:
   schemas:
-    Forbidden:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 403
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Forbidden
-      required:
-      - message
-      - statusCode
-      - error
-    Network:
+    BlockchainId:
       type: string
       enum:
-      - mainnet
-      - fuji
-      - testnet
-    XChainBalances:
-      type: object
-      properties:
-        locked:
-          description: A list of objects containing X-chain Asset balance information.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        unlocked:
-          description: A list of objects containing X-chain Asset balance information.
-          type: array
-          items:
-            $ref: '#/components/schemas/AggregatedAssetAmount'
-        atomicMemoryUnlocked:
-          type: array
-          items:
-            $ref: '#/components/schemas/XChainSharedAssetBalance'
-        atomicMemoryLocked:
-          type: array
-          items:
-            $ref: '#/components/schemas/XChainSharedAssetBalance'
-      required:
-      - locked
-      - unlocked
-      - atomicMemoryUnlocked
-      - atomicMemoryLocked
-    TooManyRequests:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 429
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Too Many Requests
-      required:
-      - message
-      - statusCode
-      - error
-    PrimaryNetworkAssetType:
-      type: string
-      description: Type of asset like SECP256K1 or NFT.
-      enum:
-      - secp256k1
-      - nft
-    PChainSharedAsset:
+      - 11111111111111111111111111111111LpoYY
+      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
+      - 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
+      - yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp
+      - p-chain
+      - x-chain
+      - c-chain
+    CChainSharedAssetBalance:
       type: object
       properties:
         assetId:
@@ -243,10 +168,6 @@ components:
           - 1
         sharedWithChainId:
           type: string
-          examples:
-          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-        status:
-          type: string
       required:
       - assetId
       - name
@@ -256,7 +177,104 @@ components:
       - amount
       - utxoCount
       - sharedWithChainId
-      - status
+    ListPChainBalancesResponse:
+      type: object
+      properties:
+        balances:
+          $ref: '#/components/schemas/PChainBalance'
+        chainInfo:
+          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
+      required:
+      - balances
+      - chainInfo
+    CChainAtomicBalances:
+      type: object
+      properties:
+        atomicMemoryUnlocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/CChainSharedAssetBalance'
+        atomicMemoryLocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/CChainSharedAssetBalance'
+      required:
+      - atomicMemoryUnlocked
+      - atomicMemoryLocked
+    XChainBalances:
+      type: object
+      properties:
+        locked:
+          description: A list of objects containing X-chain Asset balance information.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        unlocked:
+          description: A list of objects containing X-chain Asset balance information.
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregatedAssetAmount'
+        atomicMemoryUnlocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/XChainSharedAssetBalance'
+        atomicMemoryLocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/XChainSharedAssetBalance'
+      required:
+      - locked
+      - unlocked
+      - atomicMemoryUnlocked
+      - atomicMemoryLocked
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 401
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Unauthorized
+      required:
+      - message
+      - statusCode
+      - error
+    BadGateway:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 502
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Gateway
+      required:
+      - message
+      - statusCode
+      - error
     PChainBalance:
       type: object
       properties:
@@ -309,104 +327,60 @@ components:
       - pendingStaked
       - atomicMemoryUnlocked
       - atomicMemoryLocked
-    ListPChainBalancesResponse:
+    ListXChainBalancesResponse:
       type: object
       properties:
         balances:
-          $ref: '#/components/schemas/PChainBalance'
+          $ref: '#/components/schemas/XChainBalances'
         chainInfo:
           $ref: '#/components/schemas/PrimaryNetworkChainInfo'
       required:
       - balances
       - chainInfo
-    PrimaryNetworkChainInfo:
+    AggregatedAssetAmount:
       type: object
       properties:
-        chainName:
-          $ref: '#/components/schemas/PrimaryNetworkChainName'
-        network:
-          $ref: '#/components/schemas/Network'
-      required:
-      - chainName
-      - network
-    NotFound:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 404
-        error:
+        assetId:
           type: string
-          description: The type of error
+          description: Unique ID for an asset.
           examples:
-          - Not Found
-      required:
-      - message
-      - statusCode
-      - error
-    BadGateway:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 502
-        error:
+          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
+        name:
           type: string
-          description: The type of error
+          description: Name of this asset.
           examples:
-          - Bad Gateway
-      required:
-      - message
-      - statusCode
-      - error
-    PrimaryNetworkChainName:
-      type: string
-      enum:
-      - p-chain
-      - x-chain
-      - c-chain
-    Unauthorized:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 401
-        error:
+          - Avalanche
+        symbol:
           type: string
-          description: The type of error
+          description: Symbol for this asset (max 4 characters).
           examples:
-          - Unauthorized
+          - AVAX
+        denomination:
+          type: number
+          description: Denomination of this asset to represent fungibility.
+          examples:
+          - 9
+        type:
+          examples:
+          - secp256k1
+          $ref: '#/components/schemas/PrimaryNetworkAssetType'
+        amount:
+          type: string
+          description: Amount of the asset.
+          examples:
+          - '5001000'
+        utxoCount:
+          type: number
+          examples:
+          - 1
       required:
-      - message
-      - statusCode
-      - error
+      - assetId
+      - name
+      - symbol
+      - denomination
+      - type
+      - amount
+      - utxoCount
     XChainSharedAssetBalance:
       type: object
       properties:
@@ -454,45 +428,7 @@ components:
       - amount
       - utxoCount
       - sharedWithChainId
-    InternalServerError:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 500
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Internal Server Error
-      required:
-      - message
-      - statusCode
-      - error
-    CChainAtomicBalances:
-      type: object
-      properties:
-        atomicMemoryUnlocked:
-          type: array
-          items:
-            $ref: '#/components/schemas/CChainSharedAssetBalance'
-        atomicMemoryLocked:
-          type: array
-          items:
-            $ref: '#/components/schemas/CChainSharedAssetBalance'
-      required:
-      - atomicMemoryUnlocked
-      - atomicMemoryLocked
-    CChainSharedAssetBalance:
+    PChainSharedAsset:
       type: object
       properties:
         assetId:
@@ -530,6 +466,10 @@ components:
           - 1
         sharedWithChainId:
           type: string
+          examples:
+          - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+        status:
+          type: string
       required:
       - assetId
       - name
@@ -539,105 +479,7 @@ components:
       - amount
       - utxoCount
       - sharedWithChainId
-    BlockchainId:
-      type: string
-      enum:
-      - 11111111111111111111111111111111LpoYY
-      - 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
-      - 2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm
-      - 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
-      - yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp
-      - p-chain
-      - x-chain
-      - c-chain
-    AggregatedAssetAmount:
-      type: object
-      properties:
-        assetId:
-          type: string
-          description: Unique ID for an asset.
-          examples:
-          - th5aLdWLi32yS9ED6uLGoMMubqHjzMsXhKWwzP6yZTYQKYzof
-        name:
-          type: string
-          description: Name of this asset.
-          examples:
-          - Avalanche
-        symbol:
-          type: string
-          description: Symbol for this asset (max 4 characters).
-          examples:
-          - AVAX
-        denomination:
-          type: number
-          description: Denomination of this asset to represent fungibility.
-          examples:
-          - 9
-        type:
-          examples:
-          - secp256k1
-          $ref: '#/components/schemas/PrimaryNetworkAssetType'
-        amount:
-          type: string
-          description: Amount of the asset.
-          examples:
-          - '5001000'
-        utxoCount:
-          type: number
-          examples:
-          - 1
-      required:
-      - assetId
-      - name
-      - symbol
-      - denomination
-      - type
-      - amount
-      - utxoCount
-    BadRequest:
-      type: object
-      properties:
-        message:
-          description: The error message describing the reason for the exception
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        statusCode:
-          type: number
-          description: The HTTP status code of the response
-          examples:
-          - 400
-        error:
-          type: string
-          description: The type of error
-          examples:
-          - Bad Request
-      required:
-      - message
-      - statusCode
-      - error
-    ListCChainAtomicBalancesResponse:
-      type: object
-      properties:
-        balances:
-          $ref: '#/components/schemas/CChainAtomicBalances'
-        chainInfo:
-          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
-      required:
-      - balances
-      - chainInfo
-    ListXChainBalancesResponse:
-      type: object
-      properties:
-        balances:
-          $ref: '#/components/schemas/XChainBalances'
-        chainInfo:
-          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
-      required:
-      - balances
-      - chainInfo
+      - status
     ServiceUnavailable:
       type: object
       properties:
@@ -658,6 +500,164 @@ components:
           description: The type of error
           examples:
           - Service Unavailable
+      required:
+      - message
+      - statusCode
+      - error
+    TooManyRequests:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 429
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Too Many Requests
+      required:
+      - message
+      - statusCode
+      - error
+    ListCChainAtomicBalancesResponse:
+      type: object
+      properties:
+        balances:
+          $ref: '#/components/schemas/CChainAtomicBalances'
+        chainInfo:
+          $ref: '#/components/schemas/PrimaryNetworkChainInfo'
+      required:
+      - balances
+      - chainInfo
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 500
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Internal Server Error
+      required:
+      - message
+      - statusCode
+      - error
+    PrimaryNetworkChainInfo:
+      type: object
+      properties:
+        chainName:
+          $ref: '#/components/schemas/PrimaryNetworkChainName'
+        network:
+          $ref: '#/components/schemas/Network'
+      required:
+      - chainName
+      - network
+    PrimaryNetworkAssetType:
+      type: string
+      description: Type of asset like SECP256K1 or NFT.
+      enum:
+      - secp256k1
+      - nft
+    Forbidden:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 403
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Forbidden
+      required:
+      - message
+      - statusCode
+      - error
+    PrimaryNetworkChainName:
+      type: string
+      enum:
+      - p-chain
+      - x-chain
+      - c-chain
+    Network:
+      type: string
+      enum:
+      - mainnet
+      - fuji
+      - testnet
+    NotFound:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 404
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Not Found
+      required:
+      - message
+      - statusCode
+      - error
+    BadRequest:
+      type: object
+      properties:
+        message:
+          description: The error message describing the reason for the exception
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        statusCode:
+          type: number
+          description: The HTTP status code of the response
+          examples:
+          - 400
+        error:
+          type: string
+          description: The type of error
+          examples:
+          - Bad Request
       required:
       - message
       - statusCode
